@@ -3,9 +3,6 @@
 Marketing site for **Duvaryne LLP** — AWS and DevOps consulting, Bengaluru.
 Next.js 16 (App Router) on Cloudflare Workers, with Neon Postgres behind the contact form.
 
-The practice traded as Alvionix Edge LLP until 2026. This codebase descends from that
-site; the case studies document the same delivery record.
-
 ---
 
 ## Stack

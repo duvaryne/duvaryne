@@ -1,9 +1,9 @@
 /**
  * Single source of truth for every fact that appears in more than one place.
  *
- * Nothing below may be re-typed into a component. The predecessor site (alvionixedge.com)
- * carried three different phone numbers and two different LinkedIn URLs across its
- * templates because these values lived in the templates themselves.
+ * Nothing below may be re-typed into a component. Duplicating these values across
+ * templates is how sites end up with three different phone numbers and two different
+ * LinkedIn URLs.
  *
  * Entity-consistency rule: `name` is spelled identically here, in JSON-LD, in the footer,
  * on LinkedIn and on GitHub. AI search engines resolve entities by exact-string matching,
@@ -31,15 +31,7 @@ export const site = {
     github: "https://github.com/duvaryne",
   },
 
-  /**
-   * The practice was founded in 2025 and traded as Alvionix Edge LLP until 2026, when it
-   * was renamed Duvaryne. The delivery record on this site is that same practice's work.
-   * Stating the former name once, here, is what lets a reader reconcile the case studies
-   * with the older references they may find elsewhere.
-   */
   founded: 2025,
-  formerName: "Alvionix Edge LLP",
-  renamedIn: 2026,
 
   /** Named founder. A specialist consultancy is bought on the credentials of the person doing the work. */
   founder: {

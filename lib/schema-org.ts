@@ -20,10 +20,7 @@ export function organizationSchema(): Json {
     "@type": ["Organization", "ProfessionalService"],
     "@id": ORG_ID,
     name: site.name,
-    // The former trading name is listed so search engines resolve the rename to one
-    // entity rather than two competing ones. Every case study on this site was delivered
-    // under it.
-    alternateName: [site.shortName, site.formerName],
+    alternateName: site.shortName,
     url: site.url,
     email: site.email,
     telephone: site.phone,
