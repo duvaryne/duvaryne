@@ -64,7 +64,7 @@ export default async function PostPage({ params }: Props) {
         eyebrow="Blog"
         crumbs={crumbs}
         meta={
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.875rem] text-on-inverse/60">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.875rem] text-on-inverse-muted">
             <span>
               By{" "}
               <Link href="/about/" className="text-on-inverse/85 underline underline-offset-2">

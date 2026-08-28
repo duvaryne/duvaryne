@@ -29,10 +29,10 @@ export function PageHeader({
       <Container>
         {crumbs.length ? (
           <nav aria-label="Breadcrumb" className="mb-7">
-            <ol className="flex flex-wrap items-center gap-1 text-[0.8125rem] text-on-inverse/60">
+            <ol className="flex flex-wrap items-center gap-1 text-[0.8125rem] text-on-inverse-muted">
               {crumbs.map((c, i) => (
                 <li key={c.path} className="flex items-center gap-1">
-                  {i > 0 ? <ChevronRight size={13} aria-hidden className="text-on-inverse/35" /> : null}
+                  {i > 0 ? <ChevronRight size={13} aria-hidden className="text-on-inverse/70" /> : null}
                   {i === crumbs.length - 1 ? (
                     <span aria-current="page" className="text-on-inverse/85">
                       {c.name}
@@ -68,7 +68,7 @@ export function PageHeader({
         {meta ?? null}
 
         {updated ? (
-          <p className="mt-7 text-[0.8125rem] text-on-inverse/50">
+          <p className="mt-7 text-[0.8125rem] text-on-inverse-muted">
             Last updated <time dateTime={updated.toISOString()} className="tabular">{formatDate(updated)}</time>
           </p>
         ) : null}
