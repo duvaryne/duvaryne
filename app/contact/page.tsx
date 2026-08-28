@@ -109,9 +109,7 @@ export default function ContactPage() {
               <div>
                 <dt className="font-medium text-heading">Where we work</dt>
                 <dd className="mt-1 text-muted">
-                  Across India, and remotely with teams in the US and EU. Primary AWS regions{" "}
-                  <span className="tabular">ap-south-1</span> and{" "}
-                  <span className="tabular">ap-south-2</span>.
+                  Across India, and remotely with teams in the US and EU.
                 </dd>
               </div>
               <div>

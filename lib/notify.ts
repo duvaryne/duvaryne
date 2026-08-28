@@ -20,7 +20,9 @@ export async function notifyEnquiry(input: {
 }): Promise<{ sent: boolean; reason?: string }> {
   const key = process.env.RESEND_API_KEY?.trim();
   const from = process.env.NOTIFY_FROM?.trim();
-  const to = process.env.NOTIFY_TO?.trim() ?? site.email;
+  // `||`, not `??`: an env var set to an empty string is a real deployment mistake, and
+  // `??` would happily pass "" through as the recipient. Empty means "not configured".
+  const to = process.env.NOTIFY_TO?.trim() || site.email;
 
   if (!key || !from) return { sent: false, reason: "not-configured" };
 
