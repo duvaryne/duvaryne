@@ -15,7 +15,7 @@ Next.js 16 (App Router) on Cloudflare Workers, with Neon Postgres behind the con
 | Hosting | Cloudflare Workers via `@opennextjs/cloudflare` |
 | Database | Neon (Lakebase Postgres) over HTTP (`@neondatabase/serverless`) |
 | Spam | Cloudflare Turnstile + honeypot |
-| Notifications | Resend HTTP API (optional) |
+| Notifications | Resend HTTP API into the Titan mailbox (optional) |
 
 ## Quick start
 

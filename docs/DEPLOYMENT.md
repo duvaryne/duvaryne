@@ -96,6 +96,33 @@ Turnstile is skipped and the notification email is a no-op, both by design.
 
 ---
 
+## Step 4b. Contact-form notifications (Resend → Titan)
+
+Titan receives your mail; it cannot send the form's alert. A Cloudflare Worker has no
+usable SMTP path — outbound port 25 is blocked and `nodemailer` needs Node's `net`/`tls`,
+which the runtime does not provide. So the alert goes out over HTTP through Resend and
+lands **in the Titan mailbox**. Titan remains the mailbox; Resend is only the transport.
+
+Neon is the system of record. If Resend is unset or failing, the enquiry is still stored
+and the visitor still gets a success response — the failure is logged, never surfaced.
+
+1. Sign up at <https://resend.com> (free tier: 3,000 emails/month, ample here).
+2. **Verify a subdomain, not the apex.** Add `send.duvaryne.com`. Resend gives you DKIM
+   and SPF records scoped to that subdomain, which you add in Cloudflare DNS. Verifying
+   the apex instead would have you editing the apex SPF record that Titan depends on.
+3. Set the secrets:
+
+   ```bash
+   npx wrangler secret put RESEND_API_KEY
+   npx wrangler secret put NOTIFY_FROM   # noreply@send.duvaryne.com
+   npx wrangler secret put NOTIFY_TO     # hello@duvaryne.com
+   ```
+
+`reply_to` on the notification is set to the enquirer's address, so replying from the
+Titan inbox goes straight to them rather than to Resend.
+
+---
+
 ## Step 5. First deploy
 
 ```bash
@@ -127,32 +154,31 @@ SELECT id, name, email, created_at FROM enquiries ORDER BY created_at DESC LIMIT
 
 ---
 
-## Step 6. DNS — preserve email first
+## Step 6. DNS — done, and mail survived
 
-`duvaryne.com` is on GoDaddy nameservers (`ns49/ns50.domaincontrol.com`) with a live
-GoDaddy mailbox. **Before** changing nameservers:
+The nameserver cutover is complete. `duvaryne.com` is on Cloudflare
+(`keenan.ns.cloudflare.com`, `violet.ns.cloudflare.com`), and the mail records came
+across intact:
 
-1. In GoDaddy DNS, record every existing `MX` and `TXT` record. Today these are:
+| Type | Value | Priority |
+|---|---|---|
+| MX | `smtp.secureserver.net` | 0 |
+| MX | `mailstore1.secureserver.net` | 10 |
+| TXT | `v=spf1 include:spf.em.secureserver.net ?all` | — |
 
-   | Type | Name | Value | Priority |
-   |---|---|---|---|
-   | MX | @ | `smtp.secureserver.net` | 0 |
-   | MX | @ | `mailstore1.secureserver.net` | 10 |
-   | TXT | @ | `v=spf1 include:spf.em.secureserver.net ?all` | — |
+That is GoDaddy-hosted **Titan**, and it is the mailbox for `hello@duvaryne.com`.
 
-   Re-read them yourself — do not trust this table if time has passed.
+**Do not let anything change the apex `MX` or the SPF `TXT` record.** In particular,
+enabling Cloudflare Email Routing will offer to replace the MX records with its own,
+which would silently stop mail reaching Titan. Decline it unless you are deliberately
+migrating away from Titan.
 
-2. Add the domain to Cloudflare (**Websites → Add a site**). Cloudflare imports existing
-   records; **check the MX and SPF rows came across** before continuing.
-3. Only then switch the nameservers at GoDaddy to the pair Cloudflare gives you.
-4. After propagation, confirm mail still resolves:
+Re-verify any time with:
 
-   ```bash
-   dig +short duvaryne.com MX
-   dig +short duvaryne.com TXT
-   ```
-
-   Then send a test message to the mailbox and confirm receipt.
+```bash
+dig +short duvaryne.com MX
+dig +short duvaryne.com TXT
+```
 
 ---
 
