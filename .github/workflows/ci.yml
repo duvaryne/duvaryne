@@ -147,14 +147,39 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The `secrets` context is not available in a job-level `if:`, so the gate has to be
+      # a step. Without it every push is a red build until Cloudflare credentials exist,
+      # which trains people to ignore CI. Absent credentials are "not configured yet", not
+      # a failure; a broken build is.
+      - name: Check for Cloudflare credentials
+        id: creds
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Deploy skipped"
+              echo
+              echo "\`CLOUDFLARE_API_TOKEN\` and/or \`CLOUDFLARE_ACCOUNT_ID\` are not set."
+              echo "Add them under Settings → Secrets and variables → Actions, and the next"
+              echo "push to \`main\` will deploy automatically."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       # cf:build pins --webpack; Turbopack does not emit the prerendered layout the
       # adapter copies from. populateCache uploads the prerendered pages as static assets.
       - name: Build worker
+        if: steps.creds.outputs.ready == 'true'
         run: pnpm cf:build
         env:
           NEXT_PUBLIC_SITE_URL: https://duvaryne.com
 
       - name: Deploy
+        if: steps.creds.outputs.ready == 'true'
         run: |
           npx opennextjs-cloudflare populateCache remote
           npx wrangler deploy
