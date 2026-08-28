@@ -1,0 +1,75 @@
+---
+title: "Ephemeral Environments: 300% Deployment Velocity"
+description: "An internal developer platform giving every branch an isolated environment with a 4-hour TTL raised deployment velocity 300% and cut non-production spend 40%."
+h1: "Self-Service Ephemeral Environments on an Internal Developer Platform"
+slug: "ephemeral-environments-internal-developer-platform"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: false
+draft: false
+diagram: "/diagrams/ephemeral-environments-internal-developer-platform.svg"
+diagramAlt: "Ephemeral environments diagram: a Slack command hits API Gateway and Lambda, Step Functions commits a manifest that ArgoCD syncs into an isolated EKS namespace with its own load balancer and ExternalDNS URL, and an EventBridge-scheduled destroy Lambda tears the environment down when its time-to-live expires."
+outcomeHeadline: "300% increase in deployment velocity. 40% cut in non-production spend. EKS, Step Functions, ArgoCD."
+mapsToService: "/services/devops/"
+stack:
+  - "Amazon EKS"
+  - "AWS Step Functions"
+  - "ArgoCD"
+  - "AWS Lambda"
+  - "EventBridge"
+  - "ExternalDNS"
+stats:
+  - value: "300%"
+    label: "Increase in deployment velocity"
+  - value: "40%"
+    label: "Reduction in non-production cloud spend"
+  - value: "4 hrs"
+    label: "Time-to-live before automatic destruction"
+  - value: "50+"
+    label: "Environment creations and destructions per week, unattended"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+In rapid software development, a major bottleneck is the scarcity of staging environments. Developers often queue up to test their features on a single "Staging" server, leading to conflicts, delays, and "it works on my machine" syndromes.
+
+This project involved building an **Internal Developer Platform (IDP)** that treats environments as disposable commodities. By abstracting the complexity of Kubernetes and AWS, we empowered developers to spin up a full-stack, isolated replica of production with a single API call (or Slack command). Crucially, these environments are "ephemeral"—they come with a built-in Time-To-Live (TTL) and auto-destruct after 4 hours, preventing the cloud bill from exploding due to forgotten resources.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Developer Autonomy:** Remove the DevOps team from the critical path. Developers can self-provision testing grounds instantly without raising a ticket.
+- **Resource Isolation:** Guarantee that Feature A testing never breaks Feature B testing by giving every branch its own dedicated Kubernetes Namespace and URL.
+- **Cost Containment:** Enforce strict "leases" on infrastructure. If an environment isn't actively being used, it shouldn't exist.
+- **Drift Elimination:** Every ephemeral environment is spun up fresh from the latest Infrastructure-as-Code definitions, ensuring testing always happens on "clean" infrastructure.
+
+## Architecture and implementation
+
+<img src="/diagrams/ephemeral-environments-internal-developer-platform.svg" alt="Ephemeral environments diagram: a Slack command hits API Gateway and Lambda, Step Functions commits a manifest that ArgoCD syncs into an isolated EKS namespace with its own load balancer and ExternalDNS URL, and an EventBridge-scheduled destroy Lambda tears the environment down when its time-to-live expires." width="1600" height="900" />
+
+- **Interface:** Amazon API Gateway triggering AWS Lambda functions.
+- **Workflow Orchestration: AWS Step Functions** to manage the provisioning lifecycle (Create Namespace -> Deploy App -> Create Ingress -> Health Check).
+- **Container Orchestration:** Amazon EKS (using Namespaces for multi-tenancy).
+- **Traffic Routing:** AWS Load Balancer Controller + ExternalDNS to automatically generate dynamic URLs (e.g., `feature-login-update.dev.company.com`).
+- **Automation Logic: Amazon EventBridge Scheduler** to trigger the "Destroy" Lambda when the TTL expires.
+- **Methodology: GitOps (ArgoCD):** The "creation" process simply adds a temporary Application manifest to the Git repo, which ArgoCD picks up and syncs.
+- **Namespace-as-a-Service:** Leveraging Kubernetes quotas and limits to ensure one developer cannot hog cluster resources.
+
+## Outcomes
+
+- **300% Increase in Deployment Velocity:** Developers no longer wait for "Staging" to be free. Multiple features are tested in parallel.
+- **40% Reduction in Non-Production Cloud Spend:** By ensuring dev environments only run during working hours and auto-terminate, we eliminated "zombie" resources.
+- **Standardized Quality:** Every environment is identical to production, significantly reducing bugs that typically appear only after deployment.
+- **Zero-Touch Management:** The system handles over 50 environment creations/destructions per week without any manual intervention from the Ops team.
+
+## What we would do differently
+
+A four-hour TTL is the right default and the wrong hard limit. Developers learned to re-request environments mid-debug, which is friction we introduced ourselves; an extend command would have cost an afternoon to build and saved more than that in the first month. We would also seed environments with a realistic anonymised dataset from the start — an isolated namespace with an empty database catches structural bugs but not the ones that only appear at production data volumes.
+
+<CTA />

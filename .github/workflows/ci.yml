@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# SPEC §12.5: typecheck -> lint -> build -> axe -> Lighthouse CI. Block merge on failure.
+# Vercel handles deployment; this job only decides whether the code is allowed to merge.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, lint and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Vercel refuses to deploy known-vulnerable packages, and it checks BEFORE building.
+      # Without this step that rejection is invisible here: CI goes green, Vercel fails at
+      # duration 0 with no build log, and it looks like a platform problem rather than a
+      # dependency one. next-mdx-remote 5.0.0 cost six failed deployments exactly this way.
+      # Fail here instead, where the message is actionable.
+      - name: Audit dependencies
+        run: pnpm audit --audit-level high
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      # Production build: Wave 0 + Phase 1 only. Fails on any zod frontmatter error.
+      - name: Build (production gate)
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://duvaryne.com
+
+      # No file currently carries `draft: true`, so this build matches the one above. It is
+      # kept because the drafts path is how the next unfinished page gets merged safely: the
+      # day someone sets `draft: true`, this step is what proves the held-back page still
+      # compiles. Without it a draft can rot silently until the day it is promoted.
+      - name: Build (with drafts)
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://duvaryne.com
+          NEXT_PUBLIC_INCLUDE_DRAFTS: "true"
+
+  audit:
+    name: Accessibility and Lighthouse
+    runs-on: ubuntu-latest
+    needs: verify
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://duvaryne.com
+
+      - name: Start server
+        run: |
+          pnpm start &
+          npx --yes wait-on http://localhost:3000 --timeout 60000
+
+      # @axe-core/cli bundles its own ChromeDriver, which drifts ahead of the Chrome on the
+      # runner image and fails with "This version of ChromeDriver only supports Chrome
+      # version N". The runner ships a matched pair and points $CHROMEWEBDRIVER at it, so
+      # use that rather than downloading a second browser on every run.
+      - name: axe-core accessibility scan
+        run: |
+          set -euo pipefail
+          DRIVER_ARG=""
+          if [ -n "${CHROMEWEBDRIVER:-}" ] && [ -x "${CHROMEWEBDRIVER}/chromedriver" ]; then
+            echo "Using runner chromedriver: ${CHROMEWEBDRIVER}/chromedriver"
+            DRIVER_ARG="--chromedriver-path ${CHROMEWEBDRIVER}/chromedriver"
+          else
+            echo "::warning::\$CHROMEWEBDRIVER not found; falling back to the bundled driver"
+          fi
+
+          # One invocation per URL, deliberately. Passing several URLs to a single axe
+          # invocation reuses one browser session and intermittently scans about:blank
+          # instead of the page — which surfaces as a bogus cluster of document-title +
+          # html-has-lang + landmark-one-main + page-has-heading-one on a page that is
+          # actually fine. A fresh session per URL is slower and deterministic.
+          # Do not "optimise" this back into one command.
+          # Every index route in production, plus one detail page per templated collection.
+          # The 10 case studies and 10 posts share a template each, so scanning one of each
+          # covers the markup; scanning all 20 would triple the job for no new signal.
+          FAILED=""
+          for path in / /services/ /services/aws-cloud/ /services/devops/ \
+                      /services/it-consultation/ /aws-cost-optimization/ /about/ \
+                      /contact/ /faq/ /legal/privacy/ /legal/terms/ \
+                      /case-studies/ /blog/ /products/ /engagement-models/ \
+                      /case-studies/kubernetes-redis-microservice-deployment/ \
+                      /blog/lambda-cold-starts/; do
+            echo "--- axe http://localhost:3000${path}"
+            if ! npx --yes @axe-core/cli@4 $DRIVER_ARG --exit "http://localhost:3000${path}"; then
+              FAILED="${FAILED} ${path}"
+            fi
+          done
+
+          if [ -n "$FAILED" ]; then
+            echo "::error::axe violations on:${FAILED}"
+            exit 1
+          fi
+          echo "axe: no violations across all Phase 1 routes"
+
+      - name: Lighthouse CI
+        run: npx --yes @lhci/cli@0.14.x autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

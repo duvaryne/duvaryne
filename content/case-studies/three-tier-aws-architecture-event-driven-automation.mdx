@@ -1,0 +1,74 @@
+---
+title: "Three-Tier AWS Architecture with Event-Driven Automation"
+description: "A legacy employee management system re-architected as a multi-AZ three-tier AWS application with event-driven automation: 99.99% uptime, 40% faster queries."
+h1: "Highly Available Three-Tier AWS Architecture with Event-Driven Automation"
+slug: "three-tier-aws-architecture-event-driven-automation"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: false
+draft: false
+diagram: "/diagrams/three-tier-aws-architecture-event-driven-automation.svg"
+diagramAlt: "Three-tier AWS architecture diagram: Route 53 and an Application Load Balancer at the edge, an EC2 Auto Scaling Group with Lambda and SNS in the application tier, and RDS Multi-AZ, S3 and DynamoDB isolated in private subnets."
+outcomeHeadline: "99.99% uptime. 40% faster query response. EC2 Auto Scaling, RDS Multi-AZ, S3, Lambda, SNS."
+mapsToService: "/services/aws-cloud/"
+stack:
+  - "Amazon EC2"
+  - "Amazon RDS"
+  - "Amazon S3"
+  - "AWS Lambda"
+  - "Amazon SNS"
+  - "DynamoDB"
+stats:
+  - value: "99.99%"
+    label: "Uptime on the re-architected multi-AZ workload"
+  - value: "40%"
+    label: "Faster query response after offloading binaries to S3"
+  - value: "0"
+    label: "Public network paths to the database layer"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+Managing workforce data at scale requires more than a simple database; it demands a resilient architecture capable of handling fluctuating traffic while maintaining strict data integrity. This project involved re-architecting a legacy employee management system into a cloud-native **Three-Tier Web Application** on AWS.
+
+The solution leverages a "Polyglot Persistence" strategy, utilizing **Amazon RDS** for relational structure and **Amazon S3** for unstructured media, ensuring optimal performance for each data type. Furthermore, the application moves beyond synchronous processing by integrating **AWS Lambda** and **SNS**, allowing the system to handle background tasks (like notifications and image processing) without blocking the user interface.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **High Availability (HA) & Fault Tolerance:** Ensure the application remains online even if an entire Availability Zone (data center) fails, utilizing Multi-AZ strategies.
+- **Elastic Scalability:** Implement auto-scaling logic that dynamically adds compute capacity during onboarding surges and contracts during quiet periods to optimize costs.
+- **Decoupled Storage Strategy:** Architect a system that separates relational transactional data (SQL) from static assets (Object Storage) to improve retrieval latency.
+- **Asynchronous Processing:** Remove bottlenecks by offloading post-registration tasks (emails, notifications) to serverless functions.
+
+## Architecture and implementation
+
+<img src="/diagrams/three-tier-aws-architecture-event-driven-automation.svg" alt="Three-tier AWS architecture diagram: Route 53 and an Application Load Balancer at the edge, an EC2 Auto Scaling Group with Lambda and SNS in the application tier, and RDS Multi-AZ, S3 and DynamoDB isolated in private subnets." width="1600" height="900" />
+
+- **Compute Fleet:** Amazon EC2 instances managed by an **Auto Scaling Group (ASG)** for dynamic capacity.
+- **Traffic Management:** Application Load Balancer (ALB) with Path-Based Routing and Health Checks.
+- **Database Layer: Amazon RDS (MySQL)** for structured employee records, configured with Multi-AZ for failover.
+- **Object Storage:** Amazon S3 for secure hosting of profile images and static assets.
+- **NoSQL Layer: Amazon DynamoDB** for high-speed session management and metadata caching.
+- **Event Integration: AWS Lambda** triggered by S3 events and **Amazon SNS** for broadcasting internal notifications.
+- **Methodology: 3-Tier Architecture:** Strict segregation of Presentation (Web), Logic (App), and Data layers.
+- **Security Groups:** "Least Privilege" networking where the database accepts traffic *only* from the App Server security group, never the public internet.
+
+## Outcomes
+
+- **99.99% Uptime:** Achieved through the implementation of a Multi-AZ architecture and a self-healing Auto Scaling Group that replaces unhealthy instances automatically.
+- **Performance Optimization:** Reduced database load by offloading binary image data to S3, resulting in 40% faster query response times for employee records.
+- **Operational Efficiency:** Automated the "New Employee Announcement" workflow; uploads to S3 now automatically trigger SNS notifications to HR without manual intervention.
+- **Secure Access:** Eliminated public exposure of sensitive data by isolating the database layer in Private Subnets.
+
+## What we would do differently
+
+We would put CloudFront in front of the load balancer from the start. Serving profile images straight out of S3 through the ALB worked, but every retina-resolution avatar still crossed the application tier's network path, and the caching layer we added later would have been cheaper to design in than to retrofit. We would also reach for SQS between the S3 event and the notification Lambda rather than wiring SNS directly — the fan-out was fine, but the first time a downstream consumer was slow we had no buffer and no replay.
+
+<CTA />

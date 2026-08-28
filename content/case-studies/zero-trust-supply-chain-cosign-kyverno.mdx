@@ -1,0 +1,73 @@
+---
+title: "Zero-Trust Supply Chain with Cosign & Kyverno"
+description: "Cryptographic signing with AWS KMS and Kyverno admission control blocked every unverified artifact at the cluster boundary and cut security review time 90%."
+h1: "Zero-Trust Software Supply Chain with Cryptographic Image Attestation"
+slug: "zero-trust-supply-chain-cosign-kyverno"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: true
+draft: false
+diagram: "/diagrams/zero-trust-supply-chain-cosign-kyverno.svg"
+diagramAlt: "Zero-trust supply chain diagram: AWS CodePipeline builds and scans an image with Trivy, Cosign signs it using an asymmetric AWS KMS key, the signed image goes to a registry, and a Kyverno admission controller verifies the signature before EKS will start the pod, with an audited break-glass path for emergencies."
+outcomeHeadline: "100% of unverified artifacts blocked. 90% less security review time. AWS KMS, Cosign, Kyverno, EKS."
+mapsToService: "/services/devops/"
+stack:
+  - "AWS KMS"
+  - "Cosign"
+  - "Kyverno"
+  - "Amazon EKS"
+  - "AWS CodePipeline"
+  - "Trivy"
+stats:
+  - value: "100%"
+    label: "Unverified artifacts blocked at the cluster boundary"
+  - value: "90%"
+    label: "Reduction in security review time"
+  - value: "SOC 2 / HIPAA"
+    label: "Change-management evidence made cryptographic"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+In an era where "Supply Chain Attacks" (like SolarWinds or Log4j) bypass traditional firewalls by injecting malicious code directly into legitimate build artifacts, standard security measures are no longer sufficient. This project involved designing a military-grade **DevSecOps pipeline** that assumes the CI/CD environment itself could be compromised.
+
+We moved beyond simple vulnerability scanning to implement **Cryptographic Attestation**. The core philosophy is "Default Deny": the Kubernetes production cluster is architected to reject *any* deployment that does not carry a verifiable digital signature from the approved build pipeline. This creates an unbreakable chain of custody from the developer's Git commit to the runtime environment, ensuring that no unauthorized or modified container can ever launch in production.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Immutable Provenance:** Mathematically guarantee that the code running in production is exactly what was built by the CI server, with no tampering in between.
+- **Policy-as-Code Enforcement:** Remove human error from security reviews by enforcing compliance rules (e.g., "No Critical CVEs," "Must be Signed") at the API level.
+- **Shift-Left Security:** Catch vulnerabilities during the build phase—blocking the pipeline immediately—rather than detecting them after deployment.
+- **Runtime Governance:** Prevent "Shadow IT" by technically blocking developers from deploying images from unapproved public registries (like personal Docker Hub accounts).
+
+## Architecture and implementation
+
+<img src="/diagrams/zero-trust-supply-chain-cosign-kyverno.svg" alt="Zero-trust supply chain diagram: AWS CodePipeline builds and scans an image with Trivy, Cosign signs it using an asymmetric AWS KMS key, the signed image goes to a registry, and a Kyverno admission controller verifies the signature before EKS will start the pod, with an audited break-glass path for emergencies." width="1600" height="900" />
+
+- **Pipeline Orchestration:** AWS CodePipeline & CodeBuild.
+- **Signing Authority: AWS KMS** (Key Management Service) using Asymmetric Keys for digital signatures.
+- **Attestation Tooling: Cosign** (Sigstore) for signing artifacts and verifying blobs.
+- **Admission Control (CKA): Kyverno** deployed inside EKS to act as the "Gatekeeper," validating signatures and inspecting metadata before allowing Pod creation.
+- **Vulnerability Management:** Amazon Inspector / Trivy for deep packet scanning.
+- **Methodology: Zero-Trust Architecture:** Verification happens at the destination (the cluster), not just the source.
+- **The "Break-Glass" Procedure:** Created a secure, audited emergency bypass mechanism for critical hotfixes in the event of pipeline failure.
+
+## Outcomes
+
+- **100% Prevention of Unverified Artifacts:** The cluster successfully rejected all attempts to deploy "side-loaded" images, effectively neutralizing the risk of developers accidentally deploying malware or unapproved software.
+- **Audit-Ready Compliance:** The entire deployment history is now cryptographically verifiable, satisfying strict regulatory requirements (SOC2/HIPAA) regarding change management.
+- **Automated Security Gates:** Reduced security review time by 90% as the pipeline automatically blocks builds with "High" or "Critical" CVEs, forcing developers to patch before merging.
+- **Infrastructure Hardening:** Validated that even if an attacker gained access to the cluster's `kubectl` credentials, they still could not deploy malicious containers without access to the segregated KMS signing keys.
+
+## What we would do differently
+
+The break-glass procedure was designed last and it should have been designed first. A default-deny control is only as good as the plan for the night it is wrong, and writing that plan under time pressure produces a worse mechanism than writing it calmly alongside the control it bypasses. We would also start with Kyverno in audit mode against real traffic for a week before enforcing — not because the policy was wrong, but because it surfaces the legitimate deployment paths nobody remembered to mention.
+
+<CTA />

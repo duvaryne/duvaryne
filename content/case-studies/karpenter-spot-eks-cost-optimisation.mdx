@@ -1,0 +1,76 @@
+---
+title: "Karpenter & Spot: 50–60% EKS Compute Cost Cut"
+description: "Replacing static EKS node groups with Karpenter and safe Spot segregation cut compute spend 50-60% and node provisioning from 4 minutes to 45 seconds."
+h1: "Autonomous Cloud Cost Optimisation: Karpenter and Spot on EKS"
+slug: "karpenter-spot-eks-cost-optimisation"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: true
+draft: false
+diagram: "/diagrams/karpenter-spot-eks-cost-optimisation.svg"
+diagramAlt: "Karpenter cost optimisation diagram: an EKS control plane running the Karpenter provisioner applies taints, tolerations, node affinity and bin packing to place critical services on On-Demand capacity and fault-tolerant workloads on EC2 Spot, with EFS storage and a two-minute Spot interruption handler draining pods gracefully."
+outcomeHeadline: "Compute spend reduced 50–60%. Node provisioning 4 min → 45 s. EKS, Karpenter, Spot, bin packing."
+mapsToService: "/aws-cost-optimization/"
+stack:
+  - "Amazon EKS"
+  - "Karpenter"
+  - "EC2 Spot"
+  - "Terraform"
+  - "Amazon EFS"
+  - "Bin packing"
+stats:
+  - value: "50–60%"
+    label: "Reduction in compute cost"
+  - value: "4 min → 45 s"
+    label: "Node provisioning time"
+  - value: "70%"
+    label: "Of total workload safely moved to Spot"
+  - value: "20%"
+    label: "Capacity reclaimed by AWS with no application impact"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+In standard Kubernetes implementations, organizations frequently suffer from "provisioning waste"—paying for idle compute capacity due to rigid autoscaling configurations and safe-but-expensive instance choices. This project involved re-architecting the compute layer of a production-grade Amazon EKS cluster to transition from a static node group model to a dynamic, just-in-time provisioning model.
+
+By implementing **Karpenter** as a high-performance cluster autoscaler, the infrastructure now automatically selects the exact compute resources required by the pending workload in real-time. Furthermore, a strict segregation strategy was employed to force non-critical batch workloads onto deeply discounted Spot Instances, while ensuring critical microservices remain on stable On-Demand instances, achieving a balance between aggressive cost-cutting and 99.99% reliability.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Eliminate Over-Provisioning:** Replace static Auto Scaling Groups (ASGs) with node-less architecture concepts to ensure zero wasted compute during low-traffic periods.
+- **Automated Spot Instance Orchestration:** Safely leverage AWS Spot Instances (up to 90% cheaper) for fault-tolerant workloads without risking application downtime during interruptions.
+- **Workload Segregation:** Architect a scheduling logic that mathematically guarantees critical pods are never scheduled on volatile nodes.
+- **Improve Scaling Velocity:** Reduce the time taken for new nodes to become "Ready" from minutes (standard autoscaler) to seconds (Karpenter).
+
+## Architecture and implementation
+
+<img src="/diagrams/karpenter-spot-eks-cost-optimisation.svg" alt="Karpenter cost optimisation diagram: an EKS control plane running the Karpenter provisioner applies taints, tolerations, node affinity and bin packing to place critical services on On-Demand capacity and fault-tolerant workloads on EC2 Spot, with EFS storage and a two-minute Spot interruption handler draining pods gracefully." width="1600" height="900" />
+
+- **Cloud Architecture:** AWS Solutions Architect principles (Cost Optimization Pillar).
+- **Orchestration:** Amazon Elastic Kubernetes Service (EKS).
+- **Provisioning Engine: Karpenter** (Just-in-time node provisioning).
+- **Scheduling Logic (CKA):** Implementation of **Taints, Tolerations, and Node Affinity** rules to control pod placement.
+- **Storage:** Amazon EFS CSI Driver (ensuring data persistence across ephemeral nodes).
+- **Infrastructure as Code:** Terraform / AWS CloudFormation.
+- **Methodology: Bin Packing:** configured Karpenter to tightly pack pods onto nodes to maximize resource utilization.
+- **Spot Interruption Handling:** Automated graceful termination of pods upon receiving the AWS 2-minute interruption warning.
+
+## Outcomes
+
+- **50-60% Reduction in Compute Costs:** Achieved by aggressively shifting 70% of the cluster's total workload (background jobs, dev environments, data processing) to Spot Instances.
+- **Sub-Minute Scaling:** Reduced node provisioning time from ~4 minutes to ~45 seconds, allowing the application to handle sudden traffic spikes without latency.
+- **Zero-Touch Operations:** The cluster now self-heals and self-optimizes; if a node is underutilized, Karpenter automatically cordons it, moves the workloads, and terminates the expensive instance (Consolidation).
+- **Architectural Resilience:** Demonstrated that the application remains stable even when AWS reclaims 20% of the underlying capacity, proving true "cloud-native" resilience.
+
+## What we would do differently
+
+We tuned consolidation more conservatively than we needed to, because the first version moved pods often enough to make the platform team nervous even though nothing broke. In hindsight the right move was to ship the aggressive setting behind a clear rollback and let the data settle the argument in a week, rather than spending a month at half the available saving. We would also instrument Spot interruption rates per instance family from day one — we ended up inferring that from billing data, which is slower and less precise than measuring it.
+
+<CTA />

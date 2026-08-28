@@ -1,0 +1,151 @@
+---
+title: "DevOps Consulting & CI/CD Automation | Duvaryne"
+description: "DevOps consulting from Bengaluru: CI/CD pipelines, Terraform, Kubernetes and GitOps, built with your engineers and handed over with runbooks. Free 30-min call."
+h1: "DevOps Consulting, CI/CD and Platform Engineering"
+eyebrow: "Services"
+slug: "services/devops"
+updated: 2026-08-05
+schema: "Service"
+serviceType: "DevOps consulting"
+stats:
+  - value: "80%"
+    label: "Reduction in release overhead"
+    source: "containerised-cicd-jenkins-docker"
+  - value: "4 min → 45 s"
+    label: "Node provisioning time after Karpenter"
+    source: "karpenter-spot-eks-cost-optimisation"
+  - value: "90%"
+    label: "Fewer after-hours pages"
+    source: "event-driven-remediation-prometheus-lambda"
+  - value: "300%"
+    label: "Increase in deployment velocity"
+    source: "ephemeral-environments-internal-developer-platform"
+relatedCaseStudies:
+  - "containerised-cicd-jenkins-docker"
+  - "ephemeral-environments-internal-developer-platform"
+  - "zero-trust-supply-chain-cosign-kyverno"
+relatedPosts:
+  # SPEC 8.3's slug table is canonical; this page originally read "github-actions-oidc-cicd".
+  - "github-actions-oidc-aws"
+  - "iac-drift-detection"
+# Ported verbatim from the WordPress page (modified 2026-08-04).
+faqs:
+  - q: "What is DevOps consulting, in plain terms?"
+    a: "DevOps consulting is the work of making software reach production quickly, repeatedly and safely. It covers version-controlled infrastructure, automated build and deploy pipelines, container orchestration, monitoring and alerting, and the release process your team follows day to day."
+  - q: "How long does it take to set up a CI/CD pipeline?"
+    a: "For a single repository going to a container platform, ten working days is a realistic target: source control hooks, automated tests, image build and scan, artifact signing, and a gated deploy to staging and production. Larger estates with multiple services and compliance gates take four to eight weeks."
+  - q: "Do we need Kubernetes, or is it overkill?"
+    a: "If you run a handful of services with predictable traffic, managed containers or serverless are usually cheaper and simpler. Kubernetes earns its complexity when you have many services, variable load worth autoscaling against, or a platform team that needs one consistent deployment model. We will tell you honestly which side of that line you are on."
+  - q: "What results have you delivered with DevOps automation?"
+    a: "Documented outcomes from our engagements include an 80% reduction in release overhead, node provisioning time cut from roughly four minutes to about 45 seconds using Karpenter, a 90% reduction in after-hours alerts through better observability, and a recovery time objective under 15 minutes for multi-region failover."
+  - q: "Which tools do you work with?"
+    a: "Terraform and Ansible for infrastructure, Jenkins, GitHub Actions and AWS CodePipeline for delivery, Docker and Amazon EKS for containers, ArgoCD for GitOps, Cosign and Kyverno for supply-chain security, and Prometheus, Grafana and CloudWatch for observability."
+  - q: "Can you work alongside our existing developers?"
+    a: "Yes. Most engagements are embedded: we build the pipeline and infrastructure with your engineers, document it, and hand it over with the runbooks. We can also stay on a monthly retainer as a fractional DevOps function if you are not ready to hire a platform engineer."
+  - q: "Are you based in Bengaluru?"
+    a: "Yes. Duvaryne LLP is a DPIIT-recognised consultancy based in Bengaluru, Karnataka, working with clients across India and remotely with international teams."
+cta:
+  heading: "Bring us your slowest pipeline"
+  body: "Thirty minutes on your delivery process and your infrastructure. You leave knowing where the time actually goes and what the first fix is worth. Written scope and fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute DevOps review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## The problem is almost never the tooling
+
+DevOps is the work of making software reach production quickly, repeatedly and safely. Most teams that
+call us already have Jenkins, or GitHub Actions, or a half-finished Terraform repository. The tooling
+exists. What is missing is that nobody can deploy on a Friday without a knot in their stomach.
+
+<Stat value="80%" label="Reduction in release overhead" source="containerised-cicd-jenkins-docker" />
+
+That knot has a cost, and it is measurable. It shows up as a weekly release train instead of a daily one,
+as a staging environment three people are queuing for, as a senior engineer woken at 3 a.m. for a
+disk-space alert that a script should have handled. We fix the specific thing causing it, not the
+category.
+
+## Where we do the work
+
+### CI/CD pipelines
+
+For a single repository deploying to a container platform, ten working days is a realistic target:
+source-control hooks, automated tests, image build and scan, artifact signing, and a gated deploy to
+staging and production. Larger estates with several services and compliance gates run four to eight weeks.
+
+For one software provider we rebuilt the delivery lifecycle around Docker and a version-controlled
+Jenkinsfile, with a stop-the-line policy that aborts the deploy when tests fail. Release overhead dropped
+by eighty percent, and the team moved from weekly deploys to several a day. The environment-specific bug
+class — the "it works on my machine" category — disappeared entirely, because the artifact tested is the
+artifact shipped, bit for bit.
+
+### Infrastructure as Code
+
+Terraform and Ansible, in your repository, reviewed like application code. The value is not that the
+infrastructure is scripted; it is that infrastructure changes become diffs a second engineer can read
+before they reach production, and that a rebuilt environment is identical to the one it replaced.
+
+Configuration drift is the silent killer here. A disaster-recovery region that has quietly diverged from
+production is not a disaster-recovery region — it is a false sense of security with a monthly bill. We
+design so that a single Git source of truth hydrates both.
+
+### Kubernetes — when it is warranted
+
+If you run a handful of services with predictable traffic, managed containers or serverless are usually
+cheaper and simpler, and we will say so. Kubernetes earns its complexity when you have many services,
+variable load worth autoscaling against, or a platform team that needs one consistent deployment model.
+
+When it is warranted, we run it properly: Karpenter for just-in-time node provisioning, taints and
+tolerations that mathematically guarantee critical pods never land on volatile Spot capacity, and bin
+packing tuned so you are not paying for headroom you never use. On one enterprise EKS estate that took
+node provisioning from roughly four minutes to about forty-five seconds — which is the difference
+between absorbing a traffic spike and apologising for one.
+
+<Stat value="4 min → 45 s" label="Node provisioning time after Karpenter" source="karpenter-spot-eks-cost-optimisation" />
+
+### GitOps and platform engineering
+
+ArgoCD as the controller, Git as the only way anything reaches a cluster. For one client we built an
+internal developer platform on top of it: a developer requests a full-stack replica of production from a
+Slack command, gets an isolated namespace and its own URL, and the environment auto-destructs after four
+hours so it cannot quietly become a line item. Deployment velocity went up three-fold and non-production
+cloud spend fell by forty percent at the same time — which is the pairing that tells you the platform was
+the bottleneck, not the budget.
+
+### Supply-chain security
+
+Signing with AWS KMS, verification with Cosign, and Kyverno as an admission controller enforcing
+default-deny at the cluster boundary. An unsigned image does not start. Not "raises an alert" — does not
+start. For a client with SOC 2 and HIPAA change-management obligations, this turned deployment history
+into something cryptographically provable, and cut security review time by ninety percent because the
+pipeline blocks critical CVEs before a human ever looks.
+
+### Observability that reduces pages instead of generating them
+
+Prometheus, Grafana and Alertmanager, tuned so that alerts correspond to things a human must decide.
+Where the fix is deterministic, we automate the fix: a webhook into Lambda that restarts the stuck pod,
+expands the volume before disk pressure crashes the database, and posts what it did to Slack. One client
+saw a ninety percent reduction in after-hours pages — not because the alerts were silenced, but because
+the routine ones now resolve themselves and say so.
+
+## Tools we work with
+
+Terraform and Ansible for infrastructure. Jenkins, GitHub Actions and AWS CodePipeline for delivery.
+Docker and Amazon EKS for containers. ArgoCD for GitOps. Cosign and Kyverno for supply-chain security.
+Prometheus, Grafana and CloudWatch for observability.
+
+We are not religious about any of them. If you are already on GitLab CI and it is working, we will
+improve it rather than migrate you for the sake of a preference.
+
+## How we work with your team
+
+Most engagements are embedded. We build the pipeline and the infrastructure alongside your engineers,
+document it as we go, and hand it over with runbooks — because a platform only one consultancy
+understands is a liability, not an asset.
+
+Where there is no platform engineer to hand over to yet, we stay on a monthly retainer as a fractional
+DevOps function. That is often the right answer for a team of eight to twenty engineers: you get senior
+platform capability without carrying a senior platform salary before you need to.
+
+Scope is written and priced fixed before work begins.
+
+<CTA />

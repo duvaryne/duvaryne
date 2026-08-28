@@ -1,0 +1,71 @@
+---
+title: "Event-Driven Remediation: 90% Fewer After-Hours Pages"
+description: "A closed-loop remediation system that resolves routine incidents automatically and reports what it did cut after-hours pages 90% without silencing real alerts."
+h1: "Event-Driven Remediation with Prometheus and Serverless Logic"
+slug: "event-driven-remediation-prometheus-lambda"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: false
+draft: false
+diagram: "/diagrams/event-driven-remediation-prometheus-lambda.svg"
+diagramAlt: "Closed-loop remediation diagram: Prometheus metrics and Alertmanager routes post a webhook through API Gateway to an AWS Lambda function that checks idempotency before acting on the Kubernetes API to restart pods or expand volumes, then reports every action to Slack and an audit log."
+outcomeHeadline: "90% fewer after-hours pages. Zero-downtime storage scaling. Prometheus, Alertmanager, Lambda, EKS."
+mapsToService: "/services/aws-cloud/"
+stack:
+  - "Prometheus"
+  - "Alertmanager"
+  - "AWS Lambda"
+  - "Amazon EKS"
+  - "Grafana"
+  - "API Gateway"
+stats:
+  - value: "90%"
+    label: "Reduction in after-hours pages"
+  - value: "85%"
+    label: "Disk threshold at which volumes expand automatically"
+  - value: "Milliseconds"
+    label: "Mean time to recovery for routine incidents"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+Modern cloud environments generate vast amounts of telemetry data, yet most organizations still rely on human engineers to manually react to alerts. This results in "Alert Fatigue" and slow recovery times during outages.
+
+This project involved engineering a **Closed-Loop Remediation System**. Instead of simply sending a Slack notification when a threshold is breached, the monitoring stack was configured to trigger automated "Mediator" functions. These functions analyze the specific alert context and execute precise corrective actions—such as restarting stuck pods, expanding volume capacity, or blocking malicious IP addresses—resolving common incidents in milliseconds without human intervention.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Reduce MTTR (Mean Time To Recovery):** Shrink the window between issue detection and resolution from minutes (human speed) to milliseconds (machine speed).
+- **Eliminate "L1" Support Toil:** Automate the repetitive, low-level fixes (like restarting a Java application that has consumed too much memory) that distract senior engineers.
+- **Proactive Resource Management:** Automatically scale persistent storage before the disk fills up, preventing database corruption or data loss.
+- **Audited Automation:** Ensure every automated action is logged and notifies the team via Slack ("I just fixed X issue"), maintaining visibility into what the robot is doing.
+
+## Architecture and implementation
+
+<img src="/diagrams/event-driven-remediation-prometheus-lambda.svg" alt="Closed-loop remediation diagram: Prometheus metrics and Alertmanager routes post a webhook through API Gateway to an AWS Lambda function that checks idempotency before acting on the Kubernetes API to restart pods or expand volumes, then reports every action to Slack and an audit log." width="1600" height="900" />
+
+- **Observability: Prometheus** (Metrics collection) and **Grafana** (Visualization) deployed on EKS.
+- **Alert Routing: Prometheus Alertmanager** configured with receiver routes.
+- **The "Glue": AWS Lambda** (Python/Boto3) & Amazon API Gateway to receive webhooks.
+- **Orchestration:** Kubernetes API (RBAC authorized) allowing the Lambda function to interact with the cluster securely.
+- **Methodology: Webhooks over Email:** Configured Alertmanager to POST JSON payloads to a secure API endpoint instead of sending emails.
+- **Idempotency:** Wrote remediation scripts to check the current state before acting, preventing "flapping" or duplicate actions.
+
+## Outcomes
+
+- **90% Reduction in After-Hours Pages:** The on-call team is now only woken up for genuine, novel architectural failures, as the system handles standard resource exhaustion issues automatically.
+- **Zero Downtime Storage Scaling:** Successfully automated PVC (Persistent Volume Claim) expansion. When disk usage hits 85%, the system automatically patches the claim to increase size, preventing "Disk Pressure" crashes.
+- **Operational Maturity:** Transformed the platform from "Reactive" (fixing things after they break) to "Pre-emptive" (fixing things as they degrade).
+
+## What we would do differently
+
+The idempotency checks were added after the first flapping incident rather than before it, and that incident was entirely predictable. Any system that acts on alerts needs a state check and a rate limit in its first version, not its second. We would also put a hard ceiling on automatic volume expansion — growing a disk to keep a database alive is the correct emergency response and a terrible standing policy, and without a ceiling the automation will happily paper over a genuine leak for months.
+
+<CTA />

@@ -1,0 +1,73 @@
+---
+title: "High-Performance Nginx Edge with Automated TLS"
+description: "A hardened Nginx edge with HTTP/2, TLS 1.3 and automated certificate rotation, scoring Grade A on Qualys SSL Labs with zero-touch renewal and no expiry risk."
+h1: "High-Performance Web Edge: Nginx with Automated TLS Termination"
+slug: "nginx-edge-automated-tls"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: false
+draft: false
+diagram: "/diagrams/nginx-edge-automated-tls.svg"
+diagramAlt: "Hardened Nginx edge diagram: a DNS A record and Certbot-managed Let's Encrypt certificates feed an Nginx server running HTTP/2, gzip, TLS 1.2 and 1.3 with HSTS, on a hardened Ubuntu LTS host restricted to SSH key-only access."
+outcomeHeadline: "Grade A on Qualys SSL Labs. Zero-touch certificate renewal. Nginx, TLS 1.3, HTTP/2, Certbot."
+mapsToService: "/services/devops/"
+stack:
+  - "Nginx"
+  - "Ubuntu LTS"
+  - "Let's Encrypt"
+  - "Certbot"
+  - "TLS 1.3"
+  - "HTTP/2"
+stats:
+  - value: "Grade A"
+    label: "Qualys SSL Labs rating"
+  - value: "0"
+    label: "Manual steps in certificate renewal"
+  - value: "HTTP/2"
+    label: "Multiplexed delivery with gzip and cache headers"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+Deploying a web presence requires more than just installing a server; it demands a configuration optimized for speed, security, and reliability. This project focused on architecting a production-ready **Static Web Host** using the industry-standard **Nginx** engine on a hardened Linux kernel.
+
+Beyond simple content serving, the focus was on establishing a "Secure-by-Default" posture. This involved configuring rigorous DNS routing policies and implementing an automated SSL/TLS certificate lifecycle, ensuring that all data in transit is encrypted. The result is a robust, low-latency web endpoint capable of handling high concurrency while maintaining an **A+ Security Rating**.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Optimized Content Delivery:** Configure Nginx for high-throughput static asset serving, utilizing gzip compression and efficient caching headers to minimize latency.
+- **Identity & Routing:** Establish authoritative DNS records (A/CNAME) to ensure rapid global domain resolution and seamless user connectivity.
+- **Encryption Everywhere:** Enforce **HTTPS-Only** traffic policies using TLS 1.3 and Let's Encrypt, preventing "Man-in-the-Middle" attacks.
+- **Server Hardening:** Disable insecure protocols and default server banners to reduce the attack surface against potential reconnaissance.
+
+## Architecture and implementation
+
+<img src="/diagrams/nginx-edge-automated-tls.svg" alt="Hardened Nginx edge diagram: a DNS A record and Certbot-managed Let's Encrypt certificates feed an Nginx server running HTTP/2, gzip, TLS 1.2 and 1.3 with HSTS, on a hardened Ubuntu LTS host restricted to SSH key-only access." width="1600" height="900" />
+
+- **Web Engine: Nginx** (Configured as a high-performance static server).
+- **Operating System: Ubuntu LTS** (Hardened with SSH Key-only access).
+- **Domain & Network:** DNS Management (A Record propagation), TCP/IP flow control.
+- **Cryptography & Security: Let's Encrypt (Certbot)** for automated certificate rotation, **OpenSSL** for handshake verification.
+- **Protocols:** HTTP/2 for multiplexing, TLS 1.2/1.3 for encryption.
+- **Methodology: Secure Administration:** implementation of SSH key pairs for remote server management, disabling root password login.
+- **DNS Validation:** utilized `dig` and `nslookup` to verify global propagation and TTL settings.
+
+## Outcomes
+
+- **Grade "A" SSL Security:** Achieved top-tier security scoring on Qualys SSL Labs by configuring strong cipher suites and implementing HSTS (HTTP Strict Transport Security).
+- **Zero-Touch Certificate Renewal:** Implemented automated cron jobs (Certbot) to handle SSL renewals, eliminating the risk of certificate expiration downtime.
+- **High Availability:** Delivered a stable, publicly accessible web endpoint with sub-millisecond response times for static assets.
+- **SEO & Trust Compliance:** Ensured the domain is trusted by modern browsers (Chrome/Safari) by enforcing valid HTTPS connections, boosting search ranking potential.
+
+## What we would do differently
+
+Certbot on a cron job is correct but it is a single point of failure on a single host. We would move renewal to a process that can fail loudly — a monitored job with an alert on certificate age rather than on renewal failure, because a cron that silently stops running looks identical to one that has nothing to do. For anything carrying real traffic we would terminate TLS at a managed load balancer and keep the origin simpler.
+
+<CTA />

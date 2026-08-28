@@ -1,0 +1,72 @@
+---
+title: "Containerised CI/CD Modernisation with Jenkins & Docker"
+description: "Rebuilding a delivery lifecycle around Docker and a version-controlled Jenkinsfile cut release overhead 80% and moved the team from weekly to daily deploys."
+h1: "Containerised CI/CD Modernisation with Jenkins and Docker"
+slug: "containerised-cicd-jenkins-docker"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: false
+draft: false
+diagram: "/diagrams/containerised-cicd-jenkins-docker.svg"
+diagramAlt: "Containerised CI/CD pipeline diagram: a GitHub commit fires a webhook into Jenkins, which builds a Docker image on AWS CodeBuild, runs unit and integration tests as a stop-the-line gate, then pushes the image to a registry and deploys it to AWS production."
+outcomeHeadline: "80% less release overhead. Weekly deploys became several a day. Jenkins, Docker, AWS CodeBuild."
+mapsToService: "/services/devops/"
+stack:
+  - "Jenkins"
+  - "Docker"
+  - "GitHub"
+  - "AWS CodeBuild"
+  - "Pipeline-as-Code"
+stats:
+  - value: "80%"
+    label: "Reduction in release overhead"
+  - value: "1/week → several/day"
+    label: "Deployment frequency"
+  - value: "0"
+    label: "Environment-specific bugs after parity was enforced"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+Facing the classic "it works on my machine" dilemma and slow manual release cycles, this project involved the complete re-engineering of the software delivery lifecycle for a software provider.
+
+The goal was to transition from monolithic, manual deployments to a streamlined **DevOps culture**. By implementing a robust **Continuous Integration/Continuous Deployment (CI/CD)** pipeline, we established a "Factory Model" for software delivery. Code is now automatically pulled, containerized using Docker to ensure consistency across environments, tested via automated gates, and deployed to production without human interference.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Immutable Infrastructure:** Leverage Docker containerization to bundle the application with its dependencies, ensuring that the artifact deployed to Production is bit-for-bit identical to the one tested in Development.
+- **Pipeline-as-Code:** Move away from manual build steps to a version-controlled, scripted pipeline (Jenkinsfile) that defines the entire lifecycle of the application.
+- **Automated Quality Gates:** Enforce a "Stop-the-Line" policy where the deployment is automatically aborted if unit tests or integration tests fail, preventing bad code from reaching users.
+- **Reduce Lead Time to Change:** Shrink the gap between a developer committing code and that feature going live from days to minutes.
+
+## Architecture and implementation
+
+<img src="/diagrams/containerised-cicd-jenkins-docker.svg" alt="Containerised CI/CD pipeline diagram: a GitHub commit fires a webhook into Jenkins, which builds a Docker image on AWS CodeBuild, runs unit and integration tests as a stop-the-line gate, then pushes the image to a registry and deploys it to AWS production." width="1600" height="900" />
+
+- **Source Control Management: GitHub** serving as the single source of truth and webhook trigger.
+- **Orchestration Core: Jenkins** configured as the central automation server managing the pipeline stages.
+- **Containerization: Docker** for packaging the web application into lightweight, portable images.
+- **Build Infrastructure: AWS CodeBuild** (integrated with Jenkins) to provide scalable, on-demand compute for compiling code and running tests.
+- **Pipeline Workflow: Stage 1 (Artifact Construction):** Automated retrieval and Docker build process.
+- **Stage 2 (Quality Assurance):** Execution of test suites against the containerized application.
+- **Stage 3 (Delivery):** Automated push to the registry and deployment to the AWS production environment.
+
+## Outcomes
+
+- **80% Reduction in Release Overhead:** Eliminated manual server configuration and file transfers, allowing the team to deploy multiple times a day instead of once a week.
+- **Environment Parity:** Completely eradicated environment-specific bugs by ensuring the container runtime is consistent across Dev, Test, and Prod.
+- **Enhanced Reliability:** The integration of automated testing gates reduced production rollback rates by significantly catching errors early in the lifecycle.
+- **Scalable Build Capacity:** By offloading build jobs to AWS, the pipeline handles concurrent builds without queuing or delaying developer feedback.
+
+## What we would do differently
+
+The Jenkins controller stayed a pet for longer than it should have. It was version-controlled and reproducible in principle, but rebuilding it was never actually tested until we had to do it, and that is not a property you want to discover under pressure. On a similar engagement today we would run the controller itself from a container image built by the same pipeline. We would also add image signing at the build stage rather than treating it as a separate hardening exercise later.
+
+<CTA />

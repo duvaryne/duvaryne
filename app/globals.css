@@ -1,0 +1,352 @@
+@import "tailwindcss";
+
+/* SPEC.md quotes Tailwind class names as documentation (§9.12 lists the ProgressBar tokens
+   to change), and the WordPress export is 2.8MB of XML. Neither is a template — scanning
+   them emits dead utilities and slows every build. */
+@source not "../SPEC.md";
+@source not "../archive";
+
+/* ============================================================================
+   Design tokens — SPEC §6.1
+   Light-first with deep-navy anchor sections. Long-form technical content reads
+   measurably better on light, and a text LCP element is cheap.
+   ========================================================================== */
+
+@theme {
+  /* Brand — from the logo. Blue and orange, no gold/amber reading. */
+  --color-navy-900: #0a1728; /* deepest: footer, hero base */
+  --color-navy-800: #11243e; /* brand Deep Navy: section anchors */
+  --color-navy-600: #1e3a5f; /* borders on navy */
+  --color-blue-600: #0b5ed7; /* brand Tech Blue: primary, links */
+  --color-blue-500: #2b7ce9; /* decorative only — see the contrast note below */
+  --color-blue-050: #eaf1fd; /* tints, callouts */
+
+  /* Contrast-safe pair added after an axe audit. SPEC §6.1 gives only blue-600 and
+     blue-500, but blue-500 fails WCAG AA as *text*: 3.83:1 on navy-800 and 4.42:1 on
+     navy-900, both under the 4.5:1 floor §6.5 requires. It also fails as a hover colour on
+     paper (3.89:1), because it is lighter than the blue-600 it replaces.
+       blue-300  text on navy grounds   — 8.2:1 on navy-800
+       blue-700  link hover on light    — 7.5:1 on paper
+     blue-500 is now only used for borders and other non-text decoration. */
+  --color-blue-300: #8fbef9;
+  --color-blue-700: #0a4caf;
+  --color-orange-500: #f97316; /* brand Accent Orange: CTA ONLY */
+  --color-orange-050: #fff3e8;
+  --color-paper: #f7f8fa; /* page background */
+  --color-ink: #0a1728; /* body text */
+  --color-slate-600: #5a6b84; /* secondary text */
+  --color-rule: #dde3ec; /* hairlines */
+  --color-signal: #0e9f6e; /* improved-metric only */
+
+  --font-display: var(--font-archivo);
+  --font-body: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+
+  /* Type scale — SPEC §6.2. Mobile H1 caps at 2.25rem, handled per-component. */
+  --text-display: 3.5rem;
+  --text-h1: 2.5rem;
+  --text-h2: 1.75rem;
+  --text-h3: 1.25rem;
+  --text-body: 1.0625rem;
+  --text-small: 0.875rem;
+
+  /* Layout — SPEC §6.3 */
+  --container-content: 1200px;
+  --container-prose: 68ch;
+
+  --breakpoint-sm: 375px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1440px;
+}
+
+/* ============================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Anchored headings must not hide under the sticky header. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--text-body);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  /* Signature type rule — SPEC §6.2. EVERY quantity on this site is set in Plex Mono
+     with tabular figures, so outcomes read as instrument readings rather than claims. */
+  .tabular,
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Visible keyboard focus on everything focusable — SPEC §6.5. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue-600);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Focus rings on navy need the light token to clear 3:1. */
+  .on-navy :focus-visible {
+    outline-color: #ffffff;
+  }
+
+  ::selection {
+    background-color: var(--color-blue-050);
+    color: var(--color-navy-900);
+  }
+
+  button,
+  [role="button"],
+  a[href],
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Any image without an explicit intrinsic ratio still must not shift layout. */
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ============================================================================
+   Prose — case studies and posts run 2,000+ words. Measure capped at 68ch.
+   ========================================================================== */
+
+@layer components {
+  .prose-duvaryne {
+    max-width: var(--container-prose);
+  }
+
+  .prose-duvaryne > :not(.not-prose) + :not(.not-prose) {
+    margin-top: 1.25em;
+  }
+
+  /* Element rules are wrapped in :where() so they carry ZERO specificity. Without this,
+     ".prose-duvaryne a" (0,1,1) beats Tailwind's ".text-white" (0,1,0) and every CTA button
+     rendered inside an MDX body comes out blue and underlined. Utilities must always win.
+     ".not-prose" opts a subtree out entirely — the same escape hatch Tailwind Typography
+     provides, defined here because that plugin is not installed. */
+
+  .prose-duvaryne :where(h2):not(:where(.not-prose, .not-prose *)) {
+    font-size: var(--text-h2);
+    margin-top: 2.5em;
+    margin-bottom: 0.6em;
+    scroll-margin-top: 6rem;
+  }
+
+  .prose-duvaryne :where(h3):not(:where(.not-prose, .not-prose *)) {
+    font-size: var(--text-h3);
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+    scroll-margin-top: 6rem;
+  }
+
+  .prose-duvaryne :where(h4):not(:where(.not-prose, .not-prose *)) {
+    font-size: var(--text-body);
+    font-weight: 600;
+    margin-top: 1.75em;
+    margin-bottom: 0.4em;
+  }
+
+  .prose-duvaryne :where(ul, ol):not(:where(.not-prose, .not-prose *)) {
+    padding-left: 1.35em;
+  }
+
+  .prose-duvaryne :where(ul):not(:where(.not-prose, .not-prose *)) {
+    list-style: disc;
+  }
+
+  .prose-duvaryne :where(ol):not(:where(.not-prose, .not-prose *)) {
+    list-style: decimal;
+  }
+
+  .prose-duvaryne :where(li + li):not(:where(.not-prose, .not-prose *)) {
+    margin-top: 0.5em;
+  }
+
+  .prose-duvaryne :where(li):not(:where(.not-prose, .not-prose *))::marker {
+    color: var(--color-slate-600);
+  }
+
+  .prose-duvaryne :where(a):not(:where(.not-prose, .not-prose *)) {
+    color: var(--color-blue-600);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    transition: color 150ms ease;
+  }
+
+  .prose-duvaryne :where(a):not(:where(.not-prose, .not-prose *)):hover {
+    color: var(--color-blue-500);
+  }
+
+  .prose-duvaryne :where(strong):not(:where(.not-prose, .not-prose *)) {
+    font-weight: 600;
+    color: var(--color-navy-900);
+  }
+
+  .prose-duvaryne :where(blockquote):not(:where(.not-prose, .not-prose *)) {
+    border-left: 3px solid var(--color-blue-600);
+    padding-left: 1.25em;
+    color: var(--color-slate-600);
+    font-style: normal;
+  }
+
+  .prose-duvaryne :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) {
+    background-color: var(--color-blue-050);
+    color: var(--color-navy-800);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  .prose-duvaryne :where(table):not(:where(.not-prose, .not-prose *)) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-small);
+  }
+
+  .prose-duvaryne :where(th, td):not(:where(.not-prose, .not-prose *)) {
+    border: 1px solid var(--color-rule);
+    padding: 0.6em 0.8em;
+    text-align: left;
+  }
+
+  .prose-duvaryne :where(th):not(:where(.not-prose, .not-prose *)) {
+    background-color: var(--color-blue-050);
+    font-weight: 600;
+  }
+}
+
+/* ============================================================================
+   Code blocks — rehype-pretty-code, theme github-light. SPEC §8.2.
+   ========================================================================== */
+
+@layer components {
+  pre[data-theme],
+  code[data-theme] {
+    background-color: #ffffff;
+  }
+
+  .prose-duvaryne pre {
+    border: 1px solid var(--color-rule);
+    border-radius: 6px;
+    padding: 1rem 1.15rem;
+    overflow-x: auto;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    /* A code block wider than the measure scrolls itself; the page never scrolls sideways. */
+    max-width: 100%;
+  }
+
+  .prose-duvaryne pre code {
+    display: grid; /* one grid row per line, so highlighted lines can span full width */
+    background: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  code[data-line-numbers] {
+    counter-reset: line;
+  }
+
+  code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 1.25rem;
+    margin-right: 1.25rem;
+    text-align: right;
+    color: var(--color-slate-600);
+  }
+
+  figure[data-rehype-pretty-code-figure] figcaption[data-rehype-pretty-code-title] {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: var(--text-small);
+    color: var(--color-slate-600);
+    border: 1px solid var(--color-rule);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    padding: 0.5rem 1.15rem;
+    background-color: var(--color-paper);
+  }
+
+  figure[data-rehype-pretty-code-figure]:has(figcaption) pre {
+    border-radius: 0 0 6px 6px;
+  }
+}
+
+/* ============================================================================
+   Utilities
+   ========================================================================== */
+
+@layer utilities {
+  /* Autolinked headings: the anchor is invisible until hovered or focused, but is always
+     reachable by keyboard. */
+  .heading-anchor {
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  h2:hover > .heading-anchor,
+  h3:hover > .heading-anchor,
+  h4:hover > .heading-anchor,
+  .heading-anchor:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   prefers-reduced-motion — respected globally. SPEC §6.5.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

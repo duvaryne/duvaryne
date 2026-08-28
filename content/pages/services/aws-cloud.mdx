@@ -1,0 +1,154 @@
+---
+title: "AWS Cloud Consulting & Migration Services | Duvaryne"
+description: "Senior-led AWS consulting from Bengaluru. Migration, landing zones, cost optimisation and managed support. Free 30-minute review of your architecture and bill."
+h1: "AWS Cloud Consulting, Migration and Managed Services"
+eyebrow: "Services"
+slug: "services/aws-cloud"
+updated: 2026-08-05
+schema: "Service"
+serviceType: "Cloud consulting"
+stats:
+  - value: "50–60%"
+    label: "Compute spend reduced on an EKS estate"
+    source: "karpenter-spot-eks-cost-optimisation"
+  - value: "99.99%"
+    label: "Uptime on a re-architected multi-AZ workload"
+    source: "three-tier-aws-architecture-event-driven-automation"
+  - value: "< 15 min"
+    label: "Recovery time objective, multi-region failover"
+    source: "multi-region-disaster-recovery-argocd-aurora-global"
+  - value: "13 yrs"
+    label: "Hands-on infrastructure experience"
+relatedCaseStudies:
+  - "karpenter-spot-eks-cost-optimisation"
+  - "multi-region-disaster-recovery-argocd-aurora-global"
+  - "three-tier-aws-architecture-event-driven-automation"
+relatedPosts:
+  - "zombie-aws-resources-cost-optimisation"
+  - "terraform-state-splitting"
+# Ported verbatim from the WordPress page (modified 2026-08-04). These already rank as
+# snippet-shaped answers — do not rewrite them without checking Search Console first.
+faqs:
+  - q: "What does an AWS cloud consultant actually do?"
+    a: "An AWS cloud consultant assesses your current infrastructure, designs the target AWS architecture, and then implements and operates it. In practice that means migration planning, landing-zone and account setup, networking and security design, cost optimisation, and ongoing managed support once the workload is live."
+  - q: "How much can we realistically reduce our AWS bill?"
+    a: "Most unoptimised accounts carry 30-50% waste. On Kubernetes workloads we have cut compute spend by 50-60% using Karpenter with Spot consolidation, right-sizing, Savings Plans and storage lifecycle policies. The first step is a review of your Cost and Usage Report, which tells you the real number before any work is committed."
+  - q: "How long does an AWS migration take?"
+    a: "A single application with a managed database typically takes two to six weeks. A multi-application estate with compliance requirements usually runs three to six months. The variable is rarely AWS itself; it is application coupling, data volume and cutover windows."
+  - q: "Do you work with startups as well as enterprises?"
+    a: "Yes. We work with early-stage startups that need a production-ready AWS foundation without hiring a platform team, and with established companies that need migration, cost control or compliance work delivered alongside their existing engineers."
+  - q: "Are you certified on AWS and Kubernetes?"
+    a: "Yes. Our engineering is led by a Certified Kubernetes Administrator (CKA) who also holds the AWS Certified Solutions Architect – Associate certification and a DevOps credential from IIT Madras, with more than 13 years of hands-on infrastructure experience. Duvaryne LLP is a DPIIT-recognised company based in Bengaluru."
+  - q: "Which AWS regions and workloads do you support?"
+    a: "We work primarily in the Mumbai (ap-south-1) and Hyderabad (ap-south-2) regions for Indian data-residency requirements, and across US and EU regions for global workloads. Typical workloads are containerised applications on EKS, managed databases such as Aurora and RDS, serverless event-driven services, and multi-region disaster recovery setups."
+  - q: "How do we get started?"
+    a: "Book a free 30-minute AWS review. We look at your architecture and your current bill, tell you where the biggest wins are, and give you a written scope and fixed price before any engagement begins."
+cta:
+  heading: "Start with the bill, not a proposal"
+  body: "Thirty minutes, your architecture and your Cost and Usage Report. You leave with the three largest savings in your account and a written scope. No obligation either way."
+  buttonLabel: "Book a free 30-minute AWS review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## What AWS consulting actually gets you
+
+AWS consulting is the work of designing, moving and then running your workloads on AWS so they stay
+cheap, available and auditable. In practice that means migration planning, landing-zone and account
+structure, networking and security design, cost optimisation, and managed support once the workload is
+live. We do all five, and we do them with the engineers who will still be on the account afterwards.
+
+<Stat value="50–60%" label="Compute spend reduced on a production EKS estate" source="karpenter-spot-eks-cost-optimisation" />
+
+Most AWS engagements fail in one of two ways. Either a strategy deck arrives and nothing gets built, or
+juniors get parachuted in behind a senior name on the pitch. We are built the other way round: the
+engineer who reviews your account is the engineer who does the work — a Certified Kubernetes
+Administrator who also holds the AWS Solutions Architect – Associate certification and a DevOps
+credential from IIT Madras, with thirteen years of production infrastructure behind them.
+
+## Where we do the work
+
+### Cloud strategy and landing zones
+
+Before a single workload moves, the account structure has to be right — organisational units, guardrails,
+identity, network topology and a tagging standard that will still make sense in two years. Getting this
+wrong is expensive to unwind and almost impossible to retrofit under audit pressure. We design the
+landing zone against the AWS Well-Architected Framework and hand it over as Terraform, so it is
+reviewable, diffable and yours.
+
+### Migration
+
+Applications, databases and workloads moved to AWS with the cutover planned around your business, not
+ours. A single application with a managed database is typically a two-to-six week piece of work. A
+multi-application estate with compliance requirements usually runs three to six months. The variable is
+rarely AWS itself — it is application coupling, data volume and how much downtime your cutover window
+allows.
+
+We plan every migration backwards from the rollback. If the cutover fails at 2 a.m., the runbook says
+exactly what happens next, and it has been tested.
+
+### Cost optimisation
+
+Most unoptimised AWS accounts carry thirty to fifty percent waste. Not because anyone was careless, but
+because cloud spend accumulates quietly: an instance family that was right eighteen months ago, snapshots
+nobody owns, a NAT Gateway carrying traffic that should never have left the VPC, storage sitting in
+Standard that has not been read since it was written.
+
+On one enterprise client's Kubernetes estate we cut compute spend by fifty to sixty percent using
+Karpenter with Spot consolidation, right-sizing, Savings Plans and storage lifecycle policies — while
+keeping critical microservices on stable On-Demand capacity, so the saving cost them nothing in
+reliability. On another, a Pilot Light disaster-recovery design cut standby costs by ninety-five percent
+against the warm-standby approach they had been paying for.
+
+<Stat value="95%" label="Standby cost reduction versus warm standby" source="multi-region-disaster-recovery-argocd-aurora-global" />
+
+The first step is never a proposal. It is a read of your Cost and Usage Report, which tells you the real
+number before you commit to anything.
+
+### Security and compliance
+
+Least-privilege IAM, private-subnet data layers, encryption in transit and at rest, and admission control
+that will not let an unsigned container reach production. For clients with regulatory exposure we have
+built cryptographic supply-chain attestation — every artifact signed with AWS KMS, verified by Kyverno at
+the cluster boundary — so that deployment history is provable rather than asserted. That work is what
+allowed one client to pass ISO 27001 availability audits on the strength of a live region-failover test
+rather than a document.
+
+### Managed support
+
+Once it is live, someone has to hold it. We run monitoring, alerting, patching and cost review on a
+monthly retainer, either as your entire platform function or alongside engineers you already have.
+
+## Data residency and regions
+
+We work primarily in Mumbai (`ap-south-1`) and Hyderabad (`ap-south-2`) for Indian data-residency
+requirements, and across US and EU regions for global workloads. Typical workloads are containerised
+applications on EKS, managed databases such as Aurora and RDS, serverless event-driven services, and
+multi-region disaster recovery.
+
+If your data cannot leave India, say so on the first call. It changes the architecture, and it is much
+cheaper to design for than to migrate into.
+
+## Who this is a good fit for
+
+- Startups that need a production-ready AWS foundation without hiring a platform team yet.
+- Companies whose AWS bill has grown faster than their traffic and who want to know why.
+- Teams facing an audit — SOC 2, ISO 27001, DPDP — who need the infrastructure evidence to exist.
+- Engineering leaders who want a second senior opinion on an architecture before committing to it.
+
+## Who it is not
+
+If you run three services with predictable traffic and a bill under a few hundred dollars a month,
+you probably do not need us yet, and we will tell you that on the call rather than sell you a landing
+zone. If you are looking for the cheapest possible hourly rate, we will not be it.
+
+## How an engagement runs
+
+We scope in writing and price it fixed before any work starts. No hourly meters, no scope that quietly
+expands. Most engagements are embedded — we build with your engineers, document as we go, and hand over
+with runbooks. Where there is no in-house platform engineer to hand over to, we stay on a monthly
+retainer as a fractional platform function.
+
+Everything we build is Infrastructure as Code, in your repository, under your account. There is no
+lock-in to us, by design. If you want to take it in-house in a year, the handover is a `git clone`.
+
+<CTA />

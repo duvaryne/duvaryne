@@ -1,0 +1,70 @@
+---
+title: "Kubernetes Microservice Deployment with Redis"
+description: "A containerised web service backed by Redis on Kubernetes, with self-healing, horizontal scaling and a portable manifest set that runs in any cluster."
+h1: "Deploying a Stateless Microservice on Kubernetes with Redis"
+slug: "kubernetes-redis-microservice-deployment"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: false
+draft: false
+diagram: "/diagrams/kubernetes-redis-microservice-deployment.svg"
+diagramAlt: "Kubernetes microservice diagram: a Kubernetes Service and load balancer route traffic to horizontally scaled stateless web API pods built from a Docker image, backed by a Redis in-memory store on a persistent volume, managed declaratively with kubectl and Helm."
+outcomeHeadline: "Portable Kubernetes deployment. Self-healing and horizontally scalable. Docker, Kubernetes, Redis, Helm."
+mapsToService: "/services/devops/"
+stack:
+  - "Kubernetes"
+  - "Docker"
+  - "Redis"
+  - "Helm"
+  - "Microservices"
+stats:
+  - value: "Self-healing"
+    label: "Pod lifecycle managed by Kubernetes"
+  - value: "Portable"
+    label: "Identical deployment package across clusters"
+  - value: "Low-latency"
+    label: "In-memory persistence via Redis"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+This project focuses on the development of a scalable, cloud-native web service designed to function as a modern voicemail system. The application parses user messages and persists them in a high-performance Redis database. To ensure reliability and portability, the entire stack is containerized using Docker and deployed on a Kubernetes cluster, allowing for automated management and dynamic scaling.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Develop Core Service:** Build a responsive web API (using Python or Node.js) to receive, parse, and store user messages.
+- **Containerize Workloads:** Package the application and its dependencies into Docker containers to ensure consistent behavior across all environments.
+- **Orchestrate Deployment:** Utilize Kubernetes to manage the application lifecycle, ensuring high availability, self-healing, and easy scaling.
+- **Integrate Data Layer:** Implement a seamless connection between the stateless web service and the Redis stateful backend for efficient message retrieval.
+- **Master DevOps Workflows:** specific experience with cloud-native tooling, including `kubectl`, Helm, and container orchestration principles.
+
+## Architecture and implementation
+
+<img src="/diagrams/kubernetes-redis-microservice-deployment.svg" alt="Kubernetes microservice diagram: a Kubernetes Service and load balancer route traffic to horizontally scaled stateless web API pods built from a Docker image, backed by a Redis in-memory store on a persistent volume, managed declaratively with kubectl and Helm." width="1600" height="900" />
+
+- **Application Runtime:** Python (Flask/FastAPI) or Node.js (Express)
+- **Data Store:** Redis (In-memory key-value database)
+- **Containerization:** Docker
+- **Orchestration:** Kubernetes (K8s)
+- **DevOps & Automation:** Kubernetes CLI (kubectl), Helm Charts, CI/CD Pipelines
+- **Architectural Pattern:** Microservices
+
+## Outcomes
+
+- **Functional Cloud Service:** A fully deployed web application capable of handling concurrent read/write operations for user messages.
+- **Infrastructure Competency:** Demonstrated ability to configure, deploy, and troubleshoot applications within a Kubernetes environment.
+- **Optimized Storage:** Successful implementation of Redis for low-latency data persistence within a distributed architecture.
+- **Production Readiness:** A standardized, portable deployment package ready for integration into larger production ecosystems.
+
+## What we would do differently
+
+Redis is deployed here as a single instance with a persistent volume, which is fine for a message store that can be rebuilt and wrong for anything you would miss. We would be explicit that this is a cache-shaped deployment, not a database-shaped one, and reach for a managed ElastiCache cluster the moment durability actually matters. We would also add resource requests and limits from the first manifest rather than after the first noisy-neighbour incident.
+
+<CTA />

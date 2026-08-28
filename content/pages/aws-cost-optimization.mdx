@@ -1,0 +1,126 @@
+---
+title: "AWS Cost Optimisation Services | Cut Your Bill 30–50%"
+description: "Most AWS accounts carry 30-50% waste. We find it from your Cost and Usage Report and cut it without touching reliability. Free 30-minute review, fixed price."
+h1: "AWS Cost Optimisation"
+eyebrow: "Services"
+slug: "aws-cost-optimization"
+updated: 2026-08-05
+schema: "Service"
+serviceType: "Cloud cost optimisation"
+stats:
+  - value: "50–60%"
+    label: "Compute spend cut on a production EKS estate"
+    source: "karpenter-spot-eks-cost-optimisation"
+  - value: "95%"
+    label: "Standby cost cut versus warm standby"
+    source: "multi-region-disaster-recovery-argocd-aurora-global"
+  - value: "40%"
+    label: "Non-production spend cut with TTL environments"
+    source: "ephemeral-environments-internal-developer-platform"
+  - value: "30 min"
+    label: "To your first three savings, at no cost"
+relatedCaseStudies:
+  - "karpenter-spot-eks-cost-optimisation"
+  - "ephemeral-environments-internal-developer-platform"
+  - "multi-region-disaster-recovery-argocd-aurora-global"
+relatedPosts:
+  - "zombie-aws-resources-cost-optimisation"
+  - "iac-drift-detection"
+faqs:
+  - q: "How much can we realistically save on our AWS bill?"
+    a: "Most unoptimised accounts carry 30-50% waste. What is recoverable depends on your workload shape: containerised and batch workloads often yield 50% or more, while a single tightly-tuned RDS-backed application may only yield 10-15%. We tell you which you are after reading your Cost and Usage Report, before you commit to anything."
+  - q: "Will cost optimisation make our system less reliable?"
+    a: "It should not, and we design so it cannot. Critical microservices stay on stable On-Demand capacity while only fault-tolerant workloads move to Spot, enforced with taints, tolerations and node affinity rules rather than good intentions. On one estate we shifted 70% of workloads to Spot and the application stayed stable through AWS reclaiming 20% of capacity."
+  - q: "What do you actually look at first?"
+    a: "Your Cost and Usage Report, then your architecture. The CUR tells us where the money goes; the architecture tells us which of it is structural and which is waste. Typical early findings are oversized instance families, orphaned snapshots and volumes, NAT Gateway traffic that should never leave the VPC, and storage never lifecycled out of Standard."
+  - q: "Do you charge a percentage of the savings?"
+    a: "No. We scope the work in writing and quote a fixed price before starting. Percentage-of-savings models create an incentive to find savings that look good on a dashboard rather than ones that hold up over twelve months."
+  - q: "How long does a cost optimisation engagement take?"
+    a: "The free review is 30 minutes. A focused optimisation on a single account is typically two to four weeks including implementation and verification. A multi-account estate with Kubernetes, Savings Plans restructuring and storage lifecycle work usually runs six to ten weeks."
+  - q: "Will the savings hold, or drift back?"
+    a: "That is the real question. Point-in-time cleanups regress within two quarters. We implement the controls that keep it down: autoscaling that consolidates idle nodes automatically, TTLs on non-production environments, tagging enforced at provisioning, and a monthly cost review if you want us to keep holding it."
+cta:
+  heading: "Find out what your account is actually wasting"
+  body: "Send us read-only access to your Cost and Usage Report and give us thirty minutes. You leave with the three largest savings in your account, quantified. If there is nothing worth doing, we will say so."
+  buttonLabel: "Book a free 30-minute cost review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Most AWS accounts carry 30–50% waste
+
+Not because anyone was careless. Cloud spend accumulates quietly. An instance family that was the right
+choice eighteen months ago. Snapshots nobody owns. A NAT Gateway carrying traffic that should never have
+left the VPC. Storage sitting in Standard that has not been read since the day it was written. A staging
+environment somebody spun up for a demo in March.
+
+<Stat value="50–60%" label="Compute spend cut on a production EKS estate" source="karpenter-spot-eks-cost-optimisation" />
+
+Every one of those is invisible on a monthly invoice, which reports a total rather than a cause. The
+Cost and Usage Report reports the cause — and reading it properly is where this work starts.
+
+## What we look for
+
+**Compute shape.** The largest single lever on most estates. Rigid autoscaling groups and safe-but-expensive
+instance choices mean you pay for headroom continuously to survive a spike that happens twice a week.
+Replacing static node groups with just-in-time provisioning removes that structurally.
+
+**Spot, used safely.** Spot capacity is up to ninety percent cheaper and most teams avoid it because one
+bad experience taught them it is dangerous. It is dangerous when applied indiscriminately. Applied with
+taints, tolerations and node affinity that mathematically guarantee critical pods never schedule onto
+volatile nodes, it is not. On one enterprise client's estate we moved seventy percent of total
+workload — batch jobs, dev environments, data processing — onto Spot while critical microservices stayed
+On-Demand. Compute spend fell fifty to sixty percent, and the application stayed stable through AWS
+reclaiming twenty percent of the underlying capacity.
+
+**Idle non-production.** Development and staging environments that run twenty-four hours a day to serve an
+eight-hour working day are paying a three-times multiplier for nothing. Ephemeral environments with a
+four-hour TTL, auto-destroyed on expiry, cut one client's non-production spend by forty percent — and
+because developers stopped queueing for a shared staging box, deployment velocity went up three-fold at
+the same time.
+
+<Stat value="40%" label="Non-production spend cut with TTL environments" source="ephemeral-environments-internal-developer-platform" />
+
+**Standby architecture.** Disaster recovery is where the most expensive habits live. A warm-standby second
+region runs application servers continuously against an outage that may never come. A Pilot Light design
+keeps the data replicating and the compute layer at zero, hydrated by ArgoCD only when failover is
+declared. One client's standby costs fell ninety-five percent, and their recovery time objective still
+came in under fifteen minutes — verified by an actual region-failover test, not a document.
+
+**Storage and data transfer.** Lifecycle policies, snapshot hygiene, and the cross-AZ traffic nobody
+budgeted for. Individually small. Collectively, frequently five figures a year.
+
+**Commitment coverage.** Savings Plans and Reserved Instances sized against what your usage will actually
+be after the optimisation work, not before. Committing first and optimising second is how organisations
+end up locked into paying for capacity they have just finished eliminating.
+
+## What we will not do
+
+We will not take a percentage of the savings. That model creates an incentive to find numbers that look
+good in a first-quarter dashboard rather than ones that survive a year, and it puts us on the wrong side
+of the table when the honest answer is "leave this alone".
+
+We will not trade reliability for a lower invoice without telling you the trade explicitly and letting
+you decline it. Every recommendation comes with what it costs you in resilience — usually nothing, but
+you will know either way.
+
+And if we read your account and there is nothing meaningful to recover, we will tell you that on the
+call. It happens, and saying so is worth more to us than a small engagement.
+
+## Making the savings stick
+
+Point-in-time cleanups regress. Within two quarters the snapshots are back, the environments are back,
+and the bill is where it started. The engineering that matters is the part that holds the line:
+
+- Autoscaling that consolidates idle nodes automatically rather than waiting for a human to notice.
+- TTLs on every non-production environment, enforced by the scheduler, not by policy.
+- Tagging enforced at provisioning time so ownership is never ambiguous.
+- A monthly cost review — either yours, with the dashboard we leave you, or ours on retainer.
+
+## How it runs
+
+Thirty minutes, free, with read-only access to your Cost and Usage Report and a look at your
+architecture. You leave that call knowing the three largest savings in your account and roughly what each
+is worth. If you want us to do the work, you get a written scope and a fixed price before anything
+starts. If you want to do it yourself with that list, that is a good outcome too.
+
+<CTA />

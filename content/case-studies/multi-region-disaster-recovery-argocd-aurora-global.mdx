@@ -1,0 +1,73 @@
+---
+title: "Multi-Region DR with ArgoCD & Aurora Global"
+description: "A Pilot Light DR design using Aurora Global Database and ArgoCD hydration achieved a recovery time objective under 15 minutes while cutting standby cost by 95%."
+h1: "Automated Multi-Region Disaster Recovery via GitOps and Global Replication"
+slug: "multi-region-disaster-recovery-argocd-aurora-global"
+updated: 2026-08-06
+client: "An enterprise client"
+featured: true
+draft: false
+diagram: "/diagrams/multi-region-disaster-recovery-argocd-aurora-global.svg"
+diagramAlt: "Pilot Light disaster recovery diagram: Route 53 health checks and failover routing sit above an active primary region running EKS and the Aurora Global writer, with a dormant standby region holding an Aurora reader and an EKS cluster scaled to zero nodes, both hydrated from a single ArgoCD ApplicationSet and Git repository."
+outcomeHeadline: "Recovery time objective under 15 minutes. 95% standby cost reduction. Aurora Global, ArgoCD, Route 53."
+mapsToService: "/services/aws-cloud/"
+stack:
+  - "Aurora Global Database"
+  - "ArgoCD"
+  - "Amazon Route 53"
+  - "Amazon EKS"
+  - "Terraform"
+stats:
+  - value: "< 15 min"
+    label: "Recovery time objective, verified by live failover"
+  - value: "95%"
+    label: "Standby cost reduction versus warm standby"
+  - value: "Near-zero"
+    label: "Recovery point objective via cross-region replication"
+  - value: "ISO 27001"
+    label: "Availability audit passed on a live failover test"
+cta:
+  heading: "Bring us the same problem"
+  body: "Thirty minutes on your architecture and your bill, with the engineer who would do the work. Written scope and a fixed price before anything starts."
+  buttonLabel: "Book a free 30-minute review"
+  href: "https://calendly.com/hello-duvaryne/30min"
+---
+
+## Context
+
+High Availability (HA) within a single region is standard, but true Disaster Recovery (DR) requires surviving a total regional outage (e.g., `us-east-1` failure). Traditional DR strategies often fail because the secondary environment is manually maintained, leading to "configuration drift"—where the backup infrastructure doesn't match production when it's actually needed.
+
+This project implemented a **"Pilot Light" DR strategy** driven entirely by GitOps. By coupling **Amazon Aurora Global Database** for instant data replication with **ArgoCD** for application hydration, we created a system where a secondary region stays dormant (and cheap) but can be fully hydrated and serving live traffic in under 15 minutes. This transforms Disaster Recovery from a frantic manual crisis into a scripted, predictable automation.
+
+> Client identity withheld under NDA. Architecture and outcomes described as delivered.
+
+## Constraints and objectives
+
+- **Minimize RTO (Recovery Time Objective):** Reduce the time to restore service from hours/days to less than 15 minutes following a catastrophic regional failure.
+- **Minimize RPO (Recovery Point Objective):** Achieve near-zero data loss using cross-region asynchronous replication at the storage layer.
+- **Eliminate Configuration Drift:** Ensure the DR environment is mathematically identical to the Primary environment by using a single Git source of truth for both.
+- **Cost Efficiency:** Avoid the massive expense of an "Active-Active" setup by keeping the DR compute layer scaled down (0 nodes) until a failover event occurs.
+
+## Architecture and implementation
+
+<img src="/diagrams/multi-region-disaster-recovery-argocd-aurora-global.svg" alt="Pilot Light disaster recovery diagram: Route 53 health checks and failover routing sit above an active primary region running EKS and the Aurora Global writer, with a dormant standby region holding an Aurora reader and an EKS cluster scaled to zero nodes, both hydrated from a single ArgoCD ApplicationSet and Git repository." width="1600" height="900" />
+
+- **Traffic Management:** Amazon Route53 with Health Checks and Failover Routing policies.
+- **Database Layer: Amazon Aurora Global Database** (Cross-Region Replication).
+- **GitOps Controller: ArgoCD** (Application Set pattern to manage clusters across multiple regions).
+- **Infrastructure as Code:** Terraform / OpenTofu for managing the VPC, Security Groups, and EKS Control Planes.
+- **Methodology: The "Hydration" Pattern:** The DR cluster exists but runs no workloads. Upon failover, we simply update the ArgoCD "Destination," and the controller automatically deploys the entire microservices stack to the new region.
+- **Write Forwarding:** Enabled Read-Replica Write Forwarding during the transition phase to allow partial availability before full promotion.
+
+## Outcomes
+
+- **95% Cost Reduction in Standby Mode:** By not running application servers in the secondary region until needed, we saved the client thousands of dollars monthly compared to their previous "Warm Standby" approach.
+- **One-Click Failover:** Replaced a 40-page manual "Disaster Runbook" with a single automation script that promotes the database and scales the cluster.
+- **Proven Compliance:** Enabled the client to pass strict ISO 27001 availability audits by demonstrating a live, successful region failover test.
+- **Global Resilience:** The architecture proved that the application logic is completely decoupled from the underlying data center location.
+
+## What we would do differently
+
+We tested the failover and we did not test the failback often enough. Promoting the standby region is the part everyone rehearses; returning to the original primary afterwards, with the data that accumulated in the meantime, is the part that is genuinely hard, and our runbook for it was thinner than it should have been. We would also make the failover script refuse to run without an explicit, logged human confirmation — the one-click property is good until somebody's automation clicks it.
+
+<CTA />
