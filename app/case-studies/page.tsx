@@ -18,8 +18,7 @@ const UPDATED = new Date("2026-08-06");
 
 export const metadata: Metadata = buildMetadata({
   title: "AWS & DevOps Case Studies | Duvaryne",
-  description:
-    "Ten production engagements in full technical detail: Karpenter and Spot cost cuts, multi-region DR, zero-trust supply chain, ephemeral environments. Numbers, not adjectives.",
+  description: "Ten production engagements in full technical detail: Karpenter and Spot cost cuts, multi-region DR, zero-trust supply chain, ephemeral environments. Numbers, not adjectives.",
   path: "/case-studies",
 });
 
@@ -64,15 +63,12 @@ export default function CaseStudiesPage() {
           webPageSchema({
             type: "WebPage",
             title: "AWS & DevOps Case Studies",
-            description:
-              "Ten production engagements in full technical detail, with the architecture and the numbers as delivered.",
+            description: "Ten production engagements in full technical detail, with the architecture and the numbers as delivered.",
             path: "/case-studies",
             updated: UPDATED,
           }),
-          {
-            "@type": "ItemList",
-            itemListElement: studies.map((s, i) => ({
-              "@type": "ListItem",
+          { "@type": "ItemList",
+            itemListElement: studies.map((s, i) => ({ "@type": "ListItem",
               position: i + 1,
               name: s.h1,
               url: absoluteUrl(`/case-studies/${s.slug}`),

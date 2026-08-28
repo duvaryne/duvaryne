@@ -32,7 +32,7 @@ export function Footer() {
     .map((key) => ({ href: site.social[key], ...socialMeta[key] }));
 
   return (
-    <footer className="on-navy bg-navy-900 text-white/70">
+    <footer className="on-inverse bg-inverse-deep text-on-inverse/70">
       <Container className="py-14 lg:py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <div className="lg:pr-6">
@@ -49,7 +49,7 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-navy-600 transition-colors duration-150 hover:border-blue-500 hover:text-white"
+                    className="inline-flex h-11 w-11 items-center justify-center border border-inverse-rule transition-colors duration-150 hover:border-decor hover:text-on-inverse"
                   >
                     <Icon size={17} aria-hidden />
                   </a>
@@ -62,7 +62,7 @@ export function Footer() {
           <FooterColumn title="Company" links={primaryNav} />
 
           <div>
-            <h2 className="text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-white">
+            <h2 className="text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-on-inverse">
               Contact
             </h2>
             <ul className="mt-4 space-y-3 text-[0.9375rem]">
@@ -77,7 +77,7 @@ export function Footer() {
                 {/* The ONE phone number. Nothing else appears anywhere on the site. */}
                 <a
                   href={site.phoneHref}
-                  className="tabular transition-colors duration-150 hover:text-white"
+                  className="tabular transition-colors duration-150 hover:text-on-inverse"
                 >
                   {site.phone}
                 </a>
@@ -86,7 +86,7 @@ export function Footer() {
                 <Mail size={16} className="mt-1 shrink-0" aria-hidden />
                 <a
                   href={`mailto:${site.email}`}
-                  className="transition-colors duration-150 hover:text-white"
+                  className="transition-colors duration-150 hover:text-on-inverse"
                 >
                   {site.email}
                 </a>
@@ -98,14 +98,14 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               data-analytics="cta_book_clicked"
-              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-orange-500 px-4 text-[0.9375rem] font-semibold text-navy-900 transition-colors duration-150 hover:bg-[#ea6a0c]"
+              className="mt-6 inline-flex min-h-11 items-center justify-center bg-action px-4 text-[0.9375rem] font-semibold text-on-action transition-colors duration-150 hover:bg-action-hover"
             >
               Book a free 30-minute review
             </a>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-navy-600 pt-6 text-[0.875rem] md:flex-row md:items-center md:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-inverse-rule pt-6 text-[0.875rem] md:flex-row md:items-center md:justify-between">
           {/* Computed, never hardcoded — defect 12. */}
           <p>
             © <span className="tabular">{year}</span> {site.name}. All rights reserved.
@@ -115,7 +115,7 @@ export function Footer() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="transition-colors duration-150 hover:text-white"
+                  className="transition-colors duration-150 hover:text-on-inverse"
                 >
                   {link.label}
                 </Link>
@@ -137,7 +137,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h2 className="text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-white">
+      <h2 className="text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-on-inverse">
         {title}
       </h2>
       <ul className="mt-4 space-y-2.5 text-[0.9375rem]">
@@ -145,7 +145,7 @@ function FooterColumn({
           <li key={link.href}>
             <Link
               href={link.href}
-              className="transition-colors duration-150 hover:text-white"
+              className="transition-colors duration-150 hover:text-on-inverse"
             >
               {link.label}
             </Link>

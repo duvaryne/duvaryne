@@ -28,14 +28,14 @@ export default function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#0A1728",
+          background: "#F4F6F8",
           padding: "72px",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div style={{ width: 10, height: 34, background: "#F97316" }} />
+          <div style={{ width: 10, height: 34, background: "#C8922E" }} />
           {/* Satori requires explicit display on any element with more than one child. */}
-          <div style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#FFFFFF" }}>
+          <div style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#2C3238" }}>
             <span>Duvaryne</span>
           </div>
         </div>
@@ -45,7 +45,7 @@ export default function Image() {
             style={{
               fontSize: 62,
               fontWeight: 700,
-              color: "#FFFFFF",
+              color: "#2C3238",
               lineHeight: 1.1,
               letterSpacing: "-0.02em",
               maxWidth: 940,
@@ -64,7 +64,7 @@ export default function Image() {
             gap: 26,
             fontSize: 20,
             color: "rgba(255,255,255,0.5)",
-            borderTop: "1px solid #1E3A5F",
+            borderTop: "1px solid #DCE1E6",
             paddingTop: 26,
           }}
         >

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { primaryNav } from "@/lib/nav";
+import { ThemeToggle } from "./ThemeToggle";
 import { Container } from "./Container";
 import { Logo } from "./Logo";
 import { NavDisclosure } from "./NavDisclosure";
@@ -13,13 +14,13 @@ import { NavDisclosure } from "./NavDisclosure";
  */
 export function Header() {
   const links = (
-    <nav aria-label="Primary" className="lg:flex lg:items-center lg:gap-8">
-      <ul className="flex flex-col gap-1 lg:flex-row lg:items-center lg:gap-7">
+    <nav aria-label="Primary" className="lg:flex lg:items-center lg:gap-5">
+      <ul className="flex flex-col gap-1 lg:flex-row lg:items-center lg:gap-5">
         {primaryNav.map((link) => (
           <li key={link.href}>
             <Link
               href={link.href}
-              className="flex min-h-11 items-center text-[0.9375rem] font-medium text-navy-900 transition-colors duration-150 hover:text-blue-600 lg:min-h-0"
+              className="flex min-h-11 items-center whitespace-nowrap text-[0.9375rem] font-medium text-heading transition-colors duration-150 hover:text-action lg:min-h-0"
             >
               {link.label}
             </Link>
@@ -32,15 +33,16 @@ export function Header() {
         target="_blank"
         rel="noopener noreferrer"
         data-analytics="cta_book_clicked"
-        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-md bg-orange-500 px-4 text-[0.9375rem] font-semibold text-navy-900 transition-colors duration-150 hover:bg-[#ea6a0c] lg:mt-0"
+        className="mt-4 inline-flex min-h-11 items-center justify-center whitespace-nowrap bg-action px-4 text-[0.9375rem] font-semibold text-on-action transition-colors duration-150 hover:bg-action-hover lg:mt-0"
       >
         Book a free review
       </a>
+      <ThemeToggle className="mt-4 lg:mt-0" />
     </nav>
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-rule bg-paper/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-rule bg-ground/90 backdrop-blur-sm">
       <Container className="relative flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center" aria-label={`${site.name} — home`}>
           <Logo />

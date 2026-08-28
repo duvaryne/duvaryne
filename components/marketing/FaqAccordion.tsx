@@ -19,17 +19,17 @@ export function FaqAccordion({ faqs, headingLevel = 2 }: { faqs: Faq[]; headingL
       {faqs.map((faq, i) => (
         <details key={i} className="group">
           <summary className="flex min-h-11 cursor-pointer list-none items-start justify-between gap-6 py-5 [&::-webkit-details-marker]:hidden">
-            <H className="text-[1.0625rem] font-semibold leading-snug text-navy-900 lg:text-[1.125rem]">
+            <H className="text-[1.0625rem] font-semibold leading-snug text-heading lg:text-[1.125rem]">
               {faq.q}
             </H>
             <Plus
               size={19}
               aria-hidden
-              className="mt-0.5 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-45"
+              className="mt-0.5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-45"
             />
           </summary>
           {/* 40-60 words, directly beneath the question — the extractable unit. SPEC §10.3. */}
-          <p className="max-w-[68ch] pb-6 pr-10 text-[1.0625rem] leading-relaxed text-slate-600">
+          <p className="max-w-[68ch] pb-6 pr-10 text-[1.0625rem] leading-relaxed text-muted">
             {faq.a}
           </p>
         </details>

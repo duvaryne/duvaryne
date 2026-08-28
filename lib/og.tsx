@@ -27,7 +27,7 @@ export function renderOgImage({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#0A1728",
+          background: "#F4F6F8",
           padding: "68px 72px",
         }}
       >
@@ -39,16 +39,16 @@ export function renderOgImage({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 10, height: 30, background: "#F97316" }} />
+            <div style={{ width: 10, height: 30, background: "#C8922E" }} />
             {/* Satori requires explicit display on any element with more than one child. */}
-            <div style={{ display: "flex", fontSize: 26, fontWeight: 700, color: "#FFFFFF" }}>
+            <div style={{ display: "flex", fontSize: 26, fontWeight: 700, color: "#2C3238" }}>
               <span>Duvaryne</span>
             </div>
           </div>
           <div
             style={{
               fontSize: 19,
-              color: "#2B7CE9",
+              color: "#9AA3AC",
               textTransform: "uppercase",
               letterSpacing: "0.09em",
             }}
@@ -63,7 +63,7 @@ export function renderOgImage({
               style={{
                 fontSize: 40,
                 fontWeight: 600,
-                color: "#2B7CE9",
+                color: "#9AA3AC",
                 marginBottom: 20,
                 maxWidth: 1000,
               }}
@@ -75,7 +75,7 @@ export function renderOgImage({
             style={{
               fontSize: title.length > 68 ? 46 : 56,
               fontWeight: 700,
-              color: "#FFFFFF",
+              color: "#2C3238",
               lineHeight: 1.14,
               letterSpacing: "-0.02em",
               maxWidth: 1010,
@@ -90,7 +90,7 @@ export function renderOgImage({
             display: "flex",
             fontSize: 20,
             color: "rgba(255,255,255,0.5)",
-            borderTop: "1px solid #1E3A5F",
+            borderTop: "1px solid #DCE1E6",
             paddingTop: 24,
           }}
         >

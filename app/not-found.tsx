@@ -6,11 +6,11 @@ import { site } from "@/lib/site";
 export default function NotFound() {
   return (
     <Container className="py-24 lg:py-32">
-      <p className="tabular text-[0.875rem] font-medium text-blue-600">404</p>
-      <h1 className="mt-4 max-w-[18ch] text-[2.25rem] text-navy-900">
+      <p className="tabular text-[0.875rem] font-medium text-action">404</p>
+      <h1 className="mt-4 max-w-[18ch] text-[2.25rem] text-heading">
         That page does not exist
       </h1>
-      <p className="mt-5 max-w-[56ch] text-[1.0625rem] leading-relaxed text-slate-600">
+      <p className="mt-5 max-w-[56ch] text-[1.0625rem] leading-relaxed text-muted">
         The link may be out of date, or the page may have moved during our rebuild. Everything
         below still works.
       </p>
@@ -20,7 +20,7 @@ export default function NotFound() {
           <li key={link.href}>
             <Link
               href={link.href}
-              className="text-[0.9375rem] font-medium text-blue-600 transition-colors duration-150 hover:text-blue-700"
+              className="text-[0.9375rem] font-medium text-action transition-colors duration-150 hover:text-action-hover"
             >
               {link.label}
             </Link>
@@ -28,11 +28,11 @@ export default function NotFound() {
         ))}
       </ul>
 
-      <p className="mt-10 text-[0.9375rem] text-slate-600">
+      <p className="mt-10 text-[0.9375rem] text-muted">
         Looking for something specific?{" "}
         <a
           href={`mailto:${site.email}`}
-          className="text-blue-600 underline underline-offset-2"
+          className="text-action underline underline-offset-2"
         >
           {site.email}
         </a>

@@ -50,8 +50,16 @@ function firstProblem(p: Payload): { field: string; message: string } | null {
   return null;
 }
 
+/**
+ * Field chrome.
+ *
+ * The border is `border-muted` (pewter-400), not `border-rule`. Moonstone reads as a
+ * hairline against the platinum ground at 1.21:1 — correct for a decorative divider,
+ * but an input is an interactive control and its boundary needs 3:1 to be perceivable.
+ * Pewter-400 clears it at 4.9:1 against the white field.
+ */
 const field =
-  "mt-1.5 block w-full rounded-md border border-rule bg-white px-3.5 py-2.5 text-[1rem] text-ink transition-colors duration-150 placeholder:text-[#9AA6B8] focus:border-blue-600 focus:outline-none";
+  "mt-1.5 block w-full border border-muted bg-surface px-3.5 py-2.5 text-[1rem] text-fg transition-colors duration-150 placeholder:text-muted focus:border-action focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 export function ContactForm() {
   const id = useId();
@@ -123,24 +131,24 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="rounded-lg border border-rule bg-white p-8">
-        <CheckCircle2 size={26} className="text-signal" aria-hidden />
-        <h2 className="mt-4 text-[1.375rem] text-navy-900">Message received</h2>
-        <p className="mt-3 max-w-[52ch] text-[1.0625rem] leading-relaxed text-slate-600">
+      <div className="border border-rule bg-surface p-8">
+        <CheckCircle2 size={26} className="text-accent" aria-hidden />
+        <h2 className="mt-4 text-[1.375rem] text-heading">Message received</h2>
+        <p className="mt-3 max-w-[52ch] text-[1.0625rem] leading-relaxed text-muted">
           It lands in {site.email} and a person reads it — usually the same working day. If it is
           urgent, book a slot directly and skip the queue.
         </p>
-        <ol className="mt-6 space-y-2.5 text-[0.9375rem] text-slate-600">
+        <ol className="mt-6 space-y-2.5 text-[0.9375rem] text-muted">
           <li>
-            <span className="tabular font-medium text-navy-900">01</span> &nbsp;We read
+            <span className="tabular font-medium text-heading">01</span> &nbsp;We read
             it and reply with either questions or a proposed time.
           </li>
           <li>
-            <span className="tabular font-medium text-navy-900">02</span> &nbsp;Thirty
+            <span className="tabular font-medium text-heading">02</span> &nbsp;Thirty
             minutes on your architecture and your bill.
           </li>
           <li>
-            <span className="tabular font-medium text-navy-900">03</span> &nbsp;Written
+            <span className="tabular font-medium text-heading">03</span> &nbsp;Written
             scope and a fixed price, or an honest &ldquo;you do not need us yet&rdquo;.
           </li>
         </ol>
@@ -149,7 +157,7 @@ export function ContactForm() {
           target="_blank"
           rel="noopener noreferrer"
           data-analytics="cta_book_clicked"
-          className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-orange-500 px-5 text-[0.9375rem] font-semibold text-navy-900 transition-colors duration-150 hover:bg-[#ea6a0c]"
+          className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 bg-action px-5 text-[0.9375rem] font-semibold text-on-action transition-colors duration-150 hover:bg-action-hover"
         >
           Book the call now
           <ArrowRight size={16} aria-hidden />
@@ -163,7 +171,7 @@ export function ContactForm() {
       onSubmit={onSubmit}
       noValidate
       data-analytics="contact_form_submitted"
-      className="rounded-lg border border-rule bg-white p-6 sm:p-8"
+      className="border border-rule bg-surface p-6 sm:p-8"
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
@@ -194,9 +202,9 @@ export function ContactForm() {
         <div>
           <label
             htmlFor={`${id}-budget`}
-            className="text-[0.875rem] font-medium text-navy-900"
+            className="text-[0.875rem] font-medium text-heading"
           >
-            Budget band <span className="font-normal text-slate-600">(optional)</span>
+            Budget band <span className="font-normal text-muted">(optional)</span>
           </label>
           <select id={`${id}-budget`} name="budget" defaultValue="" className={field}>
             <option value="">Prefer not to say</option>
@@ -212,9 +220,9 @@ export function ContactForm() {
       <div className="mt-5">
         <label
           htmlFor={`${id}-message`}
-          className="text-[0.875rem] font-medium text-navy-900"
+          className="text-[0.875rem] font-medium text-heading"
         >
-          What are you trying to fix? <span aria-hidden className="text-orange-500">*</span>
+          What are you trying to fix? <span aria-hidden className="text-accent">*</span>
         </label>
         <textarea
           id={`${id}-message`}
@@ -261,9 +269,9 @@ export function ContactForm() {
       {status === "error" && error ? (
         <p
           role="alert"
-          className="mt-5 flex items-start gap-2.5 rounded-md border-l-[3px] border-l-orange-500 bg-orange-050 px-4 py-3 text-[0.9375rem] text-ink"
+          className="mt-5 flex items-start gap-2.5 border-l-[3px] border-l-accent bg-tint px-4 py-3 text-[0.9375rem] text-fg"
         >
-          <TriangleAlert size={17} className="mt-0.5 shrink-0 text-[#b4530a]" aria-hidden />
+          <TriangleAlert size={17} className="mt-0.5 shrink-0 text-accent-strong" aria-hidden />
           {error}
         </p>
       ) : null}
@@ -271,17 +279,17 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-orange-500 px-6 text-[0.9375rem] font-semibold text-navy-900 transition-colors duration-150 hover:bg-[#ea6a0c] disabled:opacity-60 sm:w-auto"
+        className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-action px-6 text-[0.9375rem] font-semibold text-on-action transition-colors duration-150 hover:bg-action-hover disabled:opacity-60 sm:w-auto"
       >
         {status === "submitting" ? "Sending…" : "Send message"}
         {status === "submitting" ? null : <ArrowRight size={16} aria-hidden />}
       </button>
 
-      <p className="mt-4 text-[0.8125rem] leading-relaxed text-slate-600">
+      <p className="mt-4 text-[0.8125rem] leading-relaxed text-muted">
         We reply from {site.email}. We do not add you to a mailing list — see our{" "}
         <Link
           href="/legal/privacy/"
-          className="text-blue-600 underline underline-offset-2"
+          className="text-action underline underline-offset-2"
         >
           privacy policy
         </Link>
@@ -310,14 +318,14 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="text-[0.875rem] font-medium text-navy-900">
+      <label htmlFor={id} className="text-[0.875rem] font-medium text-heading">
         {label}{" "}
         {required ? (
-          <span aria-hidden className="text-orange-500">
+          <span aria-hidden className="text-accent">
             *
           </span>
         ) : (
-          <span className="font-normal text-slate-600">(optional)</span>
+          <span className="font-normal text-muted">(optional)</span>
         )}
       </label>
       <input

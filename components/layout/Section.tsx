@@ -4,11 +4,11 @@ import { Container } from "./Container";
 type Tone = "paper" | "white" | "navy" | "tint";
 
 const tones: Record<Tone, string> = {
-  paper: "bg-paper text-ink",
-  white: "bg-white text-ink",
-  // `on-navy` switches the focus-ring colour so it still clears 3:1 against the dark ground.
-  navy: "on-navy bg-navy-800 text-white",
-  tint: "bg-blue-050 text-ink",
+  paper: "bg-ground text-fg",
+  white: "bg-surface text-fg",
+  // `on-inverse` switches the focus-ring colour so it still clears 3:1 against the dark ground.
+  navy: "on-inverse bg-inverse text-on-inverse",
+  tint: "bg-tint text-fg",
 };
 
 export function Section({
@@ -54,18 +54,16 @@ export function SectionHeader({
     <div className={cn("max-w-[52ch]", className)}>
       <h2
         id={id}
-        className={cn(
-          "text-[1.75rem] lg:text-[2rem]",
-          tone === "dark" ? "text-white" : "text-navy-900",
+        className={cn( "text-[1.75rem] lg:text-[2rem]",
+          tone === "dark" ? "text-on-inverse" : "text-heading",
         )}
       >
         {heading}
       </h2>
       {body ? (
         <p
-          className={cn(
-            "mt-4 text-[1.0625rem] leading-relaxed",
-            tone === "dark" ? "text-white/70" : "text-slate-600",
+          className={cn( "mt-4 text-[1.0625rem] leading-relaxed",
+            tone === "dark" ? "text-on-inverse/70" : "text-muted",
           )}
         >
           {body}

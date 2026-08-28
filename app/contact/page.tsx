@@ -15,8 +15,7 @@ const UPDATED = new Date("2026-08-06");
 
 export const metadata: Metadata = buildMetadata({
   title: "Contact Duvaryne | AWS & DevOps, Bengaluru",
-  description:
-    "Talk to the engineer who would do the work. Send a message or book a free 30-minute review of your AWS architecture and bill. Bengaluru, working across India, US and EU.",
+  description: "Talk to the engineer who would do the work. Send a message or book a free 30-minute review of your AWS architecture and bill. Bengaluru, working across India, US and EU.",
   path: "/contact",
 });
 
@@ -45,30 +44,30 @@ export default function ContactPage() {
           <div>
             {/* NAP block — every value from lib/site.ts, so the phone number here is the
                 same one in the footer and in LocalBusiness JSON-LD (defects 6, 7). */}
-            <h2 className="text-[1.25rem] text-navy-900">Duvaryne LLP</h2>
+            <h2 className="text-[1.25rem] text-heading">Duvaryne LLP</h2>
             <ul className="mt-5 space-y-4 text-[1rem]">
               <li className="flex items-start gap-3">
-                <MapPin size={17} className="mt-1 shrink-0 text-slate-600" aria-hidden />
-                <span className="text-ink">
+                <MapPin size={17} className="mt-1 shrink-0 text-muted" aria-hidden />
+                <span className="text-fg">
                   {site.locality}, {site.region}
                   <br />
                   {site.countryName}
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <Phone size={17} className="mt-1 shrink-0 text-slate-600" aria-hidden />
+                <Phone size={17} className="mt-1 shrink-0 text-muted" aria-hidden />
                 <a
                   href={site.phoneHref}
-                  className="tabular text-blue-600 transition-colors duration-150 hover:text-blue-700"
+                  className="tabular text-action transition-colors duration-150 hover:text-action-hover"
                 >
                   {site.phone}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Mail size={17} className="mt-1 shrink-0 text-slate-600" aria-hidden />
+                <Mail size={17} className="mt-1 shrink-0 text-muted" aria-hidden />
                 <a
                   href={`mailto:${site.email}`}
-                  className="text-blue-600 transition-colors duration-150 hover:text-blue-700"
+                  className="text-action transition-colors duration-150 hover:text-action-hover"
                 >
                   {site.email}
                 </a>
@@ -82,7 +81,7 @@ export default function ContactPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-rule text-slate-600 transition-colors duration-150 hover:border-blue-600 hover:text-blue-600"
+                  className="inline-flex h-11 w-11 items-center justify-center border border-rule text-muted transition-colors duration-150 hover:border-action hover:text-action"
                 >
                   <Linkedin size={17} aria-hidden />
                 </a>
@@ -93,7 +92,7 @@ export default function ContactPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-rule text-slate-600 transition-colors duration-150 hover:border-blue-600 hover:text-blue-600"
+                  className="inline-flex h-11 w-11 items-center justify-center border border-rule text-muted transition-colors duration-150 hover:border-action hover:text-action"
                 >
                   <Github size={17} aria-hidden />
                 </a>
@@ -102,22 +101,22 @@ export default function ContactPage() {
 
             <dl className="mt-8 space-y-4 border-t border-rule pt-8 text-[0.9375rem]">
               <div>
-                <dt className="font-medium text-navy-900">Response time</dt>
-                <dd className="mt-1 text-slate-600">
+                <dt className="font-medium text-heading">Response time</dt>
+                <dd className="mt-1 text-muted">
                   Same working day, Monday to Friday, IST.
                 </dd>
               </div>
               <div>
-                <dt className="font-medium text-navy-900">Where we work</dt>
-                <dd className="mt-1 text-slate-600">
+                <dt className="font-medium text-heading">Where we work</dt>
+                <dd className="mt-1 text-muted">
                   Across India, and remotely with teams in the US and EU. Primary AWS regions{" "}
                   <span className="tabular">ap-south-1</span> and{" "}
                   <span className="tabular">ap-south-2</span>.
                 </dd>
               </div>
               <div>
-                <dt className="font-medium text-navy-900">What to bring</dt>
-                <dd className="mt-1 text-slate-600">
+                <dt className="font-medium text-heading">What to bring</dt>
+                <dd className="mt-1 text-muted">
                   Your architecture, and read-only access to your Cost and Usage Report if the
                   bill is the problem.
                 </dd>
@@ -129,10 +128,10 @@ export default function ContactPage() {
 
       <Section tone="white">
         <div className="mx-auto max-w-[720px]">
-          <h2 className="text-center text-[1.75rem] text-navy-900">
+          <h2 className="text-center text-[1.75rem] text-heading">
             Or skip the form
           </h2>
-          <p className="mx-auto mt-3 max-w-[52ch] text-center text-[1.0625rem] leading-relaxed text-slate-600">
+          <p className="mx-auto mt-3 max-w-[52ch] text-center text-[1.0625rem] leading-relaxed text-muted">
             Thirty minutes, free, with the engineer who would do the work.
           </p>
           <div className="mt-9">
@@ -146,8 +145,7 @@ export default function ContactPage() {
           webPageSchema({
             type: "ContactPage",
             title: "Contact Duvaryne",
-            description:
-              "Talk to the engineer who would do the work. Send a message or book a free 30-minute review of your AWS architecture and bill.",
+            description: "Talk to the engineer who would do the work. Send a message or book a free 30-minute review of your AWS architecture and bill.",
             path: "/contact",
             updated: UPDATED,
           }),

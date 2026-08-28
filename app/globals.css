@@ -1,48 +1,47 @@
 @import "tailwindcss";
 
-/* SPEC.md quotes Tailwind class names as documentation (§9.12 lists the ProgressBar tokens
-   to change), and the WordPress export is 2.8MB of XML. Neither is a template — scanning
-   them emits dead utilities and slows every build. */
+/* The WordPress export and SPEC quote class names as prose; scanning them emits dead
+   utilities and slows every build. */
 @source not "../SPEC.md";
 @source not "../archive";
 
 /* ============================================================================
-   Design tokens — SPEC §6.1
-   Light-first with deep-navy anchor sections. Long-form technical content reads
-   measurably better on light, and a text LCP element is cheap.
+   BRAND PRIMITIVES — Duvaryne identity system, August 2026
+   ----------------------------------------------------------------------------
+   Every value here is taken from the identity document. Nothing is invented.
+   Two rules from that document constrain the whole system:
+
+     1. No black and no blue. Dark surfaces are pewter, never #000 or navy.
+     2. Mitred joins, no radius. "Engineered, not softened" — so no border-radius
+        anywhere. See --radius-none below.
+
+   Saffron is the single accent and is deliberately NOT a UI colour. Measured
+   against the platinum ground it is 2.55:1, which fails even the 3:1 floor for a
+   non-text boundary — a saffron button would have an invisible edge. It is used
+   the way the identity uses it: the innermost threshold of the mark, hairline
+   markers, and focus rings on dark surfaces where it reaches 3.41:1.
    ========================================================================== */
 
 @theme {
-  /* Brand — from the logo. Blue and orange, no gold/amber reading. */
-  --color-navy-900: #0a1728; /* deepest: footer, hero base */
-  --color-navy-800: #11243e; /* brand Deep Navy: section anchors */
-  --color-navy-600: #1e3a5f; /* borders on navy */
-  --color-blue-600: #0b5ed7; /* brand Tech Blue: primary, links */
-  --color-blue-500: #2b7ce9; /* decorative only — see the contrast note below */
-  --color-blue-050: #eaf1fd; /* tints, callouts */
+  --color-platinum: #f4f6f8; /* ground. "White is the chart's favourable colour." */
+  --color-moonstone: #dce1e6; /* rules and dividers */
+  --color-silver-300: #b7bfc7; /* mark gradient, light stop */
+  --color-silver: #9aa3ac; /* the mark's mid-tone */
+  --color-silver-700: #6e7880; /* mark gradient, dark stop */
+  --color-pewter-400: #5c646c; /* rules on dark; muted text on light (5.55:1) */
+  --color-pewter: #40474e; /* dark surfaces and type. Stands in for black. */
+  --color-ink: #2c3238; /* deepest surface, and body text (11.96:1 on platinum) */
+  --color-saffron: #c8922e; /* the one accent */
+  --color-saffron-300: #e0ae4e; /* accent on dark grounds only (6.38:1 on ink) */
+  --color-saffron-700: #8a6414; /* darkened saffron for warning/error states: 5.37:1 on
+                                   white, where plain saffron is 2.55:1 and unreadable */
 
-  /* Contrast-safe pair added after an axe audit. SPEC §6.1 gives only blue-600 and
-     blue-500, but blue-500 fails WCAG AA as *text*: 3.83:1 on navy-800 and 4.42:1 on
-     navy-900, both under the 4.5:1 floor §6.5 requires. It also fails as a hover colour on
-     paper (3.89:1), because it is lighter than the blue-600 it replaces.
-       blue-300  text on navy grounds   — 8.2:1 on navy-800
-       blue-700  link hover on light    — 7.5:1 on paper
-     blue-500 is now only used for borders and other non-text decoration. */
-  --color-blue-300: #8fbef9;
-  --color-blue-700: #0a4caf;
-  --color-orange-500: #f97316; /* brand Accent Orange: CTA ONLY */
-  --color-orange-050: #fff3e8;
-  --color-paper: #f7f8fa; /* page background */
-  --color-ink: #0a1728; /* body text */
-  --color-slate-600: #5a6b84; /* secondary text */
-  --color-rule: #dde3ec; /* hairlines */
-  --color-signal: #0e9f6e; /* improved-metric only */
+  /* Type — Sora display, Chivo body, JetBrains Mono for every quantity. */
+  --font-display: var(--font-sora);
+  --font-body: var(--font-chivo);
+  --font-mono: var(--font-jetbrains);
 
-  --font-display: var(--font-archivo);
-  --font-body: var(--font-plex-sans);
-  --font-mono: var(--font-plex-mono);
-
-  /* Type scale — SPEC §6.2. Mobile H1 caps at 2.25rem, handled per-component. */
+  /* Scale */
   --text-display: 3.5rem;
   --text-h1: 2.5rem;
   --text-h2: 1.75rem;
@@ -50,7 +49,14 @@
   --text-body: 1.0625rem;
   --text-small: 0.875rem;
 
-  /* Layout — SPEC §6.3 */
+  /* Tracking — the wordmark is tracked 0.42em, utility text 0.22-0.34em. */
+  --tracking-wordmark: 0.42em;
+  --tracking-utility: 0.22em;
+  --tracking-eyebrow: 0.34em;
+
+  /* "Mitre, no radius" is a brand rule, not a preference. */
+  --radius-none: 0;
+
   --container-content: 1200px;
   --container-prose: 68ch;
 
@@ -58,6 +64,163 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1440px;
+}
+
+/* ============================================================================
+   SEMANTIC LAYER
+   ----------------------------------------------------------------------------
+   Components only ever reference these. Themes swap the primitives underneath,
+   so a component never needs to know which theme is active.
+   `@theme inline` emits var(--ground) directly rather than copying the value,
+   which is what makes the utilities theme-reactive at runtime.
+   ========================================================================== */
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-rule: var(--rule);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-heading: var(--heading);
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-on-action: var(--on-action);
+  --color-inverse: var(--inverse);
+  --color-inverse-deep: var(--inverse-deep);
+  --color-inverse-rule: var(--inverse-rule);
+  --color-on-inverse: var(--on-inverse);
+  --color-on-inverse-muted: var(--on-inverse-muted);
+  --color-accent: var(--accent);
+  --color-tint: var(--tint);
+  --color-decor: var(--decor);
+  --color-focus: var(--focus);
+  --color-accent-strong: var(--accent-strong);
+}
+
+/* ---------- Light (default) ---------- */
+:root {
+  --ground: #f4f6f8;
+  --surface: #ffffff;
+  --rule: #dce1e6;
+  --fg: #2c3238;
+  --muted: #5c646c; /* NOT silver — silver is 2.36:1 here and fails */
+  --heading: #40474e;
+  --action: #40474e; /* pewter, 8.70:1. Saffron cannot carry this role. */
+  --action-hover: #2c3238;
+  --on-action: #f4f6f8;
+  --inverse: #40474e;
+  --inverse-deep: #2c3238;
+  --inverse-rule: #5c646c;
+  --on-inverse: #f4f6f8;
+  --on-inverse-muted: #dce1e6; /* 7.16:1 on pewter */
+  --accent: #c8922e;
+  --tint: #eef1f4;
+  --decor: #9aa3ac;
+  --focus: #40474e;
+  --accent-strong: #8a6414;
+  color-scheme: light;
+}
+
+/* ---------- Dark ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="contrast"]) {
+    --ground: #2c3238;
+    --surface: #40474e;
+    --rule: #5c646c;
+    --fg: #f4f6f8;
+    --muted: #b7bfc7; /* 6.97:1 on ink */
+    --heading: #f4f6f8;
+    --action: #dce1e6;
+    --action-hover: #ffffff;
+    --on-action: #2c3238;
+    --inverse: #40474e;
+    --inverse-deep: #23282d;
+    --inverse-rule: #5c646c;
+    --on-inverse: #f4f6f8;
+    --on-inverse-muted: #b7bfc7;
+    --accent: #e0ae4e; /* 6.38:1 on ink; plain saffron is only 4.69 */
+    --tint: #40474e;
+    --decor: #6e7880;
+    --focus: #e0ae4e;
+    --accent-strong: #e0ae4e;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground: #2c3238;
+  --surface: #40474e;
+  --rule: #5c646c;
+  --fg: #f4f6f8;
+  --muted: #b7bfc7;
+  --heading: #f4f6f8;
+  --action: #dce1e6;
+  --action-hover: #ffffff;
+  --on-action: #2c3238;
+  --inverse: #40474e;
+  --inverse-deep: #23282d;
+  --inverse-rule: #5c646c;
+  --on-inverse: #f4f6f8;
+  --on-inverse-muted: #b7bfc7;
+  --accent: #e0ae4e;
+  --tint: #40474e;
+  --decor: #6e7880;
+  --focus: #e0ae4e;
+  --accent-strong: #e0ae4e;
+  color-scheme: dark;
+}
+
+/* ---------- High contrast ----------
+   Pure white ground with ink type is 12.96:1. Black is still not used: the brand
+   rule holds even here, and ink already exceeds AAA by a wide margin. Rules step
+   up from moonstone to pewter so every boundary is visible rather than implied. */
+:root[data-theme="contrast"] {
+  --ground: #ffffff;
+  --surface: #ffffff;
+  --rule: #40474e;
+  --fg: #2c3238;
+  --muted: #2c3238; /* no dimmed text in this theme */
+  --heading: #2c3238;
+  --action: #2c3238;
+  --action-hover: #40474e;
+  --on-action: #ffffff;
+  --inverse: #2c3238;
+  --inverse-deep: #2c3238;
+  --inverse-rule: #f4f6f8;
+  --on-inverse: #ffffff;
+  --on-inverse-muted: #f4f6f8;
+  --accent: #8a6414; /* darkened saffron: 5.37:1 on white, where #C8922E is 2.55 */
+  --tint: #f4f6f8;
+  --decor: #40474e;
+  --focus: #2c3238;
+  --accent-strong: #8a6414;
+  color-scheme: light;
+}
+
+/* ----------------------------------------------------------------------------
+   Dark sections
+   ----------------------------------------------------------------------------
+   `.on-inverse` marks a pewter or ink ground inside an otherwise light page. Rather
+   than every component inside it carrying a `dark:`-style variant, the semantic layer
+   is re-pointed here once. A button, rule or muted paragraph placed in a dark section
+   then resolves correctly with no knowledge of where it sits.
+
+   Without this the primary CTA renders pewter-on-pewter — technically present, visually
+   gone. That is exactly what happened on the hero.
+   -------------------------------------------------------------------------- */
+.on-inverse {
+  --surface: #40474e;
+  --rule: #5c646c;
+  --fg: #f4f6f8;
+  --heading: #f4f6f8;
+  --muted: #b7bfc7;
+  --action: #f4f6f8;
+  --action-hover: #ffffff;
+  --on-action: #2c3238;
+  --accent: #e0ae4e;
+  --accent-strong: #e0ae4e;
+  --tint: #4a525a;
+  --focus: #e0ae4e;
 }
 
 /* ============================================================================
@@ -73,7 +236,9 @@
   }
 
   body {
-    background-color: var(--color-paper);
+    background-color: var(--color-ground);
+    /* Chivo Light. The identity sets body copy at 300. */
+    font-weight: 300;
     color: var(--color-ink);
     font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
     font-size: var(--text-body);
@@ -87,8 +252,11 @@
   h3,
   h4 {
     font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    /* Sora at 300. The identity sets the wordmark in Sora Light; headings that came
+       back at 700 read as a different typeface entirely. */
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: var(--color-heading);
     line-height: 1.15;
     text-wrap: balance;
   }
@@ -106,20 +274,22 @@
   }
 
   /* Visible keyboard focus on everything focusable — SPEC §6.5. */
+  /* Mitre, no radius — the brand rule applies to the focus ring too. */
   :focus-visible {
-    outline: 2px solid var(--color-blue-600);
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 0;
   }
 
-  /* Focus rings on navy need the light token to clear 3:1. */
-  .on-navy :focus-visible {
-    outline-color: #ffffff;
+  /* On pewter and ink grounds the ring switches to saffron, which is the one place
+     the accent earns its keep as UI: 3.41:1 on pewter, 4.69:1 on ink. */
+  .on-inverse :focus-visible {
+    outline-color: var(--color-saffron-300);
   }
 
   ::selection {
-    background-color: var(--color-blue-050);
-    color: var(--color-navy-900);
+    background-color: var(--color-saffron);
+    color: var(--color-ink);
   }
 
   button,
@@ -201,11 +371,11 @@
   }
 
   .prose-duvaryne :where(li):not(:where(.not-prose, .not-prose *))::marker {
-    color: var(--color-slate-600);
+    color: var(--color-muted);
   }
 
   .prose-duvaryne :where(a):not(:where(.not-prose, .not-prose *)) {
-    color: var(--color-blue-600);
+    color: var(--color-action);
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;
@@ -213,26 +383,27 @@
   }
 
   .prose-duvaryne :where(a):not(:where(.not-prose, .not-prose *)):hover {
-    color: var(--color-blue-500);
+    color: var(--color-action-hover);
   }
 
   .prose-duvaryne :where(strong):not(:where(.not-prose, .not-prose *)) {
     font-weight: 600;
-    color: var(--color-navy-900);
+    color: var(--color-heading);
   }
 
+  /* The one place saffron appears in body copy: a 3px marker, not text. */
   .prose-duvaryne :where(blockquote):not(:where(.not-prose, .not-prose *)) {
-    border-left: 3px solid var(--color-blue-600);
+    border-left: 3px solid var(--color-accent);
     padding-left: 1.25em;
-    color: var(--color-slate-600);
+    color: var(--color-muted);
     font-style: normal;
   }
 
   .prose-duvaryne :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) {
-    background-color: var(--color-blue-050);
-    color: var(--color-navy-800);
+    background-color: var(--color-tint);
+    color: var(--color-fg);
     padding: 0.15em 0.4em;
-    border-radius: 3px;
+    border-radius: 0;
     font-size: 0.9em;
   }
 
@@ -249,7 +420,7 @@
   }
 
   .prose-duvaryne :where(th):not(:where(.not-prose, .not-prose *)) {
-    background-color: var(--color-blue-050);
+    background-color: var(--color-tint);
     font-weight: 600;
   }
 }
@@ -261,12 +432,12 @@
 @layer components {
   pre[data-theme],
   code[data-theme] {
-    background-color: #ffffff;
+    background-color: var(--color-surface);
   }
 
   .prose-duvaryne pre {
     border: 1px solid var(--color-rule);
-    border-radius: 6px;
+    border-radius: 0;
     padding: 1rem 1.15rem;
     overflow-x: auto;
     font-size: 0.9375rem;
@@ -293,22 +464,22 @@
     width: 1.25rem;
     margin-right: 1.25rem;
     text-align: right;
-    color: var(--color-slate-600);
+    color: var(--color-muted);
   }
 
   figure[data-rehype-pretty-code-figure] figcaption[data-rehype-pretty-code-title] {
     font-family: var(--font-mono), ui-monospace, monospace;
     font-size: var(--text-small);
-    color: var(--color-slate-600);
+    color: var(--color-muted);
     border: 1px solid var(--color-rule);
     border-bottom: 0;
-    border-radius: 6px 6px 0 0;
+    border-radius: 0;
     padding: 0.5rem 1.15rem;
-    background-color: var(--color-paper);
+    background-color: var(--color-ground);
   }
 
   figure[data-rehype-pretty-code-figure]:has(figcaption) pre {
-    border-radius: 0 0 6px 6px;
+    border-radius: 0;
   }
 }
 

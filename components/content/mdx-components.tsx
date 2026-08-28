@@ -66,7 +66,7 @@ export function getMdxComponents(pageCta?: Cta, factLists?: FactLists): MDXCompo
           alt={alt ?? ""}
           width={Number(width) || 1600}
           height={Number(height) || 900}
-          className="my-8 h-auto w-full rounded-md border border-rule bg-white"
+          className="my-8 h-auto w-full border border-rule bg-surface"
           sizes="(max-width: 768px) 100vw, 720px"
         />
       );

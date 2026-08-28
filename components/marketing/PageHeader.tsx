@@ -25,22 +25,22 @@ export function PageHeader({
   meta?: React.ReactNode;
 }) {
   return (
-    <div className="on-navy bg-navy-800 pb-14 pt-10 text-white lg:pb-16 lg:pt-12">
+    <div className="on-inverse bg-inverse pb-14 pt-10 text-on-inverse lg:pb-16 lg:pt-12">
       <Container>
         {crumbs.length ? (
           <nav aria-label="Breadcrumb" className="mb-7">
-            <ol className="flex flex-wrap items-center gap-1 text-[0.8125rem] text-white/60">
+            <ol className="flex flex-wrap items-center gap-1 text-[0.8125rem] text-on-inverse/60">
               {crumbs.map((c, i) => (
                 <li key={c.path} className="flex items-center gap-1">
-                  {i > 0 ? <ChevronRight size={13} aria-hidden className="text-white/35" /> : null}
+                  {i > 0 ? <ChevronRight size={13} aria-hidden className="text-on-inverse/35" /> : null}
                   {i === crumbs.length - 1 ? (
-                    <span aria-current="page" className="text-white/85">
+                    <span aria-current="page" className="text-on-inverse/85">
                       {c.name}
                     </span>
                   ) : (
                     <Link
                       href={c.path}
-                      className="transition-colors duration-150 hover:text-white"
+                      className="transition-colors duration-150 hover:text-on-inverse"
                     >
                       {c.name}
                     </Link>
@@ -52,15 +52,15 @@ export function PageHeader({
         ) : null}
 
         {eyebrow ? (
-          <p className="mb-3 text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-blue-300">
+          <p className="mb-3 text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-on-inverse-muted">
             {eyebrow}
           </p>
         ) : null}
 
-        <h1 className="max-w-[20ch] text-[2.25rem] text-white lg:text-[2.5rem]">{h1}</h1>
+        <h1 className="max-w-[20ch] text-[2.25rem] text-on-inverse lg:text-[2.5rem]">{h1}</h1>
 
         {lede ? (
-          <p className="mt-5 max-w-[62ch] text-[1.125rem] leading-relaxed text-white/75">
+          <p className="mt-5 max-w-[62ch] text-[1.125rem] leading-relaxed text-on-inverse/75">
             {lede}
           </p>
         ) : null}
@@ -68,7 +68,7 @@ export function PageHeader({
         {meta ?? null}
 
         {updated ? (
-          <p className="mt-7 text-[0.8125rem] text-white/50">
+          <p className="mt-7 text-[0.8125rem] text-on-inverse/50">
             Last updated <time dateTime={updated.toISOString()} className="tabular">{formatDate(updated)}</time>
           </p>
         ) : null}

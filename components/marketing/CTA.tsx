@@ -8,7 +8,7 @@ import type { Cta } from "@/lib/content-schema";
  * One call-to-action definition per page, read from that page's own frontmatter — SPEC §8.2.
  * <CTA /> in MDX takes no props; the MDX provider injects the page's `cta` block.
  *
- * Orange discipline (SPEC §6.1): --color-orange-500 appears on the primary button here and
+ * Orange discipline (SPEC §6.1): --color-accent appears on the primary button here and
  * nowhere else on the site. Not on icons, not on underlines, not on badges.
  */
 export function CTA({ cta, className }: { cta?: Cta; className?: string }) {
@@ -23,15 +23,14 @@ export function CTA({ cta, className }: { cta?: Cta; className?: string }) {
 
   return (
     <aside
-      className={cn(
-        "on-navy not-prose my-14 rounded-lg bg-navy-800 px-6 py-10 text-white sm:px-10",
+      className={cn( "on-inverse not-prose my-14  bg-inverse px-6 py-10 text-on-inverse sm:px-10",
         className,
       )}
     >
-      <h2 className="max-w-[24ch] text-[1.5rem] text-white lg:text-[1.75rem]">
+      <h2 className="max-w-[24ch] text-[1.5rem] text-on-inverse lg:text-[1.75rem]">
         {block.heading}
       </h2>
-      <p className="mt-4 max-w-[58ch] text-[1.0625rem] leading-relaxed text-white/75">
+      <p className="mt-4 max-w-[58ch] text-[1.0625rem] leading-relaxed text-on-inverse/75">
         {block.body}
       </p>
 
@@ -42,7 +41,7 @@ export function CTA({ cta, className }: { cta?: Cta; className?: string }) {
             target="_blank"
             rel="noopener noreferrer"
             data-analytics="cta_book_clicked"
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-orange-500 px-5 text-[0.9375rem] font-semibold text-navy-900 transition-colors duration-150 hover:bg-[#ea6a0c]"
+            className="inline-flex min-h-11 items-center justify-center gap-2 bg-action px-5 text-[0.9375rem] font-semibold text-on-action transition-colors duration-150 hover:bg-action-hover"
           >
             {block.buttonLabel}
             <ArrowRight size={16} aria-hidden />
@@ -50,7 +49,7 @@ export function CTA({ cta, className }: { cta?: Cta; className?: string }) {
         ) : (
           <Link
             href={block.href}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-orange-500 px-5 text-[0.9375rem] font-semibold text-navy-900 transition-colors duration-150 hover:bg-[#ea6a0c]"
+            className="inline-flex min-h-11 items-center justify-center gap-2 bg-action px-5 text-[0.9375rem] font-semibold text-on-action transition-colors duration-150 hover:bg-action-hover"
           >
             {block.buttonLabel}
             <ArrowRight size={16} aria-hidden />
@@ -59,7 +58,7 @@ export function CTA({ cta, className }: { cta?: Cta; className?: string }) {
 
         <a
           href={`mailto:${site.email}`}
-          className="inline-flex min-h-11 items-center justify-center text-[0.9375rem] font-medium text-white/80 underline-offset-4 transition-colors duration-150 hover:text-white hover:underline sm:px-2"
+          className="inline-flex min-h-11 items-center justify-center text-[0.9375rem] font-medium text-on-inverse/80 underline-offset-4 transition-colors duration-150 hover:text-on-inverse hover:underline sm:px-2"
         >
           {site.email}
         </a>

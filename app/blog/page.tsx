@@ -16,8 +16,7 @@ const UPDATED = new Date("2026-08-06");
 
 export const metadata: Metadata = buildMetadata({
   title: "AWS & DevOps Engineering Blog | Duvaryne",
-  description:
-    "Production notes on AWS cost, Terraform, EKS networking, Lambda cold starts, IAM and drift detection — written by the engineer who ran them, not a content team.",
+  description: "Production notes on AWS cost, Terraform, EKS networking, Lambda cold starts, IAM and drift detection — written by the engineer who ran them, not a content team.",
   path: "/blog",
 });
 
@@ -46,7 +45,7 @@ export default function BlogIndex() {
           {posts.map((post) => (
             <li key={post.slug}>
               <Link href={`/blog/${post.slug}/`} className="group block py-8">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.8125rem] text-slate-600">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.8125rem] text-muted">
                   <time dateTime={post.published.toISOString()} className="tabular">
                     {formatDate(post.published)}
                   </time>
@@ -56,11 +55,11 @@ export default function BlogIndex() {
                   <span>{post.tags.join(", ")}</span>
                 </div>
 
-                <h2 className="mt-2.5 max-w-[34ch] text-[1.375rem] text-navy-900 transition-colors duration-150 group-hover:text-blue-600">
+                <h2 className="mt-2.5 max-w-[34ch] text-[1.375rem] text-heading transition-colors duration-150 group-hover:text-action">
                   {post.h1}
                 </h2>
 
-                <p className="mt-3 max-w-[68ch] text-[1rem] leading-relaxed text-slate-600">
+                <p className="mt-3 max-w-[68ch] text-[1rem] leading-relaxed text-muted">
                   {post.description}
                 </p>
               </Link>
@@ -69,7 +68,7 @@ export default function BlogIndex() {
         </ul>
 
         {posts.length === 0 ? (
-          <p className="text-[1.0625rem] text-slate-600">
+          <p className="text-[1.0625rem] text-muted">
             No posts published yet.
           </p>
         ) : null}
@@ -80,18 +79,14 @@ export default function BlogIndex() {
           webPageSchema({
             type: "WebPage",
             title: "AWS & DevOps Engineering Blog",
-            description:
-              "Production notes on AWS cost, Terraform, EKS networking, Lambda cold starts, IAM and drift detection.",
+            description: "Production notes on AWS cost, Terraform, EKS networking, Lambda cold starts, IAM and drift detection.",
             path: "/blog",
             updated: UPDATED,
           }),
-          {
-            "@type": "Blog",
-            "@id": `${absoluteUrl("/blog")}#blog`,
+          { "@type": "Blog", "@id": `${absoluteUrl("/blog")}#blog`,
             name: "Duvaryne Engineering Blog",
             url: absoluteUrl("/blog"),
-            blogPost: posts.map((p) => ({
-              "@type": "BlogPosting",
+            blogPost: posts.map((p) => ({ "@type": "BlogPosting",
               headline: p.title,
               url: absoluteUrl(`/blog/${p.slug}`),
               datePublished: p.published.toISOString(),

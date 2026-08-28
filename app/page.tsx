@@ -71,7 +71,7 @@ export default function HomePage() {
           </div>
           <Link
             href={home.caseStudies.href}
-            className="mt-10 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-blue-600 transition-colors duration-150 hover:text-blue-700"
+            className="mt-10 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-action transition-colors duration-150 hover:text-action-hover"
           >
             {home.caseStudies.linkLabel}
             <ArrowRight size={15} aria-hidden />
@@ -91,15 +91,15 @@ export default function HomePage() {
 
       <Section tone="paper">
         <div className="max-w-[68ch]">
-          <h2 className="text-[1.75rem] text-navy-900 lg:text-[2rem]">
+          <h2 className="text-[1.75rem] text-heading lg:text-[2rem]">
             {home.credibility.heading}
           </h2>
-          <p className="mt-5 text-[1.0625rem] leading-relaxed text-slate-600">
+          <p className="mt-5 text-[1.0625rem] leading-relaxed text-muted">
             {home.credibility.body}
           </p>
           <Link
             href={home.credibility.href}
-            className="mt-7 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-blue-600 transition-colors duration-150 hover:text-blue-700"
+            className="mt-7 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-action transition-colors duration-150 hover:text-action-hover"
           >
             {home.credibility.linkLabel}
             <ArrowRight size={15} aria-hidden />

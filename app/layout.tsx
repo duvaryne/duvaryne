@@ -1,36 +1,40 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Chivo, JetBrains_Mono, Sora } from "next/font/google";
 
 import "./globals.css";
 
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { themeScript } from "@/components/layout/ThemeToggle";
 import { graph, organizationSchema, personSchema, websiteSchema } from "@/lib/schema-org";
 import { site, siteUrl } from "@/lib/site";
 
-/* Fonts — SPEC §6.2. Archivo and Plex Sans preload; Plex Mono does not, because it is
-   below the fold on most pages. `display: swap` keeps text painting immediately, which
-   matters because every LCP element on this site is text. */
-const archivo = Archivo({
+/* Type — Duvaryne identity system.
+   Sora for display (the wordmark is Sora Light), Chivo for body, JetBrains Mono for
+   every quantity and utility label. Sora and Chivo preload; the mono face does not,
+   because it is below the fold on most pages. `display: swap` keeps text painting
+   immediately, which matters because every LCP element on this site is text. */
+const sora = Sora({
   subsets: ["latin"],
-  variable: "--font-archivo",
+  weight: ["200", "300", "400"],
+  variable: "--font-sora",
   display: "swap",
   preload: true,
 });
 
-const plexSans = IBM_Plex_Sans({
+const chivo = Chivo({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-plex-sans",
+  weight: ["300", "400", "600"],
+  variable: "--font-chivo",
   display: "swap",
   preload: true,
 });
 
-const plexMono = IBM_Plex_Mono({
+const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-plex-mono",
+  variable: "--font-jetbrains",
   display: "swap",
   preload: false,
 });
@@ -43,8 +47,7 @@ export const metadata: Metadata = {
     default: "AWS & DevOps Consulting in Bengaluru | Duvaryne",
     template: `%s`,
   },
-  description:
-    "Senior-led AWS and DevOps consulting from Bengaluru. Migration, Kubernetes, CI/CD and cost optimisation delivered by the engineer who reviews your account.",
+  description: "Senior-led AWS and DevOps consulting from Bengaluru. Migration, Kubernetes, CI/CD and cost optimisation delivered by the engineer who reviews your account.",
   applicationName: site.name,
   authors: [{ name: site.founder.name, url: site.social.linkedin }],
   creator: site.founder.name,
@@ -58,21 +61,34 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#11243E",
-  colorScheme: "light",
+  /* Platinum ground in light, ink in dark. Neither is black — the identity forbids it,
+     and the browser chrome is as much the brand as the page is. */
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F4F6F8" },
+    { media: "(prefers-color-scheme: dark)", color: "#2C3238" },
+  ],
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en-IN"
-      className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable}`}
+      className={`${sora.variable} ${chivo.variable} ${jetbrains.variable}`}
+      /* The pre-paint script sets data-theme before React sees the document, so the
+         server and client markup legitimately differ on this attribute. */
+      suppressHydrationWarning
     >
+      <head>
+        {/* Must run synchronously, before first paint. Deferring it means every visitor
+            with a stored preference sees a flash of the wrong palette. */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="flex min-h-screen flex-col">
         {/* Skip link — SPEC §11.2. First focusable element on every page. */}
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-navy-900 focus:px-4 focus:py-3 focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-inverse-deep focus:px-4 focus:py-3 focus:text-on-inverse"
         >
           Skip to content
         </a>

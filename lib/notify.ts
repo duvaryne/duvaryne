@@ -29,8 +29,7 @@ export async function notifyEnquiry(input: {
     `Email:   ${input.email}`,
     input.company ? `Company: ${input.company}` : null,
     input.budget ? `Budget:  ${input.budget}` : null,
-    `Ref:     #${input.id}`,
-    "",
+    `Ref:     #${input.id}`, "",
     input.message,
   ].filter((l): l is string => l !== null);
 
@@ -38,8 +37,7 @@ export async function notifyEnquiry(input: {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`, "Content-Type": "application/json",
       },
       body: JSON.stringify({
         from: `${site.shortName} Website <${from}>`,

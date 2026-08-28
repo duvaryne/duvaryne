@@ -39,7 +39,7 @@ export function CaseStudyGrid({ studies }: { studies: Item[] }) {
     <>
       {tags.length ? (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-[0.8125rem] font-medium text-slate-600">
+          <span className="mr-1 text-[0.8125rem] font-medium text-muted">
             Filter by stack
           </span>
           <FilterChip label="All" active={active === null} onClick={() => setActive(null)} />
@@ -54,7 +54,7 @@ export function CaseStudyGrid({ studies }: { studies: Item[] }) {
         </div>
       ) : null}
 
-      <p aria-live="polite" className="tabular mt-5 text-[0.875rem] text-slate-600">
+      <p aria-live="polite" className="tabular mt-5 text-[0.875rem] text-muted">
         {visible.length} of {studies.length} engagements
       </p>
 
@@ -91,11 +91,10 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={cn(
-        "min-h-9 rounded-full border px-3.5 text-[0.8125rem] font-medium transition-colors duration-150",
+      className={cn( "min-h-9  border px-3.5 text-[0.8125rem] font-medium transition-colors duration-150",
         active
-          ? "border-navy-800 bg-navy-800 text-white"
-          : "border-rule bg-white text-slate-600 hover:border-blue-600 hover:text-blue-600",
+          ? "border-inverse bg-inverse text-on-inverse"
+          : "border-rule bg-surface text-muted hover:border-action hover:text-action",
       )}
     >
       {label}

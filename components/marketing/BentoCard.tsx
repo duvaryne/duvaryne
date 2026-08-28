@@ -32,16 +32,14 @@ export function BentoCard({
   return (
     <Link
       href={`/case-studies/${slug}/`}
-      className={cn(
-        "group flex flex-col rounded-lg border border-rule bg-white p-7 transition-colors duration-200 hover:border-blue-600",
+      className={cn( "group flex flex-col  border border-rule bg-surface p-7 transition-colors duration-200 hover:border-action",
         large && "lg:p-9",
         className,
       )}
     >
       {/* The GEO-extractable fact line, before any prose — SPEC §10.3. */}
       <p
-        className={cn(
-          "tabular font-medium leading-snug text-navy-900",
+        className={cn( "tabular font-medium leading-snug text-heading",
           large ? "text-[1.25rem] lg:text-[1.375rem]" : "text-[1.0625rem]",
         )}
       >
@@ -49,8 +47,7 @@ export function BentoCard({
       </p>
 
       <Heading
-        className={cn(
-          "mt-4 flex-1 font-body font-normal leading-relaxed text-slate-600",
+        className={cn( "mt-4 flex-1 font-body font-normal leading-relaxed text-muted",
           large ? "text-[1rem]" : "text-[0.9375rem]",
         )}
       >
@@ -61,14 +58,14 @@ export function BentoCard({
         {stack.slice(0, large ? 6 : 4).map((tech) => (
           <li
             key={tech}
-            className="rounded border border-rule px-2 py-0.5 text-[0.75rem] text-slate-600"
+            className="border border-rule px-2 py-0.5 text-[0.75rem] text-muted"
           >
             {tech}
           </li>
         ))}
       </ul>
 
-      <span className="mt-5 inline-flex items-center gap-1.5 text-[0.875rem] font-medium text-blue-600">
+      <span className="mt-5 inline-flex items-center gap-1.5 text-[0.875rem] font-medium text-action">
         Read the case study
         <ArrowRight
           size={15}

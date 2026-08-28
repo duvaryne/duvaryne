@@ -61,14 +61,14 @@ export default async function CaseStudyPage({ params }: Props) {
         meta={
           <>
             {/* The GEO-extractable fact line, before any prose — SPEC §8.4 step 1. */}
-            <p className="tabular mt-6 max-w-[62ch] border-l-2 border-blue-500 pl-5 text-[1.125rem] font-medium leading-relaxed text-white">
+            <p className="tabular mt-6 max-w-[62ch] border-l-2 border-decor pl-5 text-[1.125rem] font-medium leading-relaxed text-on-inverse">
               {cs.outcomeHeadline}
             </p>
             <ul className="mt-7 flex flex-wrap gap-1.5">
               {cs.stack.map((tech) => (
                 <li
                   key={tech}
-                  className="rounded border border-navy-600 px-2.5 py-1 text-[0.75rem] text-white/70"
+                  className="border border-inverse-rule px-2.5 py-1 text-[0.75rem] text-on-inverse/70"
                 >
                   {tech}
                 </li>
@@ -92,7 +92,7 @@ export default async function CaseStudyPage({ params }: Props) {
         <Container className="pb-16">
           <Link
             href={cs.mapsToService}
-            className="inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-blue-600 transition-colors duration-150 hover:text-blue-700"
+            className="inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-action transition-colors duration-150 hover:text-action-hover"
           >
             See the service behind this work
             <ArrowRight size={15} aria-hidden />

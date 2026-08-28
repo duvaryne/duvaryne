@@ -17,9 +17,9 @@ import { cn } from "@/lib/utils";
  *   - useReducedMotion collapsing transitions to INSTANT
  *
  * Token corrections applied (the shipped component clashes with the brand palette):
- *   bg-[#4568FF]  -> --color-blue-600   (#4568FF is periwinkle, not brand Tech Blue)
+ *   bg-[#4568FF]  -> --color-action   (#4568FF is periwinkle, not brand Tech Blue)
  *   stone-*       -> slate / navy tokens (stone is a WARM grey; muddy against navy)
- *   #1D1D1A       -> --color-navy-800   (warm near-black -> navy)
+ *   #1D1D1A       -> --color-inverse   (warm near-black -> navy)
  *   rgba(28,25,23) -> rgba(10,23,40)    (warm stone shadow -> navy shadow)
  *
  * Import is `motion/react` (Motion), NOT `framer-motion`.
@@ -60,12 +60,12 @@ export function ProgressBar({
         <label
           id={`${id}-label`}
           htmlFor={id}
-          className="text-[0.8125rem] font-medium text-slate-600"
+          className="text-[0.8125rem] font-medium text-muted"
         >
           {label}
         </label>
         {showValue ? (
-          <span className="tabular text-[0.8125rem] font-medium text-navy-900">
+          <span className="tabular text-[0.8125rem] font-medium text-heading">
             {valueText ?? `${Math.round(pct)}%`}
           </span>
         ) : null}
@@ -79,15 +79,13 @@ export function ProgressBar({
         aria-valuemax={max}
         {...(indeterminate ? {} : { "aria-valuenow": value })}
         aria-valuetext={valueText}
-        className={cn(
-          "relative h-2 w-full overflow-hidden rounded-full bg-[#E4E9F1]",
-          "shadow-[inset_0_1px_2px_rgba(10,23,40,0.10)]",
+        className={cn( "relative h-2 w-full overflow-hidden  bg-rule", "shadow-[inset_0_1px_2px_rgba(44,50,56,0.10)]",
           barClassName,
         )}
       >
         {indeterminate ? (
           <motion.span
-            className="absolute inset-y-0 w-1/3 rounded-full bg-blue-600"
+            className="absolute inset-y-0 w-1/3 bg-action"
             animate={reduced ? { x: 0 } : { x: ["-100%", "300%"] }}
             transition={
               reduced ? INSTANT : { duration: 1.1, repeat: Infinity, ease: "easeInOut" }
@@ -95,7 +93,7 @@ export function ProgressBar({
           />
         ) : (
           <motion.span
-            className="absolute inset-y-0 left-0 rounded-full bg-blue-600"
+            className="absolute inset-y-0 left-0 bg-action"
             initial={false}
             animate={{ width: `${pct}%` }}
             transition={transition}

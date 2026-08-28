@@ -11,12 +11,12 @@ export function ProcessSteps({
   return (
     <ol className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
       {steps.map((step) => (
-        <li key={step.n} className="border-t border-navy-600 pt-5">
-          <span className="tabular block text-[0.875rem] font-medium text-blue-300">
+        <li key={step.n} className="border-t border-inverse-rule pt-5">
+          <span className="tabular block text-[0.875rem] font-medium text-on-inverse-muted">
             {step.n}
           </span>
-          <h3 className="mt-3 text-[1.125rem] text-white">{step.title}</h3>
-          <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-white/70">{step.body}</p>
+          <h3 className="mt-3 text-[1.125rem] text-on-inverse">{step.title}</h3>
+          <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-on-inverse/70">{step.body}</p>
         </li>
       ))}
     </ol>

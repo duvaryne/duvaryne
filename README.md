@@ -11,6 +11,7 @@ Next.js 16 (App Router) on Cloudflare Workers, with Neon Postgres behind the con
 |---|---|
 | Framework | Next.js 16, App Router, React 19 |
 | Styling | Tailwind CSS v4 (CSS-first, no `tailwind.config`) |
+| Themes | Light, dark, high contrast + system. Set pre-paint; no flash. |
 | Content | MDX in `content/`, frontmatter validated by zod at build time |
 | Hosting | Cloudflare Workers via `@opennextjs/cloudflare` |
 | Database | Neon (Lakebase Postgres) over HTTP (`@neondatabase/serverless`) |
@@ -68,6 +69,31 @@ docs/           DEPLOYMENT.md
 credentials. Nothing may re-type those values into a component — the predecessor site
 shipped three different phone numbers and two LinkedIn URLs because they lived in
 templates.
+
+## Design system
+
+`app/globals.css` has three layers, in order:
+
+1. **Brand primitives** — the ten colours from the identity system. Nothing invented.
+2. **Semantic layer** (`@theme inline`) — `ground`, `surface`, `rule`, `fg`, `muted`,
+   `action`, `accent`… Components reference only these.
+3. **Themes** — `:root`, `[data-theme="dark"]`, `[data-theme="contrast"]`, plus a
+   `prefers-color-scheme` block for the system default.
+
+`.on-inverse` re-points the semantic layer for pewter/ink sections, so a button inside a
+dark band resolves correctly without knowing where it sits.
+
+Three rules are not preferences:
+
+- **No black, no blue.** Dark surfaces are pewter (`#40474E`) or ink (`#2C3238`).
+- **No border-radius.** "Mitred joins, no radius — engineered, not softened."
+- **Saffron is not a UI colour.** At 2.55:1 on platinum it fails even the 3:1 boundary
+  floor, so it is never a button or a link. It appears on the mark's inner threshold,
+  blockquote markers, and focus rings on dark grounds. Warning states use
+  `accent-strong` (`#8A6414`, 5.37:1), a darkened saffron.
+
+The mark lives in `components/brand/Mark.tsx` and drops rings as it shrinks, per the
+identity's "in use" plate. Its geometry is transcribed, not redrawn.
 
 ## Content rules, enforced by the build
 

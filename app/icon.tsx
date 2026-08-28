@@ -3,9 +3,9 @@ import { ImageResponse } from "next/og";
 /**
  * Favicon, generated rather than committed as a binary.
  *
- * PLACEHOLDER, like components/layout/Logo.tsx — SPEC I1 / §11.3 forbids approximating the
- * Duvaryne mark with drawn shapes, so this is a plain monogram on the brand navy. Replace
- * with the official asset by deleting this file and adding app/favicon.ico.
+ * At 32px the identity drops the middle threshold and thickens the two survivors — see
+ * the "in use" plate. Drawing all three here produces mush once antialiasing lands.
+ * The base stays open and the centre stays empty at every size.
  */
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
@@ -20,14 +20,23 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0A1728",
-          color: "#FFFFFF",
-          fontSize: 20,
-          fontWeight: 700,
-          borderRadius: 6,
+          background: "#F4F6F8",
         }}
       >
-        A
+        <svg width="32" height="32" viewBox="0 0 200 200">
+          <g fill="none" strokeLinecap="butt" strokeLinejoin="miter" strokeMiterlimit={10}>
+            <path
+              d="M139 167.56 L178 100 L139 32.44 L61 32.44 L22 100 L61 167.56"
+              stroke="#40474E"
+              strokeWidth={16}
+            />
+            <path
+              d="M115 125.98 L130 100 L115 74.02 L85 74.02 L70 100 L85 125.98"
+              stroke="#C8922E"
+              strokeWidth={18}
+            />
+          </g>
+        </svg>
       </div>
     ),
     size,

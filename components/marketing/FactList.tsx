@@ -29,10 +29,10 @@ export function FactList({
           key={f.label}
           className="flex flex-col gap-1 border-b border-rule py-3 sm:flex-row sm:gap-6"
         >
-          <dt className="text-[0.9375rem] font-medium text-navy-900 sm:w-44 sm:shrink-0">
+          <dt className="text-[0.9375rem] font-medium text-heading sm:w-44 sm:shrink-0">
             {f.label}
           </dt>
-          <dd className="text-[0.9375rem] leading-relaxed text-slate-600">{f.value}</dd>
+          <dd className="text-[0.9375rem] leading-relaxed text-muted">{f.value}</dd>
         </div>
       ))}
     </dl>

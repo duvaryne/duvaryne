@@ -37,27 +37,24 @@ export function Stat({
   const body = (
     <>
       <span
-        className={cn(
-          "tabular block font-medium leading-none tracking-[-0.01em]",
+        className={cn( "tabular block font-medium leading-none tracking-[-0.01em]",
           valueSize,
-          tone === "dark" ? "text-white" : "text-navy-900",
+          tone === "dark" ? "text-on-inverse" : "text-heading",
         )}
       >
         {value}
       </span>
       <span
-        className={cn(
-          "mt-2.5 block text-[0.9375rem] leading-snug",
-          tone === "dark" ? "text-white/70" : "text-slate-600",
+        className={cn( "mt-2.5 block text-[0.9375rem] leading-snug",
+          tone === "dark" ? "text-on-inverse/70" : "text-muted",
         )}
       >
         {label}
       </span>
       {href ? (
         <span
-          className={cn(
-            "mt-3 inline-flex items-center gap-1 text-[0.8125rem] font-medium",
-            tone === "dark" ? "text-blue-300" : "text-blue-600",
+          className={cn( "mt-3 inline-flex items-center gap-1 text-[0.8125rem] font-medium",
+            tone === "dark" ? "text-on-inverse-muted" : "text-action",
           )}
         >
           Read the case study
@@ -68,11 +65,10 @@ export function Stat({
   );
 
   const shell = cn(
-    // not-prose: this renders inside MDX bodies; prose link styling must not reach it.
-    "not-prose block border-l-2 pl-5",
-    tone === "dark" ? "border-navy-600" : "border-rule",
+    // not-prose: this renders inside MDX bodies; prose link styling must not reach it. "not-prose block border-l-2 pl-5",
+    tone === "dark" ? "border-inverse-rule" : "border-rule",
     href && "transition-colors duration-150",
-    href && (tone === "dark" ? "hover:border-blue-500" : "hover:border-blue-600"),
+    href && (tone === "dark" ? "hover:border-decor" : "hover:border-action"),
     className,
   );
 

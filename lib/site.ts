@@ -10,8 +10,19 @@
  * so "Duvaryne", "Duvaryne LLP" and "DuVaryne" must not be used interchangeably.
  */
 export const site = {
-  name: "Duvaryne LLP",
+  /**
+   * NOTE: the identity system (August 2026) names the entity "Duvaryne Technologies LLP"
+   * and sets the wordmark descriptor to "TECHNOLOGIES LLP". This previously read
+   * "Duvaryne LLP", which would have put a different name in the header than in the
+   * footer and the legal pages. Confirm which is the registered name — it appears in
+   * JSON-LD, /legal/privacy/ and /legal/terms/, so it should not stay ambiguous.
+   */
+  name: "Duvaryne Technologies LLP",
   shortName: "Duvaryne",
+
+  /** The lockup, exactly as the identity sets it. Both lines are always uppercase. */
+  wordmark: "DUVARYNE",
+  wordmarkSub: "TECHNOLOGIES LLP",
   url: "https://duvaryne.com",
   email: "hello@duvaryne.com",
 
@@ -58,12 +69,7 @@ export const site = {
   },
 
   /** Rendered under the hero and in the footer. Kept here so it cannot drift. */
-  trustSignals: [
-    "DPIIT-recognised",
-    "CKA",
-    "AWS Solutions Architect – Associate",
-    "IIT Madras DevOps",
-    "13 years hands-on",
+  trustSignals: [ "DPIIT-recognised", "CKA", "AWS Solutions Architect – Associate", "IIT Madras DevOps", "13 years hands-on",
   ],
 
   /** Primary AWS regions — drives `areaServed` in schema and the copy on service pages. */

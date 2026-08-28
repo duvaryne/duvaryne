@@ -18,6 +18,15 @@
     "enabled": true
   },
 
+  // Custom domains declared here rather than clicked in the dashboard, so the routing is
+  // reviewable and reproducible. Cloudflare creates the proxied DNS records and issues the
+  // certificate for each. Both hosts are served by the same Worker; canonicals and the
+  // sitemap always point at the apex, so www does not compete for indexing.
+  "routes": [
+    { "pattern": "duvaryne.com", "custom_domain": true },
+    { "pattern": "www.duvaryne.com", "custom_domain": true }
+  ],
+
   // Secrets (DATABASE_URL, TURNSTILE_SECRET_KEY, RESEND_API_KEY) are NOT set here —
   // they go in via `wrangler secret put`, so they never reach the repository.
   "vars": {

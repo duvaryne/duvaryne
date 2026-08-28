@@ -38,7 +38,7 @@ export function NavDisclosure({ children }: { children: React.ReactNode }) {
         aria-expanded={open}
         aria-controls={panelId}
         aria-label={open ? "Close menu" : "Open menu"}
-        className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-md text-navy-900 transition-colors duration-150 hover:bg-blue-050 lg:hidden"
+        className="-mr-2 inline-flex h-11 w-11 items-center justify-center text-heading transition-colors duration-150 hover:bg-tint lg:hidden"
       >
         {open ? <X size={22} aria-hidden /> : <Menu size={22} aria-hidden />}
       </button>
@@ -46,7 +46,7 @@ export function NavDisclosure({ children }: { children: React.ReactNode }) {
       <div
         id={panelId}
         data-open={open}
-        className="hidden data-[open=true]:absolute data-[open=true]:inset-x-0 data-[open=true]:top-full data-[open=true]:block data-[open=true]:border-t data-[open=true]:border-rule data-[open=true]:bg-white data-[open=true]:p-5 data-[open=true]:shadow-lg lg:!static lg:!block lg:!border-0 lg:!bg-transparent lg:!p-0 lg:!shadow-none"
+        className="hidden data-[open=true]:absolute data-[open=true]:inset-x-0 data-[open=true]:top-full data-[open=true]:block data-[open=true]:border-t data-[open=true]:border-rule data-[open=true]:bg-surface data-[open=true]:p-5 data-[open=true]:shadow-lg lg:!static lg:!block lg:!border-0 lg:!bg-transparent lg:!p-0 lg:!shadow-none"
         onClick={() => setOpen(false)}
       >
         {children}

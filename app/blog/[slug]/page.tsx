@@ -64,10 +64,10 @@ export default async function PostPage({ params }: Props) {
         eyebrow="Blog"
         crumbs={crumbs}
         meta={
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.875rem] text-white/60">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.875rem] text-on-inverse/60">
             <span>
               By{" "}
-              <Link href="/about/" className="text-white/85 underline underline-offset-2">
+              <Link href="/about/" className="text-on-inverse/85 underline underline-offset-2">
                 {post.author}
               </Link>
             </span>
@@ -89,7 +89,7 @@ export default async function PostPage({ params }: Props) {
 
       {post.faqs.length ? (
         <Section tone="white">
-          <h2 className="text-[1.5rem] text-navy-900">Questions this raises</h2>
+          <h2 className="text-[1.5rem] text-heading">Questions this raises</h2>
           <div className="mt-8 max-w-[80ch]">
             <FaqAccordion faqs={post.faqs} headingLevel={3} />
           </div>
@@ -99,16 +99,16 @@ export default async function PostPage({ params }: Props) {
       {mapped ? (
         <Container className="pb-16">
           {/* Contextual CTA from mapsToCaseStudy — never a generic "contact us". */}
-          <aside className="rounded-lg border border-rule bg-white p-7">
-            <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-blue-600">
+          <aside className="border border-rule bg-surface p-7">
+            <p className="text-[0.8125rem] font-semibold uppercase tracking-[0.09em] text-action">
               We hit this in production
             </p>
-            <p className="tabular mt-3 text-[1.125rem] font-medium leading-snug text-navy-900">
+            <p className="tabular mt-3 text-[1.125rem] font-medium leading-snug text-heading">
               {mapped.outcomeHeadline}
             </p>
             <Link
               href={`/case-studies/${mapped.slug}/`}
-              className="mt-5 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-blue-600 transition-colors duration-150 hover:text-blue-700"
+              className="mt-5 inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-action transition-colors duration-150 hover:text-action-hover"
             >
               Read the case study
               <ArrowRight size={15} aria-hidden />

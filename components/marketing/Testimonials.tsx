@@ -20,12 +20,12 @@ export function Testimonials({ items = testimonials }: { items?: Testimonial[] }
       {items.map((t) => (
         <li
           key={t.attribution}
-          className="rounded-lg border border-rule bg-white p-7"
+          className="border border-rule bg-surface p-7"
         >
-          <blockquote className="text-[1.0625rem] leading-relaxed text-ink">
+          <blockquote className="text-[1.0625rem] leading-relaxed text-fg">
             {t.quote}
           </blockquote>
-          <p className="mt-5 text-[0.875rem] text-slate-600">{t.attribution}</p>
+          <p className="mt-5 text-[0.875rem] text-muted">{t.attribution}</p>
         </li>
       ))}
     </ul>

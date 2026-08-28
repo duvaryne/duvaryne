@@ -17,8 +17,7 @@ const UPDATED = new Date("2026-08-06");
 
 export const metadata: Metadata = buildMetadata({
   title: "AWS & DevOps Consulting FAQs | Duvaryne",
-  description:
-    "Straight answers on AWS migration timelines, realistic cost savings, whether you need Kubernetes, certifications, pricing and how our engagements actually run.",
+  description: "Straight answers on AWS migration timelines, realistic cost savings, whether you need Kubernetes, certifications, pricing and how our engagements actually run.",
   path: "/faq",
 });
 
@@ -48,7 +47,7 @@ export default function FaqPage() {
       />
 
       <Section tone="paper">
-        <p className="tabular text-[0.875rem] text-slate-600">
+        <p className="tabular text-[0.875rem] text-muted">
           {all.length} questions across {groups.length} pages
         </p>
 
@@ -56,10 +55,10 @@ export default function FaqPage() {
           {groups.map((group) => (
             <div key={group.href}>
               <div className="flex flex-wrap items-baseline justify-between gap-3">
-                <h2 className="text-[1.375rem] text-navy-900">{group.group}</h2>
+                <h2 className="text-[1.375rem] text-heading">{group.group}</h2>
                 <Link
                   href={group.href}
-                  className="inline-flex items-center gap-1 text-[0.875rem] font-medium text-blue-600 transition-colors duration-150 hover:text-blue-700"
+                  className="inline-flex items-center gap-1 text-[0.875rem] font-medium text-action transition-colors duration-150 hover:text-action-hover"
                 >
                   Read the full page
                   <ArrowUpRight size={14} aria-hidden />
@@ -82,8 +81,7 @@ export default function FaqPage() {
           webPageSchema({
             type: "WebPage",
             title: "AWS & DevOps Consulting FAQs",
-            description:
-              "Straight answers on AWS migration timelines, realistic cost savings, whether you need Kubernetes, certifications, pricing and how our engagements run.",
+            description: "Straight answers on AWS migration timelines, realistic cost savings, whether you need Kubernetes, certifications, pricing and how our engagements run.",
             path: "/faq",
             updated: UPDATED,
           }),

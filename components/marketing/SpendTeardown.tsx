@@ -74,19 +74,19 @@ export function SpendTeardown() {
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
       <div>
-        <h2 className="max-w-[18ch] text-[1.75rem] text-navy-900 lg:text-[2rem]">
+        <h2 className="max-w-[18ch] text-[1.75rem] text-heading lg:text-[2rem]">
           {copy.heading}
         </h2>
-        <p className="mt-4 max-w-[52ch] text-[1.0625rem] leading-relaxed text-slate-600">
+        <p className="mt-4 max-w-[52ch] text-[1.0625rem] leading-relaxed text-muted">
           {copy.body}
         </p>
       </div>
 
-      <div className="rounded-lg border border-rule bg-white p-6 sm:p-8">
+      <div className="border border-rule bg-surface p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
           <label
             htmlFor={`${groupId}-slider`}
-            className="text-[0.8125rem] font-medium text-slate-600"
+            className="text-[0.8125rem] font-medium text-muted"
           >
             {copy.sliderLabel}
           </label>
@@ -94,7 +94,7 @@ export function SpendTeardown() {
           <div
             role="group"
             aria-label="Currency"
-            className="flex rounded-md border border-rule p-0.5"
+            className="flex border border-rule p-0.5"
           >
             {(["INR", "USD"] as const).map((c) => (
               <button
@@ -102,10 +102,10 @@ export function SpendTeardown() {
                 type="button"
                 onClick={() => setCurrency(c)}
                 aria-pressed={currency === c}
-                className={`tabular min-h-8 rounded px-2.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
+                className={`tabular min-h-8  px-2.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
                   currency === c
-                    ? "bg-navy-800 text-white"
-                    : "text-slate-600 hover:text-navy-900"
+                    ? "bg-inverse text-on-inverse"
+                    : "text-muted hover:text-heading"
                 }`}
               >
                 {c === "INR" ? "₹" : "$"}
@@ -116,10 +116,10 @@ export function SpendTeardown() {
 
         <output
           htmlFor={`${groupId}-slider`}
-          className="tabular mt-3 block text-[2.25rem] font-medium leading-none tracking-[-0.01em] text-navy-900 lg:text-[2.5rem]"
+          className="tabular mt-3 block text-[2.25rem] font-medium leading-none tracking-[-0.01em] text-heading lg:text-[2.5rem]"
         >
           {spendLabel}
-          <span className="ml-1 text-[1rem] font-normal text-slate-600">/month</span>
+          <span className="ml-1 text-[1rem] font-normal text-muted">/month</span>
         </output>
 
         <input
@@ -132,7 +132,7 @@ export function SpendTeardown() {
           onChange={(e) => setIndex(Number(e.target.value))}
           data-analytics="spend_teardown_used"
           aria-valuetext={`${spendLabel} per month`}
-          className="mt-6 h-11 w-full cursor-pointer accent-blue-600"
+          className="mt-6 h-11 w-full cursor-pointer accent-action"
         />
 
         <div className="mt-4">
@@ -144,12 +144,12 @@ export function SpendTeardown() {
           />
         </div>
 
-        <p className="mt-6 border-t border-rule pt-6 text-[1.0625rem] leading-relaxed text-ink">
+        <p className="mt-6 border-t border-rule pt-6 text-[1.0625rem] leading-relaxed text-fg">
           {/* Split so the two money figures render in Plex Mono tabular like every other
               quantity on the site, while the sentence around them stays in Plex Sans. */}
           {result.split(/(\S*[₹$][\d,.]+\S*)/).map((part, i) =>
             /[₹$]/.test(part) ? (
-              <strong key={i} className="tabular font-medium text-navy-900">
+              <strong key={i} className="tabular font-medium text-heading">
                 {part}
               </strong>
             ) : (
@@ -163,13 +163,13 @@ export function SpendTeardown() {
           target="_blank"
           rel="noopener noreferrer"
           data-analytics="cta_book_clicked"
-          className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-orange-500 px-5 text-[0.9375rem] font-semibold text-navy-900 transition-colors duration-150 hover:bg-[#ea6a0c]"
+          className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 bg-action px-5 text-[0.9375rem] font-semibold text-on-action transition-colors duration-150 hover:bg-action-hover"
         >
           {copy.cta.label}
           <ArrowRight size={16} aria-hidden />
         </a>
 
-        <p className="tabular mt-5 text-[0.8125rem] leading-relaxed text-slate-600">
+        <p className="tabular mt-5 text-[0.8125rem] leading-relaxed text-muted">
           {copy.disclaimer}
         </p>
       </div>

@@ -6,13 +6,7 @@
  * because `contactSchema = z.object(...)` is a module-level call the bundler cannot
  * prove is side-effect free.
  */
-export const BUDGET_BANDS = [
-  "Under $5k",
-  "$5k – $15k",
-  "$15k – $50k",
-  "$50k+",
-  "Retainer",
-  "Not sure yet",
+export const BUDGET_BANDS = [ "Under $5k", "$5k – $15k", "$15k – $50k", "$50k+", "Retainer", "Not sure yet",
 ] as const;
 
 export type BudgetBand = (typeof BUDGET_BANDS)[number];

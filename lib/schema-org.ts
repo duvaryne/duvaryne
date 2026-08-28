@@ -16,19 +16,15 @@ const SITE_ID = `${site.url}/#website`;
 const PERSON_ID = `${site.url}/about/#founder`;
 
 export function organizationSchema(): Json {
-  return {
-    "@type": ["Organization", "ProfessionalService"],
-    "@id": ORG_ID,
+  return { "@type": ["Organization", "ProfessionalService"], "@id": ORG_ID,
     name: site.name,
     alternateName: site.shortName,
     url: site.url,
     email: site.email,
     telephone: site.phone,
     foundingDate: String(site.founded),
-    description:
-      "Senior-led AWS and DevOps consulting from Bengaluru. Cloud migration, Kubernetes, CI/CD and cost optimisation.",
-    address: {
-      "@type": "PostalAddress",
+    description: "Senior-led AWS and DevOps consulting from Bengaluru. Cloud migration, Kubernetes, CI/CD and cost optimisation.",
+    address: { "@type": "PostalAddress",
       addressLocality: site.locality,
       addressRegion: site.region,
       addressCountry: site.country,
@@ -41,44 +37,30 @@ export function organizationSchema(): Json {
 }
 
 export function websiteSchema(): Json {
-  return {
-    "@type": "WebSite",
-    "@id": SITE_ID,
+  return { "@type": "WebSite", "@id": SITE_ID,
     url: site.url,
     name: site.name,
     publisher: { "@id": ORG_ID },
     inLanguage: "en-IN",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
+    potentialAction: { "@type": "SearchAction",
+      target: { "@type": "EntryPoint",
         urlTemplate: `${site.url}/search/?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
+      }, "query-input": "required name=search_term_string",
     },
   };
 }
 
 /** SPEC §9.4 — the largest single E-E-A-T and GEO gain available to this site. */
 export function personSchema(): Json {
-  return {
-    "@type": "Person",
-    "@id": PERSON_ID,
+  return { "@type": "Person", "@id": PERSON_ID,
     name: site.founder.name,
     jobTitle: site.founder.jobTitle,
     worksFor: { "@id": ORG_ID },
     url: absoluteUrl("/about"),
     sameAs: [site.social.linkedin, site.social.github],
-    knowsAbout: [
-      "Amazon Web Services",
-      "Kubernetes",
-      "DevOps",
-      "Infrastructure as Code",
-      "Cloud cost optimisation",
-      "Site reliability engineering",
+    knowsAbout: [ "Amazon Web Services", "Kubernetes", "DevOps", "Infrastructure as Code", "Cloud cost optimisation", "Site reliability engineering",
     ],
-    hasCredential: site.founder.credentials.map((c) => ({
-      "@type": "EducationalOccupationalCredential",
+    hasCredential: site.founder.credentials.map((c) => ({ "@type": "EducationalOccupationalCredential",
       name: c.name,
       credentialCategory: "certification",
       recognizedBy: { "@type": "Organization", name: c.issuer },
@@ -87,9 +69,7 @@ export function personSchema(): Json {
 }
 
 export function localBusinessSchema(): Json {
-  return {
-    "@type": "ProfessionalService",
-    "@id": `${site.url}/contact/#localbusiness`,
+  return { "@type": "ProfessionalService", "@id": `${site.url}/contact/#localbusiness`,
     name: site.name,
     image: `${site.url}/opengraph-image`,
     url: absoluteUrl("/contact"),
@@ -97,8 +77,7 @@ export function localBusinessSchema(): Json {
     // ONE phone number — the old site published three different ones (defects 6, 7).
     telephone: site.phone,
     priceRange: "$$",
-    address: {
-      "@type": "PostalAddress",
+    address: { "@type": "PostalAddress",
       addressLocality: site.locality,
       addressRegion: site.region,
       addressCountry: site.country,
@@ -120,9 +99,7 @@ export function serviceSchema({
   serviceType?: string;
   path: string;
 }): Json {
-  return {
-    "@type": "Service",
-    "@id": `${absoluteUrl(path)}#service`,
+  return { "@type": "Service", "@id": `${absoluteUrl(path)}#service`,
     name,
     description,
     serviceType: serviceType ?? name,
@@ -134,10 +111,8 @@ export function serviceSchema({
 
 export function faqPageSchema(faqs: Faq[]): Json | null {
   if (!faqs.length) return null;
-  return {
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
+  return { "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({ "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
@@ -160,9 +135,7 @@ export function articleSchema({
   tags?: string[];
 }): Json {
   const url = absoluteUrl(path);
-  return {
-    "@type": "Article",
-    "@id": `${url}#article`,
+  return { "@type": "Article", "@id": `${url}#article`,
     headline: title,
     description,
     url,
@@ -191,9 +164,7 @@ export function caseStudyArticleSchema({
   stack: string[];
 }): Json {
   const url = absoluteUrl(path);
-  return {
-    "@type": "Article",
-    "@id": `${url}#article`,
+  return { "@type": "Article", "@id": `${url}#article`,
     headline: title,
     description,
     url,
@@ -208,10 +179,8 @@ export function caseStudyArticleSchema({
 }
 
 export function breadcrumbSchema(trail: { name: string; path: string }[]): Json {
-  return {
-    "@type": "BreadcrumbList",
-    itemListElement: trail.map((c, i) => ({
-      "@type": "ListItem",
+  return { "@type": "BreadcrumbList",
+    itemListElement: trail.map((c, i) => ({ "@type": "ListItem",
       position: i + 1,
       name: c.name,
       item: absoluteUrl(c.path),
@@ -233,9 +202,7 @@ export function webPageSchema({
   updated: Date;
 }): Json {
   const url = absoluteUrl(path);
-  return {
-    "@type": type,
-    "@id": `${url}#webpage`,
+  return { "@type": type, "@id": `${url}#webpage`,
     name: title,
     description,
     url,
@@ -248,8 +215,6 @@ export function webPageSchema({
 
 /** Wraps builders into one @graph so a page emits a single <script> tag. */
 export function graph(...nodes: (Json | null)[]): string {
-  return JSON.stringify({
-    "@context": "https://schema.org",
-    "@graph": nodes.filter((n): n is Json => n !== null),
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": nodes.filter((n): n is Json => n !== null),
   });
 }

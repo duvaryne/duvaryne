@@ -1,34 +1,75 @@
 import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
+import { Mark, type MarkTone } from "@/components/brand/Mark";
 
 /**
- * PLACEHOLDER WORDMARK — SPEC I1 / §11.3.
+ * The Duvaryne lockup.
  *
- * No vector logo has been supplied for Duvaryne yet. SPEC's logo
- * rule is explicit: never approximate the Duvaryne mark with generated shapes. This is
- * therefore a typographic wordmark, not a drawn logo — it makes no attempt to imitate the
- * real mark and is safe to ship until the SVG arrives.
+ * Four configurations are approved by the identity system; two of them are used on this
+ * site. `horizontal` is the primary and is what the header carries. `stacked` is for
+ * decks and signage and is available for the OG plates.
  *
- * TO REPLACE: drop the official file at public/brand/logo.svg and swap the <span> below
- * for <Image src="/brand/logo.svg" .../>. Nothing else in the codebase references the mark.
+ * Typography is fixed by the identity and is the part most likely to be "tidied" into
+ * something wrong: the name is Sora at 200 tracked 0.42em, the descriptor is JetBrains
+ * Mono tracked 0.4em. Both need a matching text-indent, because letter-spacing in CSS
+ * adds trailing space after the final glyph and would otherwise push the whole lockup
+ * off-centre by half a space.
  */
 export function Logo({
   className,
   tone = "light",
+  variant = "horizontal",
 }: {
   className?: string;
-  tone?: "light" | "dark";
+  tone?: MarkTone;
+  variant?: "horizontal" | "stacked";
 }) {
+  const nameColour = tone === "dark" ? "text-on-inverse" : "text-heading";
+  const subColour = tone === "dark" ? "text-on-inverse-muted" : "text-muted";
+
+  const wordmark = (
+    <span className={cn("block", variant === "stacked" && "text-center")}>
+      <span
+        className={cn(
+          "block font-display text-[1.0625rem] font-extralight leading-none",
+          nameColour,
+        )}
+        style={{ letterSpacing: "0.42em", textIndent: "0.42em" }}
+      >
+        {site.wordmark}
+      </span>
+      <span
+        className={cn(
+          "mt-1.5 hidden font-mono text-[0.5rem] leading-none sm:block",
+          subColour,
+        )}
+        style={{ letterSpacing: "0.4em", textIndent: "0.4em" }}
+      >
+        {site.wordmarkSub}
+      </span>
+    </span>
+  );
+
+  if (variant === "stacked") {
+    return (
+      <span className={cn("inline-flex flex-col items-center gap-3", className)}>
+        <Mark size={52} tone={tone} />
+        {wordmark}
+        <span className="sr-only">{site.name}</span>
+      </span>
+    );
+  }
+
   return (
-    <span
-      className={cn(
-        "font-display text-[1.0625rem] font-bold tracking-[-0.02em]",
-        tone === "dark" ? "text-white" : "text-navy-900",
-        className,
-      )}
-    >
-      {site.shortName}
-      <span className="sr-only"> — {site.name}</span>
+    <span className={cn("inline-flex items-center gap-3", className)}>
+      <Mark size={34} tone={tone} />
+      {/* The hairline is part of the lockup, not decoration between two things. */}
+      <span
+        aria-hidden
+        className={cn("h-8 w-px", tone === "dark" ? "bg-inverse-rule" : "bg-rule")}
+      />
+      {wordmark}
+      <span className="sr-only">{site.name}</span>
     </span>
   );
 }
