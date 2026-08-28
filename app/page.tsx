@@ -40,14 +40,14 @@ export default function HomePage() {
       </Section>
 
       <Section tone="white">
-        <SectionHeader heading={home.proof.heading} body={home.proof.body} />
+        <SectionHeader eyebrow="Evidence" heading={home.proof.heading} body={home.proof.body} />
         <div className="mt-12">
           <StatGrid stats={home.proof.stats} columns={3} />
         </div>
       </Section>
 
       <Section tone="paper">
-        <SectionHeader heading={home.services.heading} body={home.services.body} />
+        <SectionHeader eyebrow="What we do" heading={home.services.heading} body={home.services.body} />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {home.services.items.map((s) => (
             <ServiceCard
@@ -63,7 +63,7 @@ export default function HomePage() {
 
       {featured.length ? (
         <Section tone="white">
-          <SectionHeader heading={home.caseStudies.heading} body={home.caseStudies.body} />
+          <SectionHeader eyebrow="Delivered work" heading={home.caseStudies.heading} body={home.caseStudies.body} />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {featured.map((cs) => (
               <BentoCard key={cs.slug} caseStudy={cs} />
@@ -80,7 +80,7 @@ export default function HomePage() {
       ) : null}
 
       <Section tone="navy">
-        <SectionHeader heading={home.process.heading} tone="dark" />
+        <SectionHeader eyebrow="How we work" heading={home.process.heading} tone="dark" />
         <div className="mt-12">
           <ProcessSteps steps={home.process.steps} />
         </div>

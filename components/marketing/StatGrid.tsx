@@ -23,10 +23,13 @@ export function StatGrid({
     4: "sm:grid-cols-2 lg:grid-cols-4",
   }[columns];
 
+  /* Drawn cells rather than gaps. A measured number reads as a specification when it
+     sits in a ruled box and as a marketing claim when it floats in whitespace, and
+     these are all sourced figures from the case studies. */
   return (
-    <dl className={cn("grid gap-x-8 gap-y-10", cols, className)}>
+    <dl className={cn("grid-frame grid grid-cols-1", cols, className)}>
       {stats.map((s, i) => (
-        <div key={`${s.value}-${i}`}>
+        <div key={`${s.value}-${i}`} className="px-5 py-7 lg:px-7 lg:py-8">
           {/* dt/dd carry the semantics; Stat carries the visual treatment. */}
           <dt className="sr-only">{s.label}</dt>
           <dd>

@@ -40,21 +40,34 @@ export function Section({
 export function SectionHeader({
   heading,
   body,
+  eyebrow,
   tone = "light",
   className,
   id,
 }: {
   heading: string;
   body?: string;
+  /** Short mono label above the heading. Carries the section's single saffron marker. */
+  eyebrow?: string;
   tone?: "light" | "dark";
   className?: string;
   id?: string;
 }) {
   return (
     <div className={cn("max-w-[52ch]", className)}>
+      {eyebrow ? (
+        <p
+          className={cn(
+            "marker-inline mb-5 font-mono text-[0.6875rem] uppercase tracking-[0.26em]",
+            tone === "dark" ? "text-on-inverse-muted" : "text-muted",
+          )}
+        >
+          {eyebrow}
+        </p>
+      ) : null}
       <h2
         id={id}
-        className={cn( "text-[1.75rem] lg:text-[2rem]",
+        className={cn( "text-[2rem] lg:text-[2.375rem]",
           tone === "dark" ? "text-on-inverse" : "text-heading",
         )}
       >
