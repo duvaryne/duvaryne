@@ -38,7 +38,7 @@ export function Hero() {
               {hero.eyebrow}
             </p>
 
-            <h1 className="mt-7 max-w-[16ch] text-[2.75rem] leading-[0.98] text-on-inverse lg:text-[4.25rem]">
+            <h1 className="mt-7 max-w-[20ch] text-[2.375rem] leading-[1.02] text-on-inverse lg:text-[3.5rem]">
               {hero.h1}
             </h1>
 
