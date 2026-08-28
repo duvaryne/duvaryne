@@ -2,7 +2,7 @@
   "name": "duvaryne",
   "version": "1.0.0",
   "private": true,
-  "description": "duvaryne.com \u2014 AWS cloud & DevOps consulting, Bengaluru",
+  "description": "duvaryne.com — AWS cloud & DevOps consulting, Bengaluru",
   "engines": {
     "node": ">=20"
   },
@@ -22,6 +22,7 @@
     "db:init": "tsx scripts/db-init.ts"
   },
   "dependencies": {
+    "@neon/config": "^1.0.5",
     "@neondatabase/serverless": "^1.1.0",
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",

@@ -19,22 +19,44 @@ Cloudflare Workers + Neon Postgres. Everything here is on a free tier.
 
 ---
 
-## Step 1. Create the Neon database
+## Step 1. Neon database
 
-1. Sign up at <https://neon.tech> (free tier: 0.5 GB, ample for a contact form).
-2. Create a project in the region nearest your users — **AWS ap-south-1 (Mumbai)**.
-3. Copy the **pooled** connection string. The host must contain `-pooler`.
+The project is already provisioned: **`curly-mud-99483022`** in organisation
+**Duvaryne** (`org-frosty-surf-08952346`), region `aws-ap-southeast-1`, branch
+`production`. The `enquiries` table exists.
 
-   The pooled string matters: Neon's serverless driver speaks HTTPS, which is the only
-   thing a Worker can do. A direct-connection string compiles fine and fails at runtime.
+To set it up on a new machine:
 
-4. Create the table:
+```bash
+npm i -g neon
+neon auth                       # browser OAuth
+neon link --org-id org-frosty-surf-08952346 --project-id curly-mud-99483022 -y
+```
 
-   ```bash
-   DATABASE_URL='postgresql://…-pooler…/neondb?sslmode=require' pnpm db:init
-   ```
+`link` writes the IDs to a git-ignored `.neon` file and pulls the branch's variables into
+`.env.local` — `DATABASE_URL` (pooled), `DATABASE_URL_UNPOOLED` (direct), and the Neon
+Auth URLs. Then:
 
-   Expect `✔ enquiries table ready (0 rows)`. The script is idempotent.
+```bash
+pnpm db:init                    # idempotent; creates enquiries + its index
+```
+
+Two things about connections:
+
+- **`DATABASE_URL` is pooled** (`-pooler` in the host) and is what the Worker uses. Neon's
+  serverless driver speaks HTTPS, which is the only thing a Worker can do — a direct
+  string will fail at runtime.
+- **`DATABASE_URL_UNPOOLED` is direct** and is what schema work must use. DDL through
+  PgBouncer's transaction mode fails in ways that never mention pooling. `pnpm db:init`
+  prefers it automatically and warns if only the pooled URL is available.
+
+`neon.ts` declares the branch's services. `neon config plan` dry-runs a diff; `neon deploy`
+applies it. It currently declares `auth: true` to match what is provisioned — omitting it
+would make the next deploy **deprovision Neon Auth**.
+
+> **OAuth tokens expire**, and mid-session expiry shows up as *"supplied credentials do not
+> pass authentication"*. For CI or unattended use, mint an API key at
+> <https://console.neon.tech/app/settings/api-keys> and set `NEON_API_KEY` instead.
 
 ---
 

@@ -34,3 +34,10 @@ coverage/
 .open-next/
 .wrangler/
 cloudflare-env.d.ts
+
+# Neon CLI workspace context
+.neon
+
+# Wrangler local secrets
+.dev.vars
+.dev.vars.*

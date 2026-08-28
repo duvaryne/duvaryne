@@ -13,7 +13,7 @@ Next.js 16 (App Router) on Cloudflare Workers, with Neon Postgres behind the con
 | Styling | Tailwind CSS v4 (CSS-first, no `tailwind.config`) |
 | Content | MDX in `content/`, frontmatter validated by zod at build time |
 | Hosting | Cloudflare Workers via `@opennextjs/cloudflare` |
-| Database | Neon Postgres over HTTP (`@neondatabase/serverless`) |
+| Database | Neon (Lakebase Postgres) over HTTP (`@neondatabase/serverless`) |
 | Spam | Cloudflare Turnstile + honeypot |
 | Notifications | Resend HTTP API (optional) |
 
@@ -21,8 +21,19 @@ Next.js 16 (App Router) on Cloudflare Workers, with Neon Postgres behind the con
 
 ```bash
 pnpm install
-cp .env.example .env.local   # fill in DATABASE_URL to exercise the contact form
+npm i -g neon && neon auth
+neon link --org-id org-frosty-surf-08952346 --project-id curly-mud-99483022 -y
+pnpm db:init
 pnpm dev
+```
+
+`neon link` writes `.env.local` for you — don't hand-write `DATABASE_URL`. Project and
+branch IDs land in the git-ignored `.neon`; services are declared in `neon.ts`.
+
+For the Worker's local secrets, `wrangler dev` reads `.dev.vars` (not `.env.local`):
+
+```bash
+grep '^DATABASE_URL=' .env.local > .dev.vars
 ```
 
 ## Scripts
@@ -34,7 +45,9 @@ pnpm dev
 | `pnpm cf:build` | Production build + OpenNext bundle |
 | `pnpm cf:preview` | Build, populate cache, serve the real Worker on :8787 |
 | `pnpm cf:deploy` | Build, populate remote cache, deploy |
-| `pnpm db:init` | Create the `enquiries` table (idempotent) |
+| `pnpm db:init` | Create the `enquiries` table (idempotent, uses the direct connection) |
+| `neon status` | Show the linked branch's live service config |
+| `neon config plan` | Dry-run diff of what `neon deploy` would change |
 | `pnpm content:validate` | Check frontmatter without a full build |
 
 `pnpm cf:preview` runs the actual Worker in workerd. Anything runtime-specific — the
@@ -47,6 +60,7 @@ app/            routes; (marketing)/[...slug] renders content/pages/**
 components/     layout/, marketing/, content/ (MDX), seo/, ui/
 content/        pages/, case-studies/ (10), blog/ (10 stubs), data/home.ts
 lib/            site.ts (brand facts), seo.ts, schema-org.ts, db.ts, notify.ts
+neon.ts         Neon services declared as code (`neon config plan` / `neon deploy`)
 docs/           DEPLOYMENT.md
 ```
 
@@ -93,6 +107,9 @@ error. Literal string attributes do survive, which is why the key travels as one
 - `components/layout/Logo.tsx` is a typographic placeholder. Drop the real SVG at
   `public/brand/logo.svg` and swap the span for `next/image`.
 - Social URLs and the Calendly link in `lib/site.ts` are assumed, not confirmed.
+- Neon Auth is provisioned on the project and declared in `neon.ts`, but nothing in the
+  app uses it. Remove it deliberately (and run `neon config plan` first) if you want it
+  deprovisioned.
 
 ## Deploying
 
