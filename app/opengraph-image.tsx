@@ -37,7 +37,6 @@ export default function Image() {
           {/* Satori requires explicit display on any element with more than one child. */}
           <div style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#FFFFFF" }}>
             <span>Duvaryne</span>
-            <span style={{ color: "#2B7CE9" }}>Edge</span>
           </div>
         </div>
 

@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 /**
  * PLACEHOLDER WORDMARK — SPEC I1 / §11.3.
  *
- * No vector logo has been supplied; only a raster PNG exists on the old site. SPEC's logo
+ * No vector logo has been supplied for Duvaryne yet. SPEC's logo
  * rule is explicit: never approximate the Duvaryne mark with generated shapes. This is
  * therefore a typographic wordmark, not a drawn logo — it makes no attempt to imitate the
  * real mark and is safe to ship until the SVG arrives.
@@ -27,10 +27,7 @@ export function Logo({
         className,
       )}
     >
-      Duvaryne
-      <span className="text-blue-600">
-        {tone === "dark" ? <span className="text-blue-300">Edge</span> : "Edge"}
-      </span>
+      {site.shortName}
       <span className="sr-only"> — {site.name}</span>
     </span>
   );
