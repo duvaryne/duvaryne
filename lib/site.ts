@@ -7,16 +7,14 @@
  *
  * Entity-consistency rule: `name` is spelled identically here, in JSON-LD, in the footer,
  * on LinkedIn and on GitHub. AI search engines resolve entities by exact-string matching,
- * so "Duvaryne", "Duvaryne LLP" and "DuVaryne" must not be used interchangeably.
+ * so "Duvaryne" and "DuVaryne" must not be used interchangeably.
+ *
+ * Two names, deliberately: `name` is the registered entity and belongs in JSON-LD, the
+ * legal pages and anywhere a statement of incorporation is being made. `shortName` is the
+ * brand and is what every other surface says. Do not use "Duvaryne LLP" — it is neither.
  */
 export const site = {
-  /**
-   * NOTE: the identity system (August 2026) names the entity "Duvaryne Technologies LLP"
-   * and sets the wordmark descriptor to "TECHNOLOGIES LLP". This previously read
-   * "Duvaryne LLP", which would have put a different name in the header than in the
-   * footer and the legal pages. Confirm which is the registered name — it appears in
-   * JSON-LD, /legal/privacy/ and /legal/terms/, so it should not stay ambiguous.
-   */
+  /** Registered entity. Legal pages, JSON-LD, statements of incorporation. */
   name: "Duvaryne Technologies LLP",
   shortName: "Duvaryne",
 
@@ -34,7 +32,7 @@ export const site = {
   country: "IN",
   countryName: "India",
 
-  calendly: "https://calendly.com/hello-duvaryne/30min",
+  calendly: "https://calendly.com/abhinav-duvaryne/30min",
 
   social: {
     linkedin: "https://www.linkedin.com/company/duvaryne",

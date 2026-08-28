@@ -1,42 +1,74 @@
 ---
 title: "Lambda Cold Starts: What Actually Moves the Number"
 description: "Most cold-start advice optimises the wrong thing. What the init phase really spends time on, when provisioned concurrency pays off, and how to measure it."
-h1: "Lambda Cold Starts: Measuring Before Optimising"
+h1: "Your API's p99 Just Hit 4 Seconds: Killing Lambda Cold Starts in Production"
 slug: "lambda-cold-starts"
 published: 2026-06-30
 updated: 2026-06-30
 author: "Abhinav Banerjee"
-readingMinutes: 9
+readingMinutes: 3
 draft: false
 tags:
-  - "AWS"
-  - "Lambda"
-  - "Serverless"
-  - "Performance"
+  - "AWS Lambda"
+  - "Cold Start"
+  - "Serverless Performance"
+  - "Provisioned Concurrency"
+  - "API Gateway"
 mapsToCaseStudy: "event-driven-remediation-prometheus-lambda"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+The dashboard shows p50 latency at a clean 80ms. p99 is sitting at 3.8 seconds, and it's not consistent — it happens randomly, mostly during low-traffic windows, and support tickets keep coming in about the app randomly freezing. Nobody can reproduce it in staging because staging always has warm containers from constant test traffic. In production, at 2am with almost no invocations, every new request has a real chance of hitting a cold Lambda execution environment — and if that function sits inside a **VPC** to reach an **RDS** instance, that cold start gets worse.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+This is one of the most common production surprises with serverless APIs, and it's completely fixable once you understand where the time is actually going.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+**Move SDK client initialization outside the handler function.** This is the single most common mistake:
+```python
+# Bad — reinitializes on every single invocation
+def handler(event, context):
+    dynamodb = boto3.client('dynamodb')
+    ...
 
-## This post is not published yet
+# Good — reused across warm invocations
+dynamodb = boto3.client('dynamodb')
+def handler(event, context):
+    ...
+```
+Anything at module scope only re-runs on a genuine cold start; anything inside the handler runs every single time.
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**Use Provisioned Concurrency for latency-sensitive endpoints:**
+```bash
+aws lambda put-provisioned-concurrency-config \
+  --function-name my-api-function \
+  --qualifier prod \
+  --provisioned-concurrent-executions 5
+```
+Pair it with **Application Auto Scaling** to scale provisioned concurrency up ahead of predictable traffic patterns — business hours, known campaign launches — instead of running it flat around the clock.
+
+**If you're on Java, turn on SnapStart.** It resumes from a pre-initialized, cached snapshot instead of running full JVM startup on every cold start — genuinely the biggest single lever for Java cold starts, often cutting them dramatically:
+```yaml
+SnapStart:
+  ApplyOn: PublishedVersions
+```
+
+**Keep your deployment package lean.** A smaller unzipped package size directly reduces init time. Split unrelated logic into separate functions instead of one function importing every SDK and dependency your whole service might ever need.
+
+**Avoid VPC attachment unless you genuinely need it** — RDS, ElastiCache, internal-only resources. Hyperplane ENIs have made VPC-attached cold starts far less painful than a few years back, but it's still overhead you don't pay for a VPC-free function reaching only AWS-managed services over the public API.
+
+## The Gotchas
+
+- **Provisioned Concurrency isn't free, ever — you pay for it whether it's invoked or not.** Over-provisioning "just to be safe" is how a cost optimization conversation turns into a Lambda bill line item nobody expected.
+- **Auto-scaled provisioned concurrency has its own warm-up lag.** A scaling policy reacting to a traffic spike as it happens is often too late — schedule scale-ups ahead of known traffic patterns instead of purely reactive scaling.
+- **SnapStart caches state from your init phase across invocations**, including anything "unique" you generate at cold start — random seeds, UUIDs, crypto material. If your code assumes init-time randomness is unique per cold start, SnapStart can silently break that assumption. Regenerate unique values inside the handler, not at init.
+- **Heavy top-level code counts against your cold start budget.** Loading a large config file or making a network call at module scope "to warm things up" often does the opposite — it just makes every cold start slower.
+- **Cold starts you can't reproduce in staging are still real.** If staging traffic keeps functions permanently warm, you're blind to your actual production cold start rate — check real p99 metrics in prod, don't trust staging numbers here.
+
+## TL;DR
+
+- Move SDK/client initialization to module scope, not inside the handler — this alone fixes a surprising amount of "cold start" complaints that are actually re-initialization on every call.
+- Provisioned Concurrency and SnapStart (Java) are the real fixes for latency-sensitive endpoints, but Provisioned Concurrency bills whether it's used or not.
+- SnapStart's init-time caching can silently reuse "unique" values generated at cold start — move anything that needs to be unique per invocation into the handler.
 
 <CTA />

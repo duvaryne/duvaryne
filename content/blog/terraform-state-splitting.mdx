@@ -1,41 +1,84 @@
 ---
 title: "Splitting a Terraform State File Without Downtime"
 description: "One state file for the whole estate makes every change risky. Splitting it with terraform state mv and moved blocks, without recreating live resources."
-h1: "Splitting a Monolithic Terraform State Without Downtime"
+h1: "Your 4,000-Line main.tf Is a Liability: Splitting Monolithic Terraform State Before It Splits Your Team"
 slug: "terraform-state-splitting"
 published: 2026-08-04
 updated: 2026-08-04
 author: "Abhinav Banerjee"
-readingMinutes: 11
+readingMinutes: 3
 draft: false
 tags:
   - "Terraform"
   - "Infrastructure as Code"
-  - "AWS"
+  - "Terraform State"
+  - "DevOps Best Practices"
+  - "IaC Architecture"
 mapsToCaseStudy: "terraform-prometheus-grafana-observability-stack"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+`terraform plan` takes eleven minutes. Every engineer on the team dreads running it, because a stale state lock means someone's plan is sitting in DynamoDB blocking everyone else. Then one Friday, a junior engineer changes a security group rule for the staging API, and `terraform apply` decides — based on a resource dependency graph nobody fully understands anymore — that it also needs to recreate the production RDS instance. That's what a 4,000-line `main.tf` managing your entire AWS account does to a team: one state file, one blast radius, one very bad Friday.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+This isn't really a Terraform problem. It's an architecture problem. Terraform will happily let you put your VPC, your EKS cluster, your RDS instances, and your IAM roles in a single state file, because nothing in the tool stops you. Nothing tells you it's a bad idea until you're staring at a plan with 340 resource changes and no idea which ten actually matter.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+Split state along blast radius, not along whatever feels tidy.
 
-## This post is not published yet
+**Pick your boundaries deliberately:**
+- `networking` — VPC, subnets, route tables, NAT gateways (changes rarely, breaks everything if it breaks).
+- `platform` — EKS/ECS cluster, shared IAM roles, RDS instances (changes occasionally).
+- `app` — per-service resources, task definitions, Lambda functions (changes constantly).
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**Set up isolated backends per state:**
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "acme-terraform-state"
+    key            = "prod/networking/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+```
+Same bucket is fine — a different `key` per state gives you isolation without managing a dozen buckets.
+
+**Reference outputs across states with `terraform_remote_state`:**
+```hcl
+data "terraform_remote_state" "networking" {
+  backend = "s3"
+  config = {
+    bucket = "acme-terraform-state"
+    key    = "prod/networking/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+resource "aws_eks_cluster" "main" {
+  vpc_config {
+    subnet_ids = data.terraform_remote_state.networking.outputs.private_subnet_ids
+  }
+}
+```
+
+**If this gets unwieldy across many services, look at Terragrunt.** It wraps Terraform to keep backend config DRY and manages apply ordering across states with a dependency graph, instead of you remembering the order by hand.
+
+**Scope IAM per state, not just the files.** Splitting state does nothing for blast radius if every pipeline still applies with one god-mode role. Give `networking` a role that can only touch VPC/subnet resources. Give `app` a role that can't touch IAM or VPC resources at all.
+
+## The Gotchas
+
+- **`terraform_remote_state` creates a real dependency, not a suggestion.** If `networking` hasn't been applied yet, `platform` will fail to read its outputs. Your pipeline needs explicit ordering, not "run all three and hope."
+- **Backend blocks don't support variables.** You can't interpolate `var.environment` into a `backend "s3"` block — Terraform evaluates backend config before variables exist. Use partial configuration with `-backend-config=prod.tfbackend` files per environment instead.
+- **State drift between split states is real.** If someone applies `app` without re-checking `platform` first, and `platform` changed an output `app` depends on, you get a plan that looks clean but deploys against stale assumptions.
+- **You lose the "one plan to review them all" convenience.** Reviewers now need to know which state a PR touches and check the right plan output — document this clearly or people will approve the wrong diff.
+- **S3 versioning and MFA delete on your state bucket aren't optional.** A corrupted or accidentally-deleted state file with no version history is a very bad day; this takes five minutes to set up and you'll never think about it again until it saves you.
+
+## TL;DR
+
+- Split Terraform state by blast radius (networking, platform, app), not by whatever feels organizationally tidy.
+- `terraform_remote_state` connects the states, but backend blocks can't use variables — use `-backend-config` files instead.
+- Splitting state without splitting IAM permissions per state doesn't actually reduce blast radius — do both.
 
 <CTA />

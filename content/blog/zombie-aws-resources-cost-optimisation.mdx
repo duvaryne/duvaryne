@@ -1,41 +1,63 @@
 ---
 title: "Finding Zombie AWS Resources Draining Your Bill"
 description: "Orphaned snapshots, unattached volumes and idle NAT Gateways compound quietly. How to find them all in the Cost and Usage Report and then kill them safely."
-h1: "Hunting Zombie AWS Resources: The Spend Nobody Owns"
+h1: "Your AWS Bill Has Ghosts: Hunting Down Zombie Resources Before They Drain Your Budget"
 slug: "zombie-aws-resources-cost-optimisation"
 published: 2026-08-11
 updated: 2026-08-11
 author: "Abhinav Banerjee"
-readingMinutes: 9
+readingMinutes: 3
 draft: false
 tags:
-  - "AWS"
-  - "Cost Optimisation"
-  - "EKS"
+  - "AWS Cost Optimization"
+  - "EBS Volumes"
+  - "AWS Config"
+  - "FinOps"
+  - "Cloud Cost Management"
 mapsToCaseStudy: "karpenter-spot-eks-cost-optimisation"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+Last month a client's AWS bill jumped by $3,200 with zero new features shipped and zero traffic growth. Three engineers spent two days convinced someone had left a crypto miner running on a forgotten EC2 instance. The real culprit was way more boring: 47 unattached EBS volumes going back 14 months, a stack of manual snapshots nobody ever cleaned up, and two NAT gateways sitting idle in a VPC nobody used anymore.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+Nobody deletes these on purpose. Someone terminates an EC2 instance during a "quick test" and the volume survives because "Delete on Termination" wasn't checked. Someone takes a manual snapshot before a risky deploy and forgets about it. Multiply that by every engineer, every sprint, for two years, and you've got a graveyard quietly billing you by the GB-month.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+Start with what's actually costing you money, not the general "let's tag everything" idea people give up on in week two.
 
-## This post is not published yet
+**Find unattached EBS volumes right now:**
+```bash
+aws ec2 describe-volumes \
+  --filters Name=status,Values=available \
+  --query 'Volumes[*].{ID:VolumeId,Size:Size,Type:VolumeType,AZ:AvailabilityZone,Created:CreateTime}' \
+  --output table
+```
+`status=available` means the volume isn't attached to anything. That's your hit list.
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**Turn on AWS Config with the right managed rules.** Enable `ec2-volume-inuse-check` for unattached volumes and `ec2-stopped-instance` for zombie instances nobody restarted. Add a custom rule or scheduled Lambda for unattached Elastic IPs — these carry an hourly charge whether or not they're attached, and they're the line item almost nobody checks during an audit.
+
+**Automate the sweep.** Schedule a Lambda via **EventBridge** weekly:
+- List volumes with `status=available` older than N days (use `CreateTime`).
+- Snapshot first, tag `pending-deletion`, and notify the owner via Slack or email.
+- Auto-delete after a grace period if nobody objects.
+
+**Enforce tagging at creation, not after the fact.** Require `Owner` and `Team` tags via a Service Control Policy or Config rule that denies untagged `RunInstances` / `CreateVolume` calls. Retroactive tagging on a two-year-old account never actually happens.
+
+**Turn on Cost Anomaly Detection.** Point it at your top cost categories (EC2, EBS, RDS) so a sudden spend spike pages someone within a day, not at month-end when finance forwards you the invoice.
+
+## The Gotchas
+
+- **Never auto-delete without a snapshot first.** The one time you skip this is the one time that "unused" volume had the only copy of a database restore someone was mid-testing.
+- **Old snapshots backing already-deleted volumes still cost money.** Nobody thinks to check snapshots separately — they assume deleting the volume deletes its history. It doesn't.
+- **Cross-region blindness is the biggest one.** Everyone audits their primary region and forgets the DR region, or the region a replication bucket quietly lives in.
+- **gp2 vs gp3 is free money on the table.** Migrating volumes you're keeping from gp2 to gp3 typically saves around 20%, with better baseline IOPS included.
+- **NAT Gateways bill hourly whether or not traffic flows through them.** A NAT gateway in a VPC nobody's deployed into in six months is pure waste — check CloudWatch's `BytesOutToDestination` before assuming it's dead, then kill it.
+
+## TL;DR
+
+- Unattached EBS volumes, orphaned snapshots, idle NAT gateways, and unattached Elastic IPs are the most common silent cost leaks — check them this week, not next quarter.
+- AWS Config managed rules plus a scheduled Lambda sweep turn this from a manual quarterly panic into a boring automated process.
+- Snapshot before you delete, tag at creation not after, and don't forget the regions you don't normally look at.
 
 <CTA />

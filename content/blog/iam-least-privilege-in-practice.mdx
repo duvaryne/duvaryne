@@ -1,41 +1,59 @@
 ---
 title: "IAM Least Privilege That Survives Contact With Reality"
 description: "Least privilege fails when it blocks the team. Building IAM policies from CloudTrail evidence, using permission boundaries, and keeping them tight over time."
-h1: "IAM Least Privilege in Practice, Not in Theory"
+h1: "AdministratorAccess for Everyone: How Lazy IAM Is One Leaked Key Away from Disaster"
 slug: "iam-least-privilege-in-practice"
 published: 2026-07-21
 updated: 2026-07-21
 author: "Abhinav Banerjee"
-readingMinutes: 12
+readingMinutes: 3
 draft: false
 tags:
-  - "AWS"
-  - "Security"
-  - "IAM"
+  - "AWS IAM"
+  - "Least Privilege"
+  - "Cloud Security"
+  - "IAM Access Analyzer"
+  - "AWS Identity Center"
 mapsToCaseStudy: "zero-trust-supply-chain-cosign-kyverno"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+Every engineer on the team has `AdministratorAccess`. It happened gradually — someone needed to debug a permissions error at 11pm before a launch, someone attached the managed policy "just for now," and "for now" became the permanent state of the account for the next eighteen months. Then a laptop gets stolen, or a CI secret leaks into a public repo, and suddenly the blast radius of one compromised credential is your entire AWS account.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+The usual response to this is a security team locking everything down overnight. Engineers can't deploy, half the pipelines break because nobody mapped what permissions they actually needed, and within a month someone quietly re-adds the admin policy because shipping matters more than the audit. Least privilege fails in practice not because it's a bad idea, but because most teams try to guess the right policy instead of measuring it.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+Stop guessing policies. Measure actual usage, then scope to that.
 
-## This post is not published yet
+**Generate policies from real usage with IAM Access Analyzer.** Point it at a role with real CloudTrail history and let it generate a policy based on the API calls actually made:
+```bash
+aws accessanalyzer start-policy-generation \
+  --policy-generation-details principalArn=arn:aws:iam::123456789012:role/deploy-role \
+  --cloud-trail-details '{"trails":[{"cloudTrailArn":"arn:aws:cloudtrail:us-east-1:123456789012:trail/main","region":"us-east-1"}],"accessRole":"arn:aws:iam::123456789012:role/access-analyzer-role","startTime":"2025-05-01T00:00:00Z"}'
+```
+This gets you a real starting point instead of a policy someone wrote from memory of "what probably gets used."
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**Move to IAM Identity Center for human access.** Stop handing out long-lived IAM users with access keys entirely. Use permission sets scoped per environment — broad-ish in dev, genuinely narrow in prod — assigned through SSO, with session credentials that expire.
+
+**Use permission boundaries for delegated admin.** If a team lead needs to create roles for their own services, give them the ability to create IAM roles *bounded* by a permission boundary that caps what those roles can ever do. They get autonomy, you get a hard ceiling they can't accidentally exceed.
+
+**Keep a break-glass role for real emergencies**, separate from everyday access, with strong CloudTrail alerting so using it triggers a notification, not silence.
+
+**Push guardrails to the Organization level with SCPs**, not individual denials. An SCP that blocks disabling CloudTrail or leaving the Organization applies everywhere at once, and nobody can quietly bypass it in one account.
+
+## The Gotchas
+
+- **Access Analyzer's generated policy is only as good as your CloudTrail history.** Short history, or a role that only occasionally runs a batch job, and the generated policy will miss legitimate actions — test in a non-prod path before rolling it out.
+- **"Least privilege" policies that still say `"Resource": "*"` aren't least privilege.** Scoping the action but not the resource is the most common half-measure — it feels safer and often isn't much safer at all.
+- **Managed policies cap out around 6,144 characters.** Genuinely scoped policies for complex services hit this limit fast, and splitting into multiple attached policies makes it easy to lose track of what a role can actually do in total.
+- **SCPs don't grant anything — they only set a ceiling.** A common and confusing mistake: assuming an SCP that "allows" an action means users automatically have it. They still need an IAM policy that grants it; the SCP just stops it from being exceeded.
+- **Tightening policies breaks service-linked roles you forgot existed.** Auto Scaling, ELB, and a dozen other AWS services quietly rely on service-linked roles — over-aggressive SCPs or boundaries can break these in ways that look like application bugs.
+
+## TL;DR
+
+- Generate least-privilege policies from actual CloudTrail usage with IAM Access Analyzer instead of guessing — guessing is why least privilege usually fails.
+- Move human access to IAM Identity Center with per-environment permission sets and short-lived sessions, not long-lived IAM users.
+- SCPs set ceilings, not grants — and a "least privilege" policy with `Resource: "*"` isn't actually least privilege.
 
 <CTA />

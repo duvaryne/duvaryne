@@ -1,42 +1,88 @@
 ---
 title: "GitHub Actions to AWS with OIDC, No Static Keys"
 description: "Long-lived AWS keys in CI are the commonest credential leak there is. Setting up OIDC federation, scoping the trust policy, and the mistakes that leave it open."
-h1: "GitHub Actions to AWS with OIDC: Deleting Your Last Static Key"
+h1: "Stop Hardcoding AWS Keys in GitHub Secrets: The OIDC Pipeline That Kills Long-Lived Credentials"
 slug: "github-actions-oidc-aws"
 published: 2026-07-14
 updated: 2026-07-14
 author: "Abhinav Banerjee"
-readingMinutes: 8
+readingMinutes: 3
 draft: false
 tags:
-  - "AWS"
-  - "CI/CD"
-  - "Security"
   - "GitHub Actions"
+  - "AWS OIDC"
+  - "CI/CD Security"
+  - "AWS IAM"
+  - "DevSecOps"
 mapsToCaseStudy: "containerised-cicd-jenkins-docker"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+Someone finds a two-year-old `AWS_ACCESS_KEY_ID` sitting in a GitHub repo's secrets, attached to an IAM user with `PowerUserAccess`, that nobody remembers creating. Nobody's rotated it, because rotating it means updating it in six different pipelines and hoping nothing breaks. It's exactly the kind of thing that shows up in a security audit finding — or worse, in an attacker's toolkit after a misconfigured Action leaks secrets to a fork's build log.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+Static credentials in CI/CD are a liability the moment you create them, not because GitHub's secret storage is insecure, but because a long-lived key that works forever is exactly the kind of thing that ends up leaked, forgotten, and unrotated. **OpenID Connect (OIDC)** solves this by never storing a credential at all.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+**Register GitHub as an OIDC identity provider in AWS IAM** (one-time setup). Create it through the console or CLI and let AWS verify the provider's certificate automatically — don't hardcode a thumbprint you found in an old blog post, GitHub has rotated its signing certificate before and a stale value will quietly break trust:
+```bash
+aws iam create-open-id-connect-provider \
+  --url https://token.actions.githubusercontent.com \
+  --client-id-list sts.amazonaws.com \
+  --thumbprint-list <fetch current thumbprint from GitHub's OIDC discovery document>
+```
 
-## This post is not published yet
+**Create an IAM role with a trust policy scoped to your exact repo and branch** — this is the part people get lazy about:
+```json
+{
+  "Effect": "Allow",
+  "Principal": {
+    "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+  },
+  "Action": "sts:AssumeRoleWithWebIdentity",
+  "Condition": {
+    "StringEquals": {
+      "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+    },
+    "StringLike": {
+      "token.actions.githubusercontent.com:sub": "repo:my-org/my-repo:ref:refs/heads/main"
+    }
+  }
+}
+```
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**Use the role in your workflow — no stored secrets involved:**
+```yaml
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-actions-deploy
+          aws-region: us-east-1
+      - run: aws s3 sync ./dist s3://my-bucket
+```
+
+**Delete the old static access keys once this is live.** Not disable — delete. If nothing broke in a week, they weren't needed.
+
+## The Gotchas
+
+- **A wildcard `sub` claim like `repo:my-org/*` opens the role to every repo in the org.** This defeats the entire point — scope it to the exact repo, and ideally the exact branch or environment, every time.
+- **Forgetting to scope pull request events is a real attack surface.** A pull request from a forked repo can trigger a workflow — if your trust policy's `sub` condition isn't scoped tightly to the ref you expect, a fork's PR could potentially assume a role it shouldn't. Scope explicitly to `refs/heads/main`, or use GitHub Environments with required reviewers for anything deploying to prod.
+- **Session duration defaults to one hour for web identity federation.** Long-running deploy jobs — large Terraform applies, slow migrations — can hit this ceiling. Plan around it rather than discovering it mid-deploy.
+- **This only covers GitHub Actions talking to AWS — it doesn't fix credentials your app uses at runtime.** Don't stop here; apply the same thinking to how your deployed services authenticate to AWS.
+- **Test the trust policy in a low-stakes repo first.** A too-narrow `sub` condition fails with an "not authorized to perform sts:AssumeRoleWithWebIdentity" error that gives you almost no clue what's wrong — work out the exact claim format before wiring it into your main pipeline.
+
+## TL;DR
+
+- OIDC lets GitHub Actions assume an AWS IAM role with short-lived, auto-expiring credentials — no stored access keys, nothing to rotate, nothing to leak.
+- Scope the trust policy's `sub` claim to the exact repo and branch — wildcards defeat the entire security benefit.
+- Delete old static keys once OIDC is confirmed working; disabling them "just in case" defeats the point.
 
 <CTA />

@@ -22,7 +22,7 @@ export const home = {
     sub: "We cut cloud bills, ship pipelines that deploy on a Friday, and hand it all over as code you own. Senior engineers only — the person who reviews your account is the person who does the work.",
     primaryCta: {
       label: "Book a free 30-minute review",
-      href: "https://calendly.com/hello-duvaryne/30min",
+      href: "https://calendly.com/abhinav-duvaryne/30min",
     },
     secondaryCta: { label: "See how we work", href: "/case-studies" },
     // Credibility strip under the fold line — replaces the old "Expert Team" card.
@@ -43,7 +43,7 @@ export const home = {
       "On {spend}/month, an unoptimised account typically carries {low}–{high} of recoverable waste.",
     disclaimer:
       "Modelled from the 30–50% range we observe across engagements. Your real number comes from your CUR, not a slider.",
-    cta: { label: "Find my real number", href: "https://calendly.com/hello-duvaryne/30min" },
+    cta: { label: "Find my real number", href: "https://calendly.com/abhinav-duvaryne/30min" },
   },
 
   proof: {
@@ -152,7 +152,7 @@ export const home = {
 
   credibility: {
     heading: "Who you are actually hiring",
-    body: "Duvaryne LLP is a DPIIT-recognised consultancy in Bengaluru, Karnataka. Engineering is led by a Certified Kubernetes Administrator who also holds the AWS Certified Solutions Architect – Associate certification and a DevOps credential from IIT Madras, with thirteen years of production infrastructure experience. We work across India and remotely with teams in the US and EU.",
+    body: "Duvaryne is a DPIIT-recognised consultancy in Bengaluru, Karnataka. Engineering is led by a Certified Kubernetes Administrator who also holds the AWS Certified Solutions Architect – Associate certification and a DevOps credential from IIT Madras, with thirteen years of production infrastructure experience. We work across India and remotely with teams in the US and EU.",
     linkLabel: "More about how we work",
     href: "/about",
   },
@@ -161,7 +161,7 @@ export const home = {
     heading: "Start with the bill, not a proposal",
     body: "Thirty minutes on your architecture and your Cost and Usage Report. You leave with the three largest savings in your account, quantified. If there is nothing worth doing, we will tell you.",
     buttonLabel: "Book a free 30-minute review",
-    href: "https://calendly.com/hello-duvaryne/30min",
+    href: "https://calendly.com/abhinav-duvaryne/30min",
     secondary: { label: "hello@duvaryne.com", href: "mailto:hello@duvaryne.com" },
   },
 } as const;

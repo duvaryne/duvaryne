@@ -36,6 +36,7 @@ const highlighter = createHighlighterCore({
     import("@shikijs/langs/typescript"),
     import("@shikijs/langs/hcl"),
     import("@shikijs/langs/sql"),
+    import("@shikijs/langs/python"),
   ],
   engine: createJavaScriptRegexEngine(),
 });

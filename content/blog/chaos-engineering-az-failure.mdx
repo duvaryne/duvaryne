@@ -1,42 +1,73 @@
 ---
 title: "Chaos Engineering: Testing an AZ Failure for Real"
 description: "Multi-AZ on the diagram is not multi-AZ in production. Running a controlled AZ failure test with AWS FIS, what breaks first, and how to fail over safely."
-h1: "Chaos Engineering: Actually Testing an Availability Zone Failure"
+h1: "What Happens When an AWS Availability Zone Dies? Find Out Before Production Does"
 slug: "chaos-engineering-az-failure"
 published: 2026-06-16
 updated: 2026-06-16
 author: "Abhinav Banerjee"
-readingMinutes: 12
+readingMinutes: 3
 draft: false
 tags:
-  - "AWS"
-  - "Resilience"
   - "Chaos Engineering"
-  - "DR"
+  - "AWS Fault Injection Service"
+  - "High Availability"
+  - "Multi-AZ Architecture"
+  - "Resilience Testing"
 mapsToCaseStudy: "multi-region-disaster-recovery-argocd-aurora-global"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+An Availability Zone in your primary region goes dark for forty minutes. The architecture diagram says "Multi-AZ," and everyone believed it, right up until the RDS failover took 90 seconds and the connection pool in every app instance kept retrying the old endpoint because nobody had configured a sane retry policy. Meanwhile, one of the three ASGs had somehow drifted to running mostly in the AZ that just died, because a subnet was hardcoded in a launch template two years ago and nobody noticed the imbalance building up.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+Nobody finds these gaps by reading the architecture diagram. Multi-AZ is a design intention until you've actually watched what happens when an AZ genuinely disappears — and the only sane way to watch that happen is to make it happen yourself, on your own terms, before AWS does it for you at 3am on a Sunday.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+**Run experiments through AWS Fault Injection Service (FIS)**, not by manually stopping instances by hand. FIS gives you repeatable, auditable experiments with built-in safety mechanisms.
 
-## This post is not published yet
+**Start with an AZ network disruption experiment**, not a full instance termination — it's a closer simulation of what a real AZ-level event actually looks like: network isolation, not instant resource deletion. Verify the exact action IDs and parameter names against AWS's current FIS documentation before running this, since experiment template syntax has evolved over time:
+```json
+{
+  "description": "AZ network disruption test - checkout service",
+  "targets": {
+    "az-subnets": {
+      "resourceType": "aws:ec2:subnet",
+      "selectionMode": "ALL",
+      "filters": [{"path": "AvailabilityZone", "values": ["us-east-1b"]}]
+    }
+  },
+  "actions": {
+    "disrupt-az": {
+      "actionId": "aws:network:disrupt-connectivity",
+      "parameters": {"duration": "PT10M", "scope": "az"},
+      "targets": {"Subnets": "az-subnets"}
+    }
+  },
+  "stopConditions": [
+    {"source": "aws:cloudwatch:alarm", "value": "arn:aws:cloudwatch:us-east-1:123456789012:alarm:checkout-error-rate"}
+  ]
+}
+```
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**Always wire a stop condition to a real CloudWatch alarm.** If error rates or latency cross a threshold you define as "this is no longer a controlled test," FIS aborts the experiment automatically. Never run a chaos experiment without this.
+
+**Run it as a game day first, in a non-prod environment**, with the whole on-call rotation watching, before ever pointing FIS at production. Define what you're validating explicitly: does the ALB drain the dead AZ's targets? Does the ASG launch replacements only in healthy AZs? Does RDS Multi-AZ failover complete inside your expected RTO? Do client connections actually recover, or do they hang on stale DNS or connection pool entries?
+
+**Check application-layer assumptions, not just infrastructure.** JVM DNS caching, connection pools that don't retry on connection reset, and hardcoded subnet or AZ references in configs are what actually cause outages during real AZ events — infrastructure usually fails over correctly; applications are what don't handle it gracefully.
+
+## The Gotchas
+
+- **Running an experiment without a stop condition turns a test into an actual incident.** This is the single most important safety practice in the entire discipline — never skip it, even for a "small" experiment.
+- **Multi-AZ doesn't automatically mean resilient.** Check for AZ affinity you didn't intend: hardcoded subnet IDs, an ASG that drifted unevenly across AZs over time, sticky sessions pinning users to specific instances.
+- **DNS and connection caching outlive the actual outage.** Route 53 or your ALB might reroute traffic correctly within seconds, while a client's cached DNS resolution or a connection pool's stale entries keep hammering the dead AZ for minutes afterward.
+- **FIS needs genuinely broad IAM permissions to do its job** — it has to be able to stop real infrastructure. Treat the FIS execution role with the same scrutiny as a production deploy role, not as a harmless testing tool.
+- **Don't run your first-ever chaos experiment against production on a Friday.** This should be obvious and somehow never is. Game day in staging first, clear rollback criteria, a defined go/no-go, and a time window when your team is actually available if something goes sideways.
+
+## TL;DR
+
+- AWS Fault Injection Service lets you simulate real AZ failures in a controlled, auditable way — always with a CloudWatch-alarm-based stop condition wired in.
+- Multi-AZ architecture diagrams don't prove resilience — hardcoded subnet references, uneven ASG distribution, and DNS/connection caching are the usual hidden failure points.
+- Test in non-prod as a game day first, validate specific outcomes like failover time and connection recovery, and never skip the stop condition.
 
 <CTA />

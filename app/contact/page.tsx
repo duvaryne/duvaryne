@@ -44,7 +44,7 @@ export default function ContactPage() {
           <div>
             {/* NAP block — every value from lib/site.ts, so the phone number here is the
                 same one in the footer and in LocalBusiness JSON-LD (defects 6, 7). */}
-            <h2 className="text-[1.25rem] text-heading">Duvaryne LLP</h2>
+            <h2 className="text-[1.25rem] text-heading">{site.shortName}</h2>
             <ul className="mt-5 space-y-4 text-[1rem]">
               <li className="flex items-start gap-3">
                 <MapPin size={17} className="mt-1 shrink-0 text-muted" aria-hidden />

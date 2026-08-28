@@ -1,42 +1,63 @@
 ---
 title: "Infrastructure Drift Detection Before It Costs You"
 description: "Drift stays silent until the day it matters, usually a failover. Continuous terraform plan in CI, drift as a build failure, and alerting on console changes."
-h1: "Detecting Infrastructure Drift Before Your DR Region Needs It"
+h1: "Someone Opened Port 22 to the World Six Months Ago, and Terraform Has No Idea"
 slug: "iac-drift-detection"
 published: 2026-06-09
 updated: 2026-06-09
 author: "Abhinav Banerjee"
-readingMinutes: 10
+readingMinutes: 3
 draft: false
 tags:
-  - "Terraform"
   - "Infrastructure as Code"
-  - "DR"
-  - "AWS"
+  - "AWS Config"
+  - "Terraform Drift"
+  - "Cloud Compliance"
+  - "DevOps Automation"
 mapsToCaseStudy: "multi-region-disaster-recovery-argocd-aurora-global"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+A security audit flags a security group with `0.0.0.0/0` open on port 22. Nobody on the team remembers adding it, and when you check the Terraform code for that security group, it says the rule should only allow SSH from the office IP range. The infrastructure and the code describing the infrastructure have quietly disagreed with each other for six months, because someone opened the port from the AWS console during an incident, fixed their problem, and never closed it again — and nobody's `terraform plan` ran on a schedule to notice.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+This is infrastructure drift, and it's one of the most common ways "we manage everything as code" turns out to be aspirational rather than true. Terraform only knows about changes it makes itself. Anything clicked in the console, run via a one-off CLI command, or changed by another tool exists in a blind spot until someone happens to run a plan against it.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+**Turn on AWS Config across every region and account you actually use**, aggregated centrally if you're running AWS Organizations. A Config recorder that's only enabled in one region misses every drift event everywhere else.
 
-## This post is not published yet
+**Layer managed rules with rules specific to your org's actual policies.** Start with the obvious ones — `restricted-ssh`, `s3-bucket-public-read-prohibited`, `iam-user-no-policies-check` — then add custom Config rules, backed by Lambda, for anything specific to how your team actually works.
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**Wire auto-remediation where it's safe to act automatically**, using SSM Automation documents attached to Config rules. AWS Config ships a large library of prebuilt `AWSConfigRemediation-*` automation documents — check what's already available for your specific rule before writing a custom one from scratch.
+
+**Run scheduled Terraform drift detection separately from Config.** These solve different problems: Config catches real-time resource changes as they happen; a scheduled `terraform plan` catches drift between what your code says and current reality, on your own timeline:
+```bash
+terraform plan -detailed-exitcode -out=tfplan
+EXIT_CODE=$?
+if [ $EXIT_CODE -eq 2 ]; then
+  echo "Drift detected — posting to Slack"
+  # notify pipeline, don't auto-apply blindly
+elif [ $EXIT_CODE -eq 1 ]; then
+  echo "Plan failed"
+  exit 1
+fi
+```
+Run this on a schedule — nightly, or at minimum weekly — not only when someone happens to push code.
+
+**Consider blocking the riskiest manual changes outright with SCPs**, rather than only detecting them after the fact. Denying non-pipeline principals from modifying security groups directly, for instance, stops the drift from happening at all instead of catching it six months later.
+
+## The Gotchas
+
+- **Auto-remediation without an exception mechanism can revert a legitimate emergency fix.** Someone opens a port by hand during a real incident to unblock something urgent — if your remediation Lambda reverts it thirty seconds later with no way to flag "this was intentional, hold off," you've just re-broken the incident fix mid-incident.
+- **AWS Config has real, scaling costs** — per configuration item recorded and per rule evaluation. An account with a lot of resource churn, like frequent scaling or ephemeral resources, can rack up a bigger Config bill than people expect; scope recording to what you actually need to track.
+- **`terraform plan -detailed-exitcode` only catches drift when it actually runs.** A pipeline that only plans on push, with no scheduled job, leaves weeks of drift invisible between deploys — schedule it independently of your deploy triggers.
+- **Not all "drift" is real drift.** AWS-managed fields — AMI auto-updates, default security group rule reordering, auto-assigned tags — show up as diffs that aren't actual problems. Tune `ignore_changes` lifecycle blocks carefully for specific known-noisy attributes; don't reach for a blanket ignore that hides genuine drift along with the noise.
+- **Detecting drift isn't the same as understanding why it happened.** A recurring drift on the same resource usually means a process problem — someone keeps needing console access for something IaC doesn't support yet — not just a compliance checkbox to tick.
+
+## TL;DR
+
+- AWS Config catches real-time manual changes; scheduled `terraform plan -detailed-exitcode` catches drift between code and reality — you need both, they're not redundant.
+- Auto-remediation needs an exception path, or it will eventually revert someone's legitimate emergency fix mid-incident.
+- Not every diff is real drift — tune `ignore_changes` for AWS-managed noise instead of either ignoring everything or chasing false positives forever.
 
 <CTA />

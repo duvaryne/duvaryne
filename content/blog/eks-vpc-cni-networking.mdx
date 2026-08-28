@@ -1,42 +1,55 @@
 ---
 title: "EKS VPC CNI: Why You Ran Out of Pod IPs"
 description: "The VPC CNI gives every pod a real VPC IP — elegant until a subnet runs dry mid-scale-up. How ENI limits, prefix delegation and subnet sizing interact on EKS."
-h1: "EKS Networking: Understanding the VPC CNI Before It Bites"
+h1: "Your EKS Cluster Ran Out of IP Addresses: Fixing VPC CNI Exhaustion Before It Kills Your Autoscaler"
 slug: "eks-vpc-cni-networking"
 published: 2026-07-07
 updated: 2026-07-07
 author: "Abhinav Banerjee"
-readingMinutes: 11
+readingMinutes: 3
 draft: false
 tags:
-  - "Kubernetes"
-  - "EKS"
-  - "Networking"
-  - "AWS"
+  - "Amazon EKS"
+  - "Kubernetes Networking"
+  - "VPC CNI"
+  - "AWS Subnetting"
+  - "EKS Troubleshooting"
 mapsToCaseStudy: "kubernetes-redis-microservice-deployment"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+The Cluster Autoscaler tries to add a node during a traffic spike and it just can't. The node joins the cluster, but pods sit in `Pending` with an event that reads `0/12 nodes are available: 1 Insufficient pod IPs`. Nobody touched networking. Nobody changed a deployment. The cluster just quietly ran out of IP addresses in the subnet it was scheduling into, because nobody realized the **AWS VPC CNI** gives every single pod a real, routable IP from your VPC — not an overlay network address like most people assume coming from other Kubernetes platforms.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+A `/24` subnet sounds generous until you do the math: each node reserves IPs for its maximum ENI capacity up front, whether or not pods are using them yet. A handful of large instance types in a small subnet can reserve most of your available IPs before a single extra pod gets scheduled.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+**Understand what's actually consuming IPs before you resize anything.** Every node pre-allocates ENI capacity based on instance type, and the CNI keeps a "warm pool" of IPs ready before pods even request one. That warm pool is capacity your subnet has committed even when unused.
 
-## This post is not published yet
+**Turn on prefix delegation** — this is the real fix for most teams, not a bigger subnet:
+```bash
+kubectl set env daemonset aws-node -n kube-system ENABLE_PREFIX_DELEGATION=true
+```
+Instead of assigning individual IPs to ENIs, this assigns `/28` prefixes (16 IPs each) in one allocation. The practical effect: a node that supported roughly 29 pods before can now support hundreds, without touching your subnet size.
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+**If prefix delegation alone isn't enough, use custom networking** to separate node IPs from pod IPs. Nodes get IPs from your primary CIDR; pods get IPs from a secondary CIDR block (an RFC 6598 range like `100.64.0.0/16` works well), attached via `ENIConfig` custom resources per AZ. This keeps your primary CIDR from ever being the bottleneck.
+
+**Size subnets for where you're going, not where you are.** A `/20` per AZ gives real headroom. Resizing a live VPC's primary CIDR isn't something you can do casually later — you can only add secondary CIDR blocks, so under-provisioning early turns into a migration project, not a config change.
+
+**Calculate max pods per node properly** using AWS's `max-pods-calculator.sh` script rather than trusting a default, especially after enabling prefix delegation — the numbers change significantly.
+
+## The Gotchas
+
+- **Prefix delegation needs contiguous IP blocks.** A subnet fragmented by IP churn — lots of scale-up and scale-down over time — can fail to allocate a `/28` prefix even when it technically has enough free IPs scattered around. This is the single most confusing failure mode people hit after enabling it.
+- **Custom networking requires an `ENIConfig` per AZ, and it's easy to miss one.** Skip an AZ's config and pods scheduled there sit in `ContainerCreating` with a networking error that doesn't obviously point back to the missing ENIConfig.
+- **IPv6 clusters solve exhaustion but introduce a different problem: ecosystem support.** Ingress controllers, service meshes, and some third-party add-ons don't uniformly support IPv6 yet — validate your full stack before committing, not after migrating.
+- **You cannot shrink a live VPC's primary CIDR, ever.** You can only add secondary ranges on top. Plan subnet sizing like it's a one-way door, because it is.
+- **The Cluster Autoscaler's error messages don't say "out of IPs" clearly.** `Insufficient pod IPs` is easy to misread as a generic capacity problem — check subnet IP availability specifically before assuming you just need bigger nodes.
+
+## TL;DR
+
+- The AWS VPC CNI gives every pod a real VPC IP, and nodes reserve ENI capacity upfront — this is why clusters run out of IPs long before they run out of compute.
+- Enable prefix delegation first; it multiplies pod density per node without resizing your subnet.
+- You can't shrink a VPC's primary CIDR later — size subnets generously up front or plan for a genuinely painful migration.
 
 <CTA />

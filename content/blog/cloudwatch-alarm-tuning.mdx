@@ -1,41 +1,77 @@
 ---
 title: "CloudWatch Alarms That Wake You for a Reason"
 description: "An alarm that fires nightly is noise with a pager attached. Choosing statistics over averages, setting honest evaluation periods, and deleting dead alarms."
-h1: "Tuning CloudWatch Alarms So They Mean Something"
+h1: "Your On-Call Engineer Has Stopped Reading Alerts: Fixing CloudWatch Alarms That Cry Wolf"
 slug: "cloudwatch-alarm-tuning"
 published: 2026-06-23
 updated: 2026-06-23
 author: "Abhinav Banerjee"
-readingMinutes: 8
+readingMinutes: 3
 draft: false
 tags:
-  - "AWS"
+  - "Amazon CloudWatch"
+  - "AWS Monitoring"
+  - "Alert Fatigue"
   - "Observability"
-  - "CloudWatch"
+  - "SRE Best Practices"
 mapsToCaseStudy: "event-driven-remediation-prometheus-lambda"
 faqs: []
 ---
 
-{/* ---------------------------------------------------------------------------
-PORT THE PROSE HERE.
+The Slack channel got 340 alarm notifications last month. Four of them were real. The on-call engineer, three weeks into rotation, has trained themselves to glance at the channel and move on, because the CPU alarm has fired and self-resolved eleven times this week and every single time it was nothing. Then one Tuesday it fires again, everyone assumes it's the usual noise, and it turns out to be the start of a genuine cascading failure that goes unnoticed for forty minutes — because the humans who were supposed to catch it stopped trusting the system that was supposed to warn them.
 
-SPEC §8.3: these ten posts are already written and live in the "AWS DevOps blog series
-with production-focused content" chat. Do NOT regenerate them — paste the prose in below,
-replacing everything between these markers.
+Alert fatigue isn't a discipline problem. It's a signal-to-noise problem, and it's almost always fixable with better alarm configuration, not more willpower from your on-call team.
 
-The frontmatter above is complete and correct: slug, tags, reading time, publication date
-and the mapsToCaseStudy link that renders the contextual CTA are all set per SPEC §8.3.
+## The Fix
 
-When the prose is in:
-  1. Delete this comment block.
-  2. Add 2-3 entries to `faqs:` where the post answers a real question (40-60 word answers).
-  3. Set `draft: false`.
-  4. Check `readingMinutes` against the final word count (~220 wpm).
---------------------------------------------------------------------------- */}
+**Use anomaly detection instead of static thresholds for anything with natural variance.** A flat "alert if latency > 500ms" doesn't know the difference between 2am and 2pm. Anomaly detection bands adjust to expected patterns:
+```hcl
+resource "aws_cloudwatch_metric_alarm" "latency_anomaly" {
+  alarm_name          = "api-latency-anomaly"
+  comparison_operator = "GreaterThanUpperThreshold"
+  evaluation_periods  = 3
+  threshold_metric_id = "ad1"
 
-## This post is not published yet
+  metric_query {
+    id         = "ad1"
+    expression = "ANOMALY_DETECTION_BAND(m1, 2)"
+  }
 
-The prose for this post is being ported from the original draft. The frontmatter, routing,
-schema and internal linking are already in place.
+  metric_query {
+    id = "m1"
+    metric {
+      metric_name = "TargetResponseTime"
+      namespace   = "AWS/ApplicationELB"
+      period      = 300
+      stat        = "Average"
+      dimensions = {
+        LoadBalancer = "app/my-alb/50dc6c495c0c9188"
+      }
+    }
+  }
+}
+```
+
+**Require multiple bad signals with composite alarms**, instead of paging on one metric alone. High latency by itself might be a blip. High latency *and* high error rate together is worth waking someone up for.
+
+**Set `datapointsToAlarm` properly** — M out of N evaluation periods — so a single noisy data point doesn't trigger a page. Requiring 3 out of 5 breaching periods filters out most transient noise without meaningfully delaying real detection.
+
+**Tier your severity and route accordingly.** Customer-impacting SLO burn pages a human immediately. Everything else — elevated-but-not-critical metrics, capacity warnings — goes to a Slack channel or opens a ticket, never a phone call.
+
+**Alarm on symptoms your on-call engineer can act on at 3am**, not internal causes that need deep context. "Error rate above threshold" is actionable. "Internal queue depth metric #47 is elevated" usually isn't, unless that specific engineer wrote that specific service.
+
+## The Gotchas
+
+- **`treatMissingData` defaults can silently disable your alarm.** If a metric stops reporting — a common symptom of the actual outage you wanted to catch — and your alarm treats missing data as "not breaching," it goes quiet exactly when you need it most. Set this explicitly.
+- **Auto Scaling causes legitimate metric swings that trip static thresholds.** A scale-out event naturally spikes CPU briefly across the fleet average — tune thresholds with this in mind or you'll get paged for your autoscaler doing its job correctly.
+- **Average vs p99 tell completely different stories.** An alarm on average latency can look calm while a meaningful slice of your users are having a terrible time — pick the statistic that matches what you actually care about, not the one that happens to look smoothest on a dashboard.
+- **Alarms need OK-state actions too, not just ALARM-state ones.** Forgetting this means dashboards stay visually red long after something self-recovers, which trains people to ignore red exactly the way constant false pages train people to ignore Slack.
+- **High-resolution (1-second) custom metrics have a real cost** that scales with how many you publish and how often. Reach for standard resolution unless you have an actual sub-minute detection need.
+
+## TL;DR
+
+- Static thresholds cause most alert fatigue — anomaly detection and composite alarms (requiring multiple bad signals) cut noise dramatically.
+- Tier severity: only genuinely customer-impacting issues should page a human; everything else goes to Slack or a ticket.
+- Set `treatMissingData` explicitly — the default can silently go quiet during the exact outage you built the alarm to catch.
 
 <CTA />
