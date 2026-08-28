@@ -239,7 +239,7 @@
   }
 
   body {
-    background-color: var(--color-ground);
+    background-color: var(--ground);
     /* Chivo Light. The identity sets body copy at 300. */
     font-weight: 300;
     color: var(--color-ink);
@@ -260,7 +260,7 @@
     font-weight: 300;
     /* Tighter as the face gets larger; Sora opens up considerably at display sizes. */
     letter-spacing: -0.025em;
-    color: var(--color-heading);
+    color: var(--heading);
     line-height: 1.15;
     text-wrap: balance;
   }
@@ -280,7 +280,7 @@
   /* Visible keyboard focus on everything focusable — SPEC §6.5. */
   /* Mitre, no radius — the brand rule applies to the focus ring too. */
   :focus-visible {
-    outline: 2px solid var(--color-focus);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
     border-radius: 0;
   }
@@ -331,17 +331,25 @@
 
    `.marker` is the single saffron appearance per section. It is a 3px block, never
    text — saffron is 2.55:1 on platinum and fails as a foreground colour.
+
+   Both read the RUNTIME variables (--rule, --accent), never the --color-* aliases.
+   That distinction is not cosmetic. `@theme inline` declares --color-rule: var(--rule)
+   on :root, and a custom property that references another resolves at its DECLARATION
+   site — so --color-rule is permanently the :root value, and .on-inverse overriding
+   --rule never reaches it. Tailwind's own utilities are unaffected because "inline"
+   means they compile to var(--rule) directly. Hand-written CSS has to do the same.
+   Using var(--rule) here drew a light moonstone hairline across the dark hero.
    ========================================================================== */
 
 @layer components {
   .grid-frame {
-    border-top: 1px solid var(--color-rule);
-    border-left: 1px solid var(--color-rule);
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
   }
 
   .grid-frame > * {
-    border-right: 1px solid var(--color-rule);
-    border-bottom: 1px solid var(--color-rule);
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
   }
 
   .marker::before {
@@ -349,7 +357,7 @@
     display: block;
     width: 1.625rem;
     height: 3px;
-    background-color: var(--color-accent);
+    background-color: var(--accent);
     margin-bottom: 0.875rem;
   }
 
@@ -364,7 +372,7 @@
     content: "";
     width: 1.625rem;
     height: 3px;
-    background-color: var(--color-accent);
+    background-color: var(--accent);
     flex-shrink: 0;
   }
 }
@@ -426,11 +434,11 @@
   }
 
   .prose-duvaryne :where(li):not(:where(.not-prose, .not-prose *))::marker {
-    color: var(--color-muted);
+    color: var(--muted);
   }
 
   .prose-duvaryne :where(a):not(:where(.not-prose, .not-prose *)) {
-    color: var(--color-action);
+    color: var(--action);
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;
@@ -438,25 +446,25 @@
   }
 
   .prose-duvaryne :where(a):not(:where(.not-prose, .not-prose *)):hover {
-    color: var(--color-action-hover);
+    color: var(--action-hover);
   }
 
   .prose-duvaryne :where(strong):not(:where(.not-prose, .not-prose *)) {
     font-weight: 600;
-    color: var(--color-heading);
+    color: var(--heading);
   }
 
   /* The one place saffron appears in body copy: a 3px marker, not text. */
   .prose-duvaryne :where(blockquote):not(:where(.not-prose, .not-prose *)) {
-    border-left: 3px solid var(--color-accent);
+    border-left: 3px solid var(--accent);
     padding-left: 1.25em;
-    color: var(--color-muted);
+    color: var(--muted);
     font-style: normal;
   }
 
   .prose-duvaryne :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) {
-    background-color: var(--color-tint);
-    color: var(--color-fg);
+    background-color: var(--tint);
+    color: var(--fg);
     padding: 0.15em 0.4em;
     border-radius: 0;
     font-size: 0.9em;
@@ -469,13 +477,13 @@
   }
 
   .prose-duvaryne :where(th, td):not(:where(.not-prose, .not-prose *)) {
-    border: 1px solid var(--color-rule);
+    border: 1px solid var(--rule);
     padding: 0.6em 0.8em;
     text-align: left;
   }
 
   .prose-duvaryne :where(th):not(:where(.not-prose, .not-prose *)) {
-    background-color: var(--color-tint);
+    background-color: var(--tint);
     font-weight: 600;
   }
 }
@@ -487,11 +495,11 @@
 @layer components {
   pre[data-theme],
   code[data-theme] {
-    background-color: var(--color-surface);
+    background-color: var(--surface);
   }
 
   .prose-duvaryne pre {
-    border: 1px solid var(--color-rule);
+    border: 1px solid var(--rule);
     border-radius: 0;
     padding: 1rem 1.15rem;
     overflow-x: auto;
@@ -519,18 +527,18 @@
     width: 1.25rem;
     margin-right: 1.25rem;
     text-align: right;
-    color: var(--color-muted);
+    color: var(--muted);
   }
 
   figure[data-rehype-pretty-code-figure] figcaption[data-rehype-pretty-code-title] {
     font-family: var(--font-mono), ui-monospace, monospace;
     font-size: var(--text-small);
-    color: var(--color-muted);
-    border: 1px solid var(--color-rule);
+    color: var(--muted);
+    border: 1px solid var(--rule);
     border-bottom: 0;
     border-radius: 0;
     padding: 0.5rem 1.15rem;
-    background-color: var(--color-ground);
+    background-color: var(--ground);
   }
 
   figure[data-rehype-pretty-code-figure]:has(figcaption) pre {
