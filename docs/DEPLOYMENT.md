@@ -115,7 +115,7 @@ and the visitor still gets a success response — the failure is logged, never s
    ```bash
    npx wrangler secret put RESEND_API_KEY
    npx wrangler secret put NOTIFY_FROM   # noreply@send.duvaryne.com
-   npx wrangler secret put NOTIFY_TO     # hello@duvaryne.com
+   npx wrangler secret put NOTIFY_TO     # contact@duvaryne.com
    ```
 
 `reply_to` on the notification is set to the enquirer's address, so replying from the
@@ -166,7 +166,7 @@ across intact:
 | MX | `mailstore1.secureserver.net` | 10 |
 | TXT | `v=spf1 include:spf.em.secureserver.net ?all` | — |
 
-That is GoDaddy-hosted **Titan**, and it is the mailbox for `hello@duvaryne.com`.
+That is GoDaddy-hosted **Titan**, and it is the mailbox for `contact@duvaryne.com`.
 
 **Do not let anything change the apex `MX` or the SPF `TXT` record.** In particular,
 enabling Cloudflare Email Routing will offer to replace the MX records with its own,

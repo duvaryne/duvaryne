@@ -162,7 +162,7 @@ export const home = {
     body: "Thirty minutes on your architecture and your Cost and Usage Report. You leave with the three largest savings in your account, quantified. If there is nothing worth doing, we will tell you.",
     buttonLabel: "Book a free 30-minute review",
     href: "https://calendly.com/abhinav-duvaryne/30min",
-    secondary: { label: "hello@duvaryne.com", href: "mailto:hello@duvaryne.com" },
+    secondary: { label: "contact@duvaryne.com", href: "mailto:contact@duvaryne.com" },
   },
 } as const;
 

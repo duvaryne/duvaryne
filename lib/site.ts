@@ -22,7 +22,7 @@ export const site = {
   wordmark: "DUVARYNE",
   wordmarkSub: "TECHNOLOGIES LLP",
   url: "https://duvaryne.com",
-  email: "hello@duvaryne.com",
+  email: "contact@duvaryne.com",
 
   phone: "+91 95179 71933",
   phoneHref: "tel:+919517971933",
