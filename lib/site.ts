@@ -36,7 +36,6 @@ export const site = {
 
   social: {
     linkedin: "https://www.linkedin.com/company/duvaryne",
-    x: "https://x.com/duvaryne",
   },
 
   founded: 2025,

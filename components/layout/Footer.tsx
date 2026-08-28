@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Linkedin, Mail, MapPin, Phone } from "lucide-react";
 import { site } from "@/lib/site";
 import { legalNav, primaryNav, serviceNav } from "@/lib/nav";
 import { Container } from "./Container";
@@ -23,7 +23,6 @@ export function Footer() {
   // that bug twice.
   const socialMeta = {
     linkedin: { label: "LinkedIn", Icon: Linkedin },
-    x: { label: "X", Icon: Twitter },
   } as const;
 
   const socials = (Object.keys(socialMeta) as (keyof typeof socialMeta)[])
