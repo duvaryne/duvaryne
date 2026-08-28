@@ -6,7 +6,7 @@
  * LinkedIn URLs.
  *
  * Entity-consistency rule: `name` is spelled identically here, in JSON-LD, in the footer,
- * on LinkedIn and on GitHub. AI search engines resolve entities by exact-string matching,
+ * on LinkedIn. AI search engines resolve entities by exact-string matching,
  * so "Duvaryne" and "DuVaryne" must not be used interchangeably.
  *
  * Two names, deliberately: `name` is the registered entity and belongs in JSON-LD, the
@@ -37,7 +37,6 @@ export const site = {
   social: {
     linkedin: "https://www.linkedin.com/company/duvaryne",
     x: "https://x.com/duvaryne",
-    github: "https://github.com/duvaryne",
   },
 
   founded: 2025,

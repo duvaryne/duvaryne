@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { site } from "@/lib/site";
 import { legalNav, primaryNav, serviceNav } from "@/lib/nav";
 import { Container } from "./Container";
@@ -23,7 +23,6 @@ export function Footer() {
   // that bug twice.
   const socialMeta = {
     linkedin: { label: "LinkedIn", Icon: Linkedin },
-    github: { label: "GitHub", Icon: Github },
     x: { label: "X", Icon: Twitter },
   } as const;
 

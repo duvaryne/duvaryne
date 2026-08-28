@@ -57,7 +57,7 @@ export function personSchema(): Json {
     jobTitle: site.founder.jobTitle,
     worksFor: { "@id": ORG_ID },
     url: absoluteUrl("/about"),
-    sameAs: [site.social.linkedin, site.social.github],
+    sameAs: [site.social.linkedin],
     knowsAbout: [ "Amazon Web Services", "Kubernetes", "DevOps", "Infrastructure as Code", "Cloud cost optimisation", "Site reliability engineering",
     ],
     hasCredential: site.founder.credentials.map((c) => ({ "@type": "EducationalOccupationalCredential",

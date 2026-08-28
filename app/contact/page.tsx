@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Github, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import { Linkedin, Mail, MapPin, Phone } from "lucide-react";
 
 import { Section } from "@/components/layout/Section";
 import { PageHeader } from "@/components/marketing/PageHeader";
@@ -84,17 +84,6 @@ export default function ContactPage() {
                   className="inline-flex h-11 w-11 items-center justify-center border border-rule text-muted transition-colors duration-150 hover:border-action hover:text-action"
                 >
                   <Linkedin size={17} aria-hidden />
-                </a>
-              </li>
-              <li>
-                <a
-                  href={site.social.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                  className="inline-flex h-11 w-11 items-center justify-center border border-rule text-muted transition-colors duration-150 hover:border-action hover:text-action"
-                >
-                  <Github size={17} aria-hidden />
                 </a>
               </li>
             </ul>
