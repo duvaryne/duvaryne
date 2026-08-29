@@ -17,19 +17,21 @@ import { cn } from "@/lib/utils";
  * light forever.
  */
 
-const MODES = ["system", "light", "dark", "contrast"] as const;
+const MODES = ["dark", "light", "contrast"] as const;
 type Mode = (typeof MODES)[number];
 
 const META: Record<Mode, { label: string; Icon: typeof Sun }> = {
-  system: { label: "System", Icon: Contrast },
-  light: { label: "Light", Icon: Sun },
   dark: { label: "Dark", Icon: Moon },
+  light: { label: "Light", Icon: Sun },
   contrast: { label: "High contrast", Icon: Contrast },
 };
 
 function apply(mode: Mode) {
   const root = document.documentElement;
-  if (mode === "system") root.removeAttribute("data-theme");
+  // Dark is what :root already is, so it is expressed by removing the attribute
+  // rather than by stamping one. That keeps the default and the explicit choice
+  // rendering through exactly the same declarations.
+  if (mode === "dark") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", mode);
   try {
     localStorage.setItem("duvaryne-theme", mode);
@@ -57,11 +59,11 @@ function getSnapshot(): Mode {
   } catch {
     // Private browsing or blocked site data — "system" is the correct fallback.
   }
-  return "system";
+  return "dark";
 }
 
-/** The server has no preference to read, and must not guess one. */
-const getServerSnapshot = (): Mode => "system";
+/** The server cannot read a stored preference; the shipped default is dark. */
+const getServerSnapshot = (): Mode => "dark";
 
 export function ThemeToggle({ className }: { className?: string }) {
   const mode = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -100,5 +102,5 @@ export function ThemeToggle({ className }: { className?: string }) {
  */
 export const themeScript = `(function(){try{
 var m=localStorage.getItem('duvaryne-theme');
-if(m==='light'||m==='dark'||m==='contrast'){document.documentElement.setAttribute('data-theme',m);}
+if(m==='light'||m==='contrast'){document.documentElement.setAttribute('data-theme',m);}
 }catch(e){}})();`;

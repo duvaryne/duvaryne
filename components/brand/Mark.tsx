@@ -22,18 +22,27 @@ const OUTER = "M139 167.56 L178 100 L139 32.44 L61 32.44 L22 100 L61 167.56";
 const MIDDLE = "M127 146.77 L154 100 L127 53.23 L73 53.23 L46 100 L73 146.77";
 const INNER = "M115 125.98 L130 100 L115 74.02 L85 74.02 L70 100 L85 125.98";
 
-export type MarkTone = "light" | "dark" | "mono";
+export type MarkTone = "theme" | "light" | "dark" | "mono";
 
-/** Stroke colours per tone. `mono` is the single-colour lockup for stamp, etch and fax. */
+/**
+ * Stroke colours per tone.
+ *
+ * `theme` is the default and the one to use in the app: it reads the --mark-* variables,
+ * so the same SVG is correct in dark, light and high-contrast without the caller having
+ * to know which theme is active. The fixed tones exist for contexts that cannot resolve
+ * CSS variables — chiefly next/og image generation — and `mono` is the single-colour
+ * lockup for stamp, etch and fax.
+ */
 const TONES: Record<MarkTone, { outer: string; middle: string; inner: string }> = {
+  theme: { outer: "var(--mark-outer)", middle: "var(--mark-mid)", inner: "var(--mark-inner)" },
   light: { outer: "#6E7880", middle: "#9AA3AC", inner: "#C8922E" },
-  dark: { outer: "#F4F6F8", middle: "#9AA3AC", inner: "#E0AE4E" },
+  dark: { outer: "#F4F6F8", middle: "#9AA3AC", inner: "#F5B935" },
   mono: { outer: "currentColor", middle: "currentColor", inner: "currentColor" },
 };
 
 export function Mark({
   size = 40,
-  tone = "light",
+  tone = "theme",
   className,
   title,
 }: {
@@ -64,7 +73,7 @@ export function Mark({
               { d: OUTER, stroke: c.outer, width: 16 },
               { d: INNER, stroke: c.inner, width: 18 },
             ]
-          : [{ d: OUTER, stroke: tone === "mono" ? "currentColor" : "#40474E", width: 22 }];
+          : [{ d: OUTER, stroke: tone === "mono" ? "currentColor" : c.outer, width: 22 }];
 
   return (
     <svg

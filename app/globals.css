@@ -100,89 +100,97 @@
   --color-accent-strong: var(--accent-strong);
 }
 
-/* ---------- Light (default) ---------- */
+/* ----------------------------------------------------------------------------
+   THEMES — dark-first
+   ----------------------------------------------------------------------------
+   The site ships dark. That is a deliberate reversal of the identity's platinum
+   ground, made for one measurable reason: saffron is 2.55:1 on platinum and fails
+   even the 3:1 floor for a non-text boundary, so on a light ground the brand's only
+   accent can never be a button, a link or a figure. It appears once as a hairline
+   and everything else is grey on grey.
+
+   On ink the same accent measures 8.40:1. Moving the ground is what lets the accent
+   do work, and the accent doing work is what the page was missing.
+
+   The chart's constraints still hold: no black (the ground is #23282D, not #000) and
+   no blue anywhere. Yellow is named favourable; only the exact hex moved, from
+   #C8922E to #F5B935, so it reads at speed on a dark ground.
+
+   `:root` is therefore the dark palette, not a light one. There is no
+   prefers-color-scheme switch: a visitor on a light OS still gets the brand, and the
+   toggle offers light and high-contrast for anyone who wants them.
+   -------------------------------------------------------------------------- */
+
+/* ---------- Dark (default) ---------- */
 :root {
+  --ground: #23282d;
+  --surface: #2c3238;
+  --rule: #3a4148;
+  --fg: #f4f6f8;
+  --muted: #c3cad1; /* 8.98:1 on the ground */
+  --heading: #ffffff;
+  --action: #f5b935;
+  --action-hover: #ffc94d;
+  --on-action: #23282d; /* 8.40:1 against the gold fill */
+  --inverse: #2c3238;
+  --inverse-deep: #1b2025;
+  --inverse-rule: #3a4148;
+  --on-inverse: #f4f6f8;
+  --on-inverse-muted: #c3cad1;
+  --accent: #f5b935;
+  --accent-strong: #f5b935;
+  --tint: #2c3238;
+  --decor: #6e7880;
+  --focus: #f5b935;
+
+  /* The mark's three thresholds. Kept as variables so one SVG serves every theme —
+     an <svg stroke="#..."> cannot follow a theme, and shipping three copies of the
+     mark is how a logo drifts out of sync with its own identity. */
+  --mark-outer: #f4f6f8;
+  --mark-mid: #9aa3ac;
+  --mark-inner: #f5b935;
+  color-scheme: dark;
+}
+
+/* ---------- Light ---------- */
+:root[data-theme="light"] {
   --ground: #f4f6f8;
   --surface: #ffffff;
   --rule: #dce1e6;
   --fg: #2c3238;
-  --muted: #5c646c; /* NOT silver — silver is 2.36:1 here and fails */
+  --muted: #5c646c;
   --heading: #40474e;
-  --action: #40474e; /* pewter, 8.70:1. Saffron cannot carry this role. */
+  /* Pewter, not gold. The brighter accent is 1.88:1 on platinum — unreadable as a
+     button here — so the light theme keeps pewter for actions and uses gold only
+     as a marker, exactly as the original identity does. */
+  --action: #40474e;
   --action-hover: #2c3238;
   --on-action: #f4f6f8;
   --inverse: #40474e;
   --inverse-deep: #2c3238;
   --inverse-rule: #5c646c;
   --on-inverse: #f4f6f8;
-  --on-inverse-muted: #dce1e6; /* 7.16:1 on pewter */
+  --on-inverse-muted: #dce1e6;
   --accent: #c8922e;
+  --accent-strong: #8a6414;
   --tint: #eef1f4;
   --decor: #9aa3ac;
   --focus: #40474e;
-  --accent-strong: #8a6414;
+  --mark-outer: #6e7880;
+  --mark-mid: #9aa3ac;
+  --mark-inner: #c8922e;
   color-scheme: light;
 }
 
-/* ---------- Dark ---------- */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="contrast"]) {
-    --ground: #2c3238;
-    --surface: #40474e;
-    --rule: #5c646c;
-    --fg: #f4f6f8;
-    --muted: #b7bfc7; /* 6.97:1 on ink */
-    --heading: #f4f6f8;
-    --action: #dce1e6;
-    --action-hover: #ffffff;
-    --on-action: #2c3238;
-    --inverse: #40474e;
-    --inverse-deep: #23282d;
-    --inverse-rule: #5c646c;
-    --on-inverse: #f4f6f8;
-    --on-inverse-muted: #b7bfc7;
-    --accent: #e0ae4e; /* 6.38:1 on ink; plain saffron is only 4.69 */
-    --tint: #40474e;
-    --decor: #6e7880;
-    --focus: #e0ae4e;
-    --accent-strong: #e0ae4e;
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --ground: #2c3238;
-  --surface: #40474e;
-  --rule: #5c646c;
-  --fg: #f4f6f8;
-  --muted: #b7bfc7;
-  --heading: #f4f6f8;
-  --action: #dce1e6;
-  --action-hover: #ffffff;
-  --on-action: #2c3238;
-  --inverse: #40474e;
-  --inverse-deep: #23282d;
-  --inverse-rule: #5c646c;
-  --on-inverse: #f4f6f8;
-  --on-inverse-muted: #b7bfc7;
-  --accent: #e0ae4e;
-  --tint: #40474e;
-  --decor: #6e7880;
-  --focus: #e0ae4e;
-  --accent-strong: #e0ae4e;
-  color-scheme: dark;
-}
-
 /* ---------- High contrast ----------
-   Pure white ground with ink type is 12.96:1. Black is still not used: the brand
-   rule holds even here, and ink already exceeds AAA by a wide margin. Rules step
-   up from moonstone to pewter so every boundary is visible rather than implied. */
+   Pure white ground with ink type is 12.96:1. Black is still not used. Rules step up
+   from hairline to pewter so every boundary is drawn rather than implied. */
 :root[data-theme="contrast"] {
   --ground: #ffffff;
   --surface: #ffffff;
   --rule: #40474e;
   --fg: #2c3238;
-  --muted: #2c3238; /* no dimmed text in this theme */
+  --muted: #2c3238;
   --heading: #2c3238;
   --action: #2c3238;
   --action-hover: #40474e;
@@ -192,11 +200,14 @@
   --inverse-rule: #f4f6f8;
   --on-inverse: #ffffff;
   --on-inverse-muted: #f4f6f8;
-  --accent: #8a6414; /* darkened saffron: 5.37:1 on white, where #C8922E is 2.55 */
+  --accent: #8a6414; /* 5.37:1 on white, where the bright gold is 1.88 */
+  --accent-strong: #8a6414;
   --tint: #f4f6f8;
   --decor: #40474e;
   --focus: #2c3238;
-  --accent-strong: #8a6414;
+  --mark-outer: #2c3238;
+  --mark-mid: #40474e;
+  --mark-inner: #8a6414;
   color-scheme: light;
 }
 
@@ -212,10 +223,24 @@
    gone. That is exactly what happened on the hero.
    -------------------------------------------------------------------------- */
 .on-inverse {
+  --surface: #2c3238;
+  --rule: #3a4148;
+  --fg: #f4f6f8;
+  --heading: #ffffff;
+  --muted: #c3cad1;
+  --action: #f5b935;
+  --action-hover: #ffc94d;
+  --on-action: #1b2025;
+  --accent: #f5b935;
+  --accent-strong: #f5b935;
+  --tint: #2c3238;
+  --focus: #f5b935;
+}
+
+/* The light theme still has genuinely inverse sections, so it keeps the old mapping. */
+:root[data-theme="light"] .on-inverse {
   --surface: #40474e;
   --rule: #5c646c;
-  --fg: #f4f6f8;
-  --heading: #f4f6f8;
   --muted: #b7bfc7;
   --action: #f4f6f8;
   --action-hover: #ffffff;
@@ -288,12 +313,12 @@
   /* On pewter and ink grounds the ring switches to saffron, which is the one place
      the accent earns its keep as UI: 3.41:1 on pewter, 4.69:1 on ink. */
   .on-inverse :focus-visible {
-    outline-color: var(--color-saffron-300);
+    outline-color: var(--accent);
   }
 
   ::selection {
-    background-color: var(--color-saffron);
-    color: var(--color-ink);
+    background-color: var(--accent);
+    color: #1b2025;
   }
 
   button,

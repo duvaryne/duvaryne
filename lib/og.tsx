@@ -27,7 +27,7 @@ export function renderOgImage({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#F4F6F8",
+          background: "#23282D",
           padding: "68px 72px",
         }}
       >
@@ -39,9 +39,9 @@ export function renderOgImage({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ width: 10, height: 30, background: "#C8922E" }} />
+            <div style={{ width: 10, height: 30, background: "#F5B935" }} />
             {/* Satori requires explicit display on any element with more than one child. */}
-            <div style={{ display: "flex", fontSize: 26, fontWeight: 700, color: "#2C3238" }}>
+            <div style={{ display: "flex", fontSize: 26, fontWeight: 700, color: "#F4F6F8" }}>
               <span>Duvaryne</span>
             </div>
           </div>
@@ -75,7 +75,7 @@ export function renderOgImage({
             style={{
               fontSize: title.length > 68 ? 46 : 56,
               fontWeight: 700,
-              color: "#2C3238",
+              color: "#F4F6F8",
               lineHeight: 1.14,
               letterSpacing: "-0.02em",
               maxWidth: 1010,
@@ -90,7 +90,7 @@ export function renderOgImage({
             display: "flex",
             fontSize: 20,
             color: "rgba(255,255,255,0.5)",
-            borderTop: "1px solid #DCE1E6",
+            borderTop: "1px solid #3A4148",
             paddingTop: 24,
           }}
         >

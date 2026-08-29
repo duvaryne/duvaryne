@@ -70,7 +70,7 @@ export function Hero() {
           {/* The mark as a structural block. Decorative here — the wordmark in the header
               already names the brand, so it carries no title. */}
           <div className="flex items-center justify-center bg-inverse px-5 py-14 lg:py-20">
-            <Mark size={132} tone="dark" className="w-[7.5rem] lg:w-[9.5rem]" />
+            <Mark size={132} className="w-[7.5rem] lg:w-[9.5rem]" />
           </div>
         </div>
 

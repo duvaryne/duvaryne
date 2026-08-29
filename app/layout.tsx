@@ -63,11 +63,10 @@ export const viewport: Viewport = {
   initialScale: 1,
   /* Platinum ground in light, ink in dark. Neither is black — the identity forbids it,
      and the browser chrome is as much the brand as the page is. */
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F4F6F8" },
-    { media: "(prefers-color-scheme: dark)", color: "#2C3238" },
-  ],
-  colorScheme: "light dark",
+  /* The site ships dark for everyone, so the browser chrome matches the ground
+     rather than the visitor's OS preference. */
+  themeColor: "#23282D",
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

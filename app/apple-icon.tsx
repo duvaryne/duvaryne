@@ -20,14 +20,14 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#F4F6F8",
+          background: "#23282D",
         }}
       >
         <svg width="132" height="132" viewBox="0 0 200 200">
           <g fill="none" strokeLinecap="butt" strokeLinejoin="miter" strokeMiterlimit={10}>
             <path
               d="M139 167.56 L178 100 L139 32.44 L61 32.44 L22 100 L61 167.56"
-              stroke="#6E7880"
+              stroke="#F4F6F8"
               strokeWidth={9}
             />
             <path
@@ -37,7 +37,7 @@ export default function AppleIcon() {
             />
             <path
               d="M115 125.98 L130 100 L115 74.02 L85 74.02 L70 100 L85 125.98"
-              stroke="#C8922E"
+              stroke="#F5B935"
               strokeWidth={6.5}
             />
           </g>

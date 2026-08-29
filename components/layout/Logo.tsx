@@ -17,7 +17,7 @@ import { Mark, type MarkTone } from "@/components/brand/Mark";
  */
 export function Logo({
   className,
-  tone = "light",
+  tone = "theme",
   variant = "horizontal",
 }: {
   className?: string;
