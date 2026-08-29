@@ -14,8 +14,20 @@ import { cn } from "@/lib/utils";
  *     softened" — a stroke-linejoin of "round" quietly undoes the whole identity.
  *   - Saffron appears on the innermost threshold only. It is the single accent.
  *
- * Ring count reduces with size, per the identity's "in use" plate: below 48px the middle
- * threshold closes up visually, and below 24px only the outer ring survives legibly.
+ * Ring count reduces with size, following the identity's "in use" plate but with the
+ * three-ring threshold lowered from 48px to 28px.
+ *
+ * The plate drops the middle threshold early because three rings were said to close up
+ * at small sizes. Measured against this viewBox that is no longer true: strokes are
+ * defined in 200 units, so at 28px the three rings render at 1.26 / 1.05 / 0.91 CSS px —
+ * roughly 2.5 / 2.1 / 1.8 device pixels on a 2x display, all comfortably resolvable. The
+ * original rule was drawn for print and 1x screens, and for a silver middle ring on a
+ * light ground where it had very little contrast to begin with; on the ink ground it
+ * reads clearly.
+ *
+ * The reduction still applies where it genuinely matters. Below 28px the rings do merge,
+ * and below 18px only the outer threshold survives — which is why the favicon, displayed
+ * at ~16px in a browser tab, keeps its own two-ring drawing.
  */
 
 const OUTER = "M139 167.56 L178 100 L139 32.44 L61 32.44 L22 100 L61 167.56";
@@ -57,23 +69,18 @@ export function Mark({
   // Stroke weights are not simply scaled: at small sizes the rings are thickened so the
   // form still reads once antialiasing takes over. These values are from the identity.
   const rings =
-    size >= 48
+    size >= 28
       ? [
           { d: OUTER, stroke: c.outer, width: 9 },
           { d: MIDDLE, stroke: c.middle, width: 7.5 },
           { d: INNER, stroke: c.inner, width: 6.5 },
         ]
-      : size >= 32
+      : size >= 18
         ? [
-            { d: OUTER, stroke: c.outer, width: 11 },
-            { d: INNER, stroke: c.inner, width: 11 },
+            { d: OUTER, stroke: c.outer, width: 16 },
+            { d: INNER, stroke: c.inner, width: 18 },
           ]
-        : size >= 20
-          ? [
-              { d: OUTER, stroke: c.outer, width: 16 },
-              { d: INNER, stroke: c.inner, width: 18 },
-            ]
-          : [{ d: OUTER, stroke: tone === "mono" ? "currentColor" : c.outer, width: 22 }];
+        : [{ d: OUTER, stroke: tone === "mono" ? "currentColor" : c.outer, width: 22 }];
 
   return (
     <svg
