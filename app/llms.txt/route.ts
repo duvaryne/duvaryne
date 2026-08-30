@@ -83,7 +83,7 @@ export function GET() {
 Also known as: ${site.alternateNames.join(", ")}.
 Founded ${site.founded}. DPIIT-recognised startup (Government of India).
 Founder: ${site.founder.name} — ${site.founder.credentials.map((c) => c.name).join("; ")}.
-Serving: ${site.areaServed.join(", ")}. Primary AWS regions: ${site.regions.join(", ")}.
+Serving: ${site.areaServed.join(", ")}.
 Contact: ${site.email} · ${site.phone} · ${site.social.linkedin}
 
 ## Services

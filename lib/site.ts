@@ -86,7 +86,15 @@ export const site = {
   trustSignals: [ "DPIIT-recognised", "CKA", "AWS Solutions Architect – Associate", "IIT Madras DevOps", "13 years hands-on",
   ],
 
-  /** Primary AWS regions — drives `areaServed` in schema and the copy on service pages. */
+  /**
+   * Primary AWS regions. Deliberately NOT surfaced as a standalone claim anywhere.
+   *
+   * Stating "primary regions: ap-south-1, ap-south-2" with nothing beside it reads as
+   * "India-only vendor" to a US or EU buyer, and prices the work before they have read a
+   * sentence. Where regions are mentioned in copy (see services/aws-cloud.mdx) they are
+   * always paired with US and EU coverage, and framed as a data-residency capability
+   * rather than a limit. Keep it that way.
+   */
   regions: ["ap-south-1 (Mumbai)", "ap-south-2 (Hyderabad)"],
   areaServed: ["IN", "US", "EU"],
 
