@@ -44,11 +44,21 @@ const jetbrains = JetBrains_Mono({
  *
  * Read from the environment rather than committed: they are per-property, they change
  * when a property is re-verified, and a token for someone else's property in the repo is
- * just confusing. Absent values are omitted from the head entirely — Next drops undefined
- * keys, so an unset variable produces no empty meta tag.
+ * just confusing.
+ *
+ * These are BUILD-time values, not runtime ones. Every page here is prerendered, so the
+ * meta tag is baked into the HTML by `next build` — setting the variable as a Cloudflare
+ * Worker var would do nothing, because by the time the Worker runs, the HTML already
+ * exists. It has to be present in the environment of the build step that produces the
+ * deployed bundle (.github/workflows/ci.yml, "Build worker").
+ *
+ * `|| undefined` rather than a bare read: an unset GitHub Actions variable interpolates to
+ * the empty string, not to nothing, and "" is a value as far as Next's metadata is
+ * concerned — it would emit <meta name="google-site-verification" content=""/>, which is a
+ * broken tag rather than an absent one. Normalising to undefined drops the key instead.
  */
 const verification = {
-  google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
   other: {
     ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
       ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }

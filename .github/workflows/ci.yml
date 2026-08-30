@@ -172,11 +172,19 @@ jobs:
 
       # cf:build pins --webpack; Turbopack does not emit the prerendered layout the
       # adapter copies from. populateCache uploads the prerendered pages as static assets.
+      # This is the only build whose output is deployed, so it is the only place a
+      # NEXT_PUBLIC_* value has to be present. Search-console tokens are repository
+      # *variables*, not secrets: they prove domain ownership and nothing more, and a
+      # secret would be masked in logs for no benefit. An unset variable interpolates to
+      # the empty string, which app/layout.tsx normalises away rather than emitting an
+      # empty meta tag.
       - name: Build worker
         if: steps.creds.outputs.ready == 'true'
         run: pnpm cf:build
         env:
           NEXT_PUBLIC_SITE_URL: https://duvaryne.com
+          NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }}
+          NEXT_PUBLIC_BING_SITE_VERIFICATION: ${{ vars.NEXT_PUBLIC_BING_SITE_VERIFICATION }}
 
       - name: Deploy
         if: steps.creds.outputs.ready == 'true'
