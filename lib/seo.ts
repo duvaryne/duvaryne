@@ -47,7 +47,14 @@ export function buildMetadata({
   return {
     title: full,
     description,
-    alternates: { canonical: url },
+    /* `alternates` is replaced wholesale by the deepest route that sets it, not merged
+       field-by-field with the layout's. Declaring only `canonical` here silently drops the
+       feed link the root layout declares, on every page that calls this builder — which is
+       every page. Both belong together, in the one place that always wins. */
+    alternates: {
+      canonical: url,
+      types: { "application/rss+xml": [{ url: "/rss.xml", title: `${site.shortName} blog` }] },
+    },
     robots: noIndex
       ? { index: false, follow: false }
       : {

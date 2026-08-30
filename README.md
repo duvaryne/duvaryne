@@ -1,6 +1,6 @@
 # duvaryne.com
 
-Marketing site for **Duvaryne LLP** — AWS and DevOps consulting, Bengaluru.
+Marketing site for **Duvaryne Technologies LLP** — AWS and DevOps consulting, Bengaluru.
 Next.js 16 (App Router) on Cloudflare Workers, with Neon Postgres behind the contact form.
 
 ---

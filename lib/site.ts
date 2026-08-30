@@ -24,6 +24,24 @@ export const site = {
   url: "https://duvaryne.com",
   email: "contact@duvaryne.com",
 
+  /**
+   * Every spelling of the brand a person might type or a search engine might encounter.
+   *
+   * "Duvaryne" is a coined word with no dictionary meaning, which is the best possible
+   * starting position for a branded query — nothing else competes for it. The risk is the
+   * opposite one: a search engine that has only ever seen "Duvaryne Technologies LLP" may
+   * not confidently resolve a bare "duvaryne" to the same entity, and vice versa. Listing
+   * the variants as `alternateName` states outright that they are one organisation.
+   *
+   * Order matters only in that `name` (the registered entity) is not repeated here.
+   */
+  alternateNames: [
+    "Duvaryne",
+    "Duvaryne Technologies",
+    "Duvaryne LLP",
+    "duvaryne.com",
+  ],
+
   phone: "+91 95179 71933",
   phoneHref: "tel:+919517971933",
 
@@ -71,6 +89,48 @@ export const site = {
   /** Primary AWS regions — drives `areaServed` in schema and the copy on service pages. */
   regions: ["ap-south-1 (Mumbai)", "ap-south-2 (Hyderabad)"],
   areaServed: ["IN", "US", "EU"],
+
+  /**
+   * The service catalogue, as offered rather than as navigated.
+   *
+   * This is deliberately not derived from `serviceNav` in lib/nav.ts. That list is a
+   * menu — it is ordered for a human scanning a header, and it includes "Engagement
+   * Models", which is a pricing page and not a service anyone buys. This list is the
+   * commercial offer, and it is what feeds `hasOfferCatalog` in the Organization schema.
+   *
+   * `serviceType` values are the words a buyer actually searches, which is why they read
+   * "AWS Cloud Consulting" rather than the site's own shorter nav label.
+   */
+  services: [
+    {
+      name: "AWS Cloud Consulting",
+      serviceType: "AWS Cloud Consulting",
+      path: "/services/aws-cloud/",
+      description:
+        "AWS landing zones, cloud migration, security baselines and managed support for production accounts.",
+    },
+    {
+      name: "DevOps & Platform Engineering",
+      serviceType: "DevOps Consulting",
+      path: "/services/devops/",
+      description:
+        "CI/CD pipelines, Kubernetes, GitOps and software supply-chain signing, built to be handed over.",
+    },
+    {
+      name: "AWS Cost Optimisation",
+      serviceType: "Cloud Cost Optimisation",
+      path: "/aws-cost-optimization/",
+      description:
+        "Cost and Usage Report analysis, waste removal and the guardrails that stop the spend returning.",
+    },
+    {
+      name: "IT Consultation",
+      serviceType: "IT Consulting",
+      path: "/services/it-consultation/",
+      description:
+        "Architecture review and a second senior opinion on a decision that is expensive to get wrong.",
+    },
+  ],
 } as const;
 
 export type Site = typeof site;

@@ -11,6 +11,7 @@ import { Mdx } from "@/components/content/Mdx";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 import { getPage, getPages } from "@/lib/content";
+import { site } from "@/lib/site";
 import { buildMetadata } from "@/lib/seo";
 import {
   breadcrumbSchema,
@@ -83,6 +84,20 @@ export default async function MarketingPage({ params }: Props) {
   const crumbs = buildCrumbs(page);
   const isService = page.schema === "Service";
 
+  /**
+   * The /services/ hub also emits a Service node per offering.
+   *
+   * The Organization's `hasOfferCatalog` references these by @id, and a catalogue whose
+   * entries resolve to nothing is a weaker claim than one whose entries are defined. Each
+   * service also has its own page carrying the same @id; repeating a node under a stable
+   * @id is how JSON-LD expects an entity to be described from more than one document, and
+   * consumers merge rather than duplicate them.
+   *
+   * Cost optimisation lives at /aws-cost-optimization/ rather than under /services/, which
+   * is why this reads the catalogue in lib/site.ts instead of the page's own children.
+   */
+  const catalogue = page.slug === "services" ? site.services : [];
+
   return (
     <>
       <PageHeader
@@ -141,6 +156,14 @@ export default async function MarketingPage({ params }: Props) {
                 path,
               })
             : null,
+          ...catalogue.map((svc) =>
+            serviceSchema({
+              name: svc.name,
+              description: svc.description,
+              serviceType: svc.serviceType,
+              path: svc.path,
+            }),
+          ),
           faqPageSchema(page.faqs),
           breadcrumbSchema(crumbs.map((c) => ({ name: c.name, path: c.path }))),
         )}

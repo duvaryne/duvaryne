@@ -18,7 +18,12 @@ const PERSON_ID = `${site.url}/about/#founder`;
 export function organizationSchema(): Json {
   return { "@type": ["Organization", "ProfessionalService"], "@id": ORG_ID,
     name: site.name,
-    alternateName: site.shortName,
+    // The registered entity is `name`; `legalName` repeats it explicitly because some
+    // consumers read only one of the two and the pair must never disagree.
+    legalName: site.name,
+    // An array, not a string: a bare "duvaryne" and the full registered name have to
+    // resolve to this same node, and the only way to assert that is to list both.
+    alternateName: [...site.alternateNames],
     url: site.url,
     email: site.email,
     telephone: site.phone,
@@ -32,6 +37,34 @@ export function organizationSchema(): Json {
     areaServed: site.areaServed.map((c) => ({ "@type": "Country", name: c })),
     award: "DPIIT-recognised startup (Government of India)",
     founder: { "@id": PERSON_ID },
+    // Topical scope of the organisation itself, distinct from the founder's `knowsAbout`.
+    // This is what ties the entity to "AWS" and "DevOps" as subjects rather than as words
+    // that merely happen to appear in the page copy.
+    knowsAbout: [
+      "Amazon Web Services",
+      "AWS cloud migration",
+      "DevOps",
+      "Kubernetes",
+      "CI/CD",
+      "Infrastructure as Code",
+      "Terraform",
+      "Cloud cost optimisation",
+      "Site reliability engineering",
+    ],
+    hasOfferCatalog: { "@type": "OfferCatalog",
+      name: `${site.shortName} services`,
+      itemListElement: site.services.map((s) => ({ "@type": "Offer",
+        itemOffered: { "@id": `${absoluteUrl(s.path)}#service` },
+      })),
+    },
+    contactPoint: { "@type": "ContactPoint",
+      contactType: "sales",
+      email: site.email,
+      telephone: site.phone,
+      areaServed: [...site.areaServed],
+      availableLanguage: ["en"],
+      url: absoluteUrl("/contact"),
+    },
     sameAs: Object.values(site.social),
   };
 }
@@ -39,14 +72,15 @@ export function organizationSchema(): Json {
 export function websiteSchema(): Json {
   return { "@type": "WebSite", "@id": SITE_ID,
     url: site.url,
-    name: site.name,
+    // The site name a search engine should print under the result, which is the brand and
+    // not the registered entity. `alternateName` carries the long form.
+    name: site.shortName,
+    alternateName: site.name,
     publisher: { "@id": ORG_ID },
     inLanguage: "en-IN",
-    potentialAction: { "@type": "SearchAction",
-      target: { "@type": "EntryPoint",
-        urlTemplate: `${site.url}/search/?q={search_term_string}`,
-      }, "query-input": "required name=search_term_string",
-    },
+    // No `potentialAction`/SearchAction here on purpose. Declaring one commits the site to
+    // a working /search/?q= endpoint, and there is no search route — a sitelinks searchbox
+    // pointing at a 404 is worse than none, and Google drops the markup either way.
   };
 }
 
