@@ -49,6 +49,17 @@ export const serviceNav: NavLink[] = [
     href: "/engagement-models/",
     description: "How we scope, price and deliver. Fixed price, written first.",
   },
+  /**
+   * Listed here so the page is not an orphan. It is in the sitemap either way, but a page
+   * nothing links to collects no internal link equity and ranks accordingly — and the
+   * footer renders this list on every page, which is the cheapest way to fix that without
+   * adding a top-level nav item for an audience segment.
+   */
+  {
+    label: "For US Companies",
+    href: "/aws-consulting-us/",
+    description: "Fixed USD pricing, calls in US hours, compliance-driven builds.",
+  },
 ];
 
 export const legalNav: NavLink[] = [

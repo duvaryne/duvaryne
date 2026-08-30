@@ -55,7 +55,13 @@ function useMoney(currency: Currency) {
 export function SpendTeardown() {
   const copy = home.spendTeardown;
   const [index, setIndex] = useState(5); // $10k/month
-  const [currency, setCurrency] = useState<Currency>("INR");
+  /* USD by default, with rupees one tap away.
+     The currency the calculator opens in is a positioning decision, not a locale one. A
+     US or EU buyer who lands on a figure in rupees prices the work as offshore before
+     reading a sentence, and the same engagement bills very differently to the two
+     audiences. India remains a first-class audience — hence the toggle rather than a
+     removal — but it is the second thing the widget says, not the first. */
+  const [currency, setCurrency] = useState<Currency>("USD");
   const groupId = useId();
 
   const fmt = useMoney(currency);
@@ -96,7 +102,7 @@ export function SpendTeardown() {
             aria-label="Currency"
             className="flex border border-rule p-0.5"
           >
-            {(["INR", "USD"] as const).map((c) => (
+            {(["USD", "INR"] as const).map((c) => (
               <button
                 key={c}
                 type="button"

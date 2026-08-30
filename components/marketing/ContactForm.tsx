@@ -206,6 +206,12 @@ export function ContactForm() {
           >
             Budget band <span className="font-normal text-muted">(optional)</span>
           </label>
+          {/* The minimum is stated rather than implied. A band list alone signals a floor
+              without committing to one, which wastes both sides' time at the first call. */}
+          <p className="mt-1 text-[0.8125rem] leading-snug text-muted">
+            Engagements typically start at $15,000. Smaller pieces of advice are what the
+            free 30-minute review is for.
+          </p>
           <select id={`${id}-budget`} name="budget" defaultValue="" className={field}>
             <option value="">Prefer not to say</option>
             {BUDGET_BANDS.map((b) => (

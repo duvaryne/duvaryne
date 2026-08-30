@@ -109,6 +109,7 @@ jobs:
           FAILED=""
           for path in / /services/ /services/aws-cloud/ /services/devops/ \
                       /services/it-consultation/ /aws-cost-optimization/ /about/ \
+                      /aws-consulting-us/ \
                       /contact/ /faq/ /legal/privacy/ /legal/terms/ \
                       /case-studies/ /blog/ /products/ /engagement-models/ \
                       /case-studies/kubernetes-redis-microservice-deployment/ \
